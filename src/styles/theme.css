@@ -1,0 +1,107 @@
+@font-face {
+  font-family: 'Unica77';
+  src: url('../../Fonts/Unica77LLTrialWeb-Regular.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Unica77';
+  src: url('../../Fonts/Unica77LLTrialWeb-Medium.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Unica77';
+  src: url('../../Fonts/Unica77LLTrialWeb-Bold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  font-family: 'Unica77', 'Helvetica Neue', Arial, sans-serif;
+  color: #222222;
+  background: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  --accent: #ff7500;
+  --background: #ffffff;
+  --surface-primary: #f1f1f1;
+  --surface-secondary: #ededed;
+  --surface-raised: #f7f7f7;
+  --surface-hover: #e5e5e5;
+  --text-primary: #111111;
+  --text-secondary: #606060;
+  --text-muted: #8b8b8b;
+  --border: #d7d7d7;
+  --grid-dot: rgba(60, 60, 60, 0.34);
+  --grid-major: rgba(60, 60, 60, 0.1);
+  --canvas-object: #222222;
+  --room-inner: #777777;
+  --tabletop-fill: rgba(34, 34, 34, 0.08);
+  --disabled: #9a9a9a;
+}
+
+:root[data-theme='dark'] {
+  color: #e0e0e0;
+  background: #232323;
+
+  --background: #232323;
+  --surface-primary: #1f1f1f;
+  --surface-secondary: #353535;
+  --surface-raised: #2a2a2a;
+  --surface-hover: #3d3d3d;
+  --text-primary: #e0e0e0;
+  --text-secondary: #b7b7b7;
+  --text-muted: #858585;
+  --border: #454545;
+  --grid-dot: rgba(255, 255, 255, 0.42);
+  --grid-major: rgba(255, 255, 255, 0.08);
+  --canvas-object: #e0e0e0;
+  --room-inner: #9a9a9a;
+  --tabletop-fill: rgba(224, 224, 224, 0.1);
+  --disabled: #6f6f6f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  min-width: 780px;
+  min-height: 560px;
+  background: var(--background);
+}
+
+button {
+  font: inherit;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+button:disabled {
+  color: var(--disabled);
+  cursor: not-allowed;
+}
+
+::selection {
+  color: #ffffff;
+  background: var(--accent);
+}
