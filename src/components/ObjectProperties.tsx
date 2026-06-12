@@ -3,9 +3,11 @@ import type {
   CanvasObject,
   GeometryField,
   Layer,
+  LayoutScaleId,
   MeasurementSystem,
 } from '../types'
 import { lineLength } from '../utils/canvas'
+import { getTrackDefinition } from '../data/trackCatalog'
 import {
   formatPropertyValue,
   getGeometryValue,
@@ -15,9 +17,12 @@ import {
 } from '../utils/objectProperties'
 import { getObjectTypeLabel } from '../utils/shapeMode'
 import { formatMillimetres } from '../utils/units'
+import { getTrackLength } from '../utils/trackGeometry'
+import { formatPrototypeLength } from '../utils/layoutScale'
 
 interface ObjectPropertiesProps {
   layer: Layer | null
+  layoutScaleId: LayoutScaleId
   measurementSystem: MeasurementSystem
   object: CanvasObject | null
   onUpdateObject: (object: CanvasObject) => void
@@ -42,14 +47,26 @@ const rectangleFields: PropertyDefinition[] = [
   { field: 'height', label: 'Height' },
 ]
 
+const trackFields: PropertyDefinition[] = [
+  { field: 'x', label: 'X' },
+  { field: 'y', label: 'Y' },
+  { field: 'rotation', label: 'Rotation' },
+]
+
 function ObjectProperties({
   layer,
+  layoutScaleId,
   measurementSystem,
   object,
   onUpdateObject,
 }: ObjectPropertiesProps) {
   const unit = propertyUnitForSystem(measurementSystem)
-  const definitions = object?.type === 'line' ? lineFields : rectangleFields
+  const definitions =
+    object?.type === 'line'
+      ? lineFields
+      : object?.type === 'track-piece'
+        ? trackFields
+        : rectangleFields
   const [values, setValues] = useState<Partial<Record<GeometryField, string>>>(
     {},
   )
@@ -68,7 +85,9 @@ function ObjectProperties({
           field,
           value === null
             ? ''
-            : formatPropertyValue(value, measurementSystem),
+            : field === 'rotation'
+              ? String(value)
+              : formatPropertyValue(value, measurementSystem),
         ]
       }),
     ) as Partial<Record<GeometryField, string>>
@@ -91,10 +110,13 @@ function ObjectProperties({
       return
     }
 
-    const millimetres = parsePropertyValue(
-      values[field] ?? '',
-      measurementSystem,
-    )
+    const rawValue = values[field] ?? ''
+    const millimetres =
+      field === 'rotation'
+        ? rawValue.trim() === ''
+          ? null
+          : Number(rawValue)
+        : parsePropertyValue(rawValue, measurementSystem)
     const updatedObject =
       millimetres === null
         ? null
@@ -103,7 +125,9 @@ function ObjectProperties({
     if (!updatedObject) {
       setErrorField(field)
       setError(
-        object.type === 'line'
+        object.type === 'track-piece'
+          ? 'Use non-negative positions and rotation in 15 degree steps from 0 to 345.'
+          : object.type === 'line'
           ? 'Use non-negative coordinates and keep the line length above zero.'
           : 'Use non-negative positions and dimensions greater than zero.',
       )
@@ -155,7 +179,11 @@ function ObjectProperties({
                 <span>{label}</span>
                 <input
                   aria-invalid={errorField === field}
-                  aria-label={`${label} (${unit})`}
+                  aria-label={
+                    field === 'rotation'
+                      ? 'Rotation (degrees)'
+                      : `${label} (${unit})`
+                  }
                   disabled={layer.locked}
                   inputMode="decimal"
                   step="any"
@@ -184,16 +212,110 @@ function ObjectProperties({
           </div>
 
           {object.type === 'line' && (
-            <div className="property-readout">
-              <span>Length</span>
-              <strong>
-                {formatMillimetres(
-                  lineLength(object.start, object.end),
-                  unit,
-                )}
-              </strong>
-            </div>
+            <>
+              <div className="property-readout">
+                <span>Length</span>
+                <strong>
+                  {formatMillimetres(
+                    lineLength(object.start, object.end),
+                    unit,
+                  )}
+                </strong>
+              </div>
+              <div className="property-readout">
+                <span>Prototype length</span>
+                <strong>
+                  {formatPrototypeLength(
+                    lineLength(object.start, object.end),
+                    layoutScaleId,
+                    measurementSystem,
+                  )}
+                </strong>
+              </div>
+            </>
           )}
+
+          {object.type !== 'line' && object.type !== 'track-piece' && (
+            <>
+              <div className="property-readout">
+                <span>Prototype width</span>
+                <strong>
+                  {formatPrototypeLength(
+                    object.width,
+                    layoutScaleId,
+                    measurementSystem,
+                  )}
+                </strong>
+              </div>
+              <div className="property-readout">
+                <span>Prototype height</span>
+                <strong>
+                  {formatPrototypeLength(
+                    object.height,
+                    layoutScaleId,
+                    measurementSystem,
+                  )}
+                </strong>
+              </div>
+            </>
+          )}
+
+          {object.type === 'track-piece' && (() => {
+            const definition = getTrackDefinition(object.definitionId)
+            return (
+              <>
+                <div className="property-readout">
+                  <span>Piece</span>
+                  <strong>{definition.name}</strong>
+                </div>
+                <div className="property-readout">
+                  <span>Length</span>
+                  <strong>
+                    {formatMillimetres(getTrackLength(object), unit)}
+                  </strong>
+                </div>
+                <div className="property-readout">
+                  <span>Prototype length</span>
+                  <strong>
+                    {formatPrototypeLength(
+                      getTrackLength(object),
+                      layoutScaleId,
+                      measurementSystem,
+                    )}
+                  </strong>
+                </div>
+                {definition.kind === 'curve' && (
+                  <>
+                    <div className="property-readout">
+                      <span>Radius</span>
+                      <strong>
+                        {formatMillimetres(
+                          definition.radiusMm ?? 0,
+                          unit,
+                        )}
+                      </strong>
+                    </div>
+                    <div className="property-readout">
+                      <span>Prototype radius</span>
+                      <strong>
+                        {formatPrototypeLength(
+                          definition.radiusMm ?? 0,
+                          layoutScaleId,
+                          measurementSystem,
+                        )}
+                      </strong>
+                    </div>
+                    <div className="property-readout">
+                      <span>Curve</span>
+                      <strong>
+                        {definition.angleDegrees}° {object.direction}
+                      </strong>
+                    </div>
+                  </>
+                )}
+              </>
+            )
+          })()}
 
           {layer.locked && (
             <p className="properties-notice">Unlock this layer to edit.</p>

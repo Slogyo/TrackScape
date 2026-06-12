@@ -1,6 +1,6 @@
 import type {
+  CanvasObject,
   RectangularCanvasObject,
-  RectangularObjectType,
 } from '../types'
 
 export type ShapeMode =
@@ -74,13 +74,14 @@ export const createShapeObject = (
 }
 
 export const getObjectTypeLabel = (
-  type: 'line' | RectangularObjectType,
+  type: CanvasObject['type'],
 ): string => {
   const labels = {
     line: 'Line',
     rectangle: 'Rectangle',
     room: 'Room',
     tabletop: 'Tabletop',
+    'track-piece': 'Track Piece',
   } as const
 
   return labels[type]

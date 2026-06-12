@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import type { PointerEvent } from 'react'
 import type {
   CanvasObject,
@@ -6,36 +12,66 @@ import type {
   Layer,
   MovementDelta,
   Point,
+  TrackPieceObject,
+  TrackPlacementSettings,
+  TrackPreviewStatus,
   ToolId,
 } from '../types'
 import {
   canDrawOnLayer,
-  clampTranslationToOrigin,
+  boundsIntersect,
+  clampGroupTranslationToOrigin,
+  getCombinedBounds,
+  getObjectBounds,
   isNonZeroLine,
   isNonZeroRectangle,
   lineLength,
   millimetresToPixels,
   normalizeRectangle,
-  pointFromPixels,
+  pointFromViewportPixels,
   snapDelta,
   snapPoint,
   translateObject,
 } from '../utils/canvas'
+import {
+  type CameraPosition,
+  DEFAULT_WORKSPACE_ZOOM,
+  getCanvasRelativeWheelCameraOffset,
+  getCenteredCamera,
+  getCursorAnchoredCamera,
+  stepZoom,
+} from '../utils/viewport'
 import { createShapeObject } from '../utils/shapeMode'
+import {
+  findNearestTrackConnector,
+  getAvailableTrackConnectors,
+  getTrackBounds,
+  normalizeRotation,
+} from '../utils/trackGeometry'
+import { getTrackDefinition } from '../data/trackCatalog'
+import TrackGeometry from './TrackGeometry'
 
 interface CanvasWorkspaceProps {
   activeLayer: Layer
   activeToolId: ToolId
   layers: Layer[]
   objects: CanvasObject[]
-  selectedObjectId: string | null
+  projectId: string
+  resetViewToken: number
+  selectedObjectIds: string[]
+  trackSettings: TrackPlacementSettings
+  zoom: number
   onAddObject: (object: CanvasObject, selectObject?: boolean) => void
   onCursorMove: (position: Point) => void
   onDraftMeasurementChange: (measurement: DraftMeasurement | null) => void
   onMovementDeltaChange: (delta: MovementDelta | null) => void
   onRemoveObject: (objectId: string) => void
-  onSelectObject: (objectId: string | null) => void
-  onUpdateObject: (object: CanvasObject) => void
+  onRemoveObjects: (objectIds: string[]) => void
+  onSelectObjects: (objectIds: string[]) => void
+  onTrackPreviewChange: (status: TrackPreviewStatus | null) => void
+  onTrackSettingsChange: (settings: TrackPlacementSettings) => void
+  onUpdateObjects: (objects: CanvasObject[]) => void
+  onZoomChange: (zoom: number) => void
 }
 
 type DrawingToolId = Extract<ToolId, 'line' | 'shape'>
@@ -48,12 +84,28 @@ interface DrawingDraft {
 }
 
 interface MovementDraft {
-  original: CanvasObject
-  preview: CanvasObject
+  originals: CanvasObject[]
+  previews: CanvasObject[]
+  collapseToObjectId: string | null
   startPointer: Point
   delta: MovementDelta
   pointerId: number
 }
+
+interface AreaSelectionDraft {
+  start: Point
+  end: Point
+  pointerId: number
+}
+
+interface PanDraft {
+  pointerId: number
+  startClient: Point
+  startCamera: CameraPosition
+  clearSelectionOnClick: boolean
+}
+
+const PAN_DRAG_THRESHOLD_PX = 3
 
 const isDrawingTool = (toolId: ToolId): toolId is DrawingToolId =>
   toolId === 'line' || toolId === 'shape'
@@ -68,17 +120,43 @@ function CanvasWorkspace({
   activeToolId,
   layers,
   objects,
-  selectedObjectId,
+  projectId,
+  resetViewToken,
+  selectedObjectIds,
+  trackSettings,
+  zoom,
   onAddObject,
   onCursorMove,
   onDraftMeasurementChange,
   onMovementDeltaChange,
   onRemoveObject,
-  onSelectObject,
-  onUpdateObject,
+  onRemoveObjects,
+  onSelectObjects,
+  onTrackPreviewChange,
+  onTrackSettingsChange,
+  onUpdateObjects,
+  onZoomChange,
 }: CanvasWorkspaceProps) {
+  const viewportRef = useRef<HTMLElement>(null)
+  const cameraRef = useRef<CameraPosition>({ x: 0, y: 0 })
+  const objectsRef = useRef(objects)
+  const spacePressedRef = useRef(false)
+  objectsRef.current = objects
+  const [camera, setCameraState] = useState<CameraPosition>({ x: 0, y: 0 })
+  const [viewportSize, setViewportSize] = useState({
+    width: 1,
+    height: 1,
+  })
   const [drawingDraft, setDrawingDraft] = useState<DrawingDraft | null>(null)
   const [movementDraft, setMovementDraft] = useState<MovementDraft | null>(null)
+  const [areaSelectionDraft, setAreaSelectionDraft] =
+    useState<AreaSelectionDraft | null>(null)
+  const [panDraft, setPanDraft] = useState<PanDraft | null>(null)
+  const [trackPointer, setTrackPointer] = useState<Point | null>(null)
+  const setCamera = useCallback((nextCamera: CameraPosition) => {
+    cameraRef.current = nextCamera
+    setCameraState(nextCamera)
+  }, [])
   const visibleLayerIds = useMemo(
     () =>
       new Set(
@@ -86,13 +164,66 @@ function CanvasWorkspace({
       ),
     [layers],
   )
-  const visibleObjects = objects.filter((object) =>
-    visibleLayerIds.has(object.layerId),
+  const visibleObjects = useMemo(
+    () => objects.filter((object) => visibleLayerIds.has(object.layerId)),
+    [objects, visibleLayerIds],
   )
-  const selectedObject =
-    objects.find((object) => object.id === selectedObjectId) ?? null
-  const selectedLayer =
-    layers.find((layer) => layer.id === selectedObject?.layerId) ?? null
+  const selectedObjects = objects.filter((object) =>
+    selectedObjectIds.includes(object.id),
+  )
+  const trackLayer = layers.find((layer) => layer.id === 'track') ?? null
+  const visibleTrackObjects = useMemo(
+    () =>
+      visibleObjects.filter(
+        (object): object is TrackPieceObject =>
+          object.type === 'track-piece',
+      ),
+    [visibleObjects],
+  )
+  const availableTrackConnectors = useMemo(
+    () => getAvailableTrackConnectors(visibleTrackObjects),
+    [visibleTrackObjects],
+  )
+  const trackPreview = useMemo(() => {
+    if (
+      activeToolId !== 'track' ||
+      !trackPointer ||
+      !trackLayer ||
+      !trackLayer.visible ||
+      trackLayer.locked
+    ) {
+      return null
+    }
+
+    const connector = findNearestTrackConnector(
+      trackPointer,
+      visibleTrackObjects,
+    )
+    const preview: TrackPieceObject = {
+      id: 'track-preview',
+      type: 'track-piece',
+      layerId: 'track',
+      definitionId: trackSettings.definitionId,
+      position: connector ? connector.position : snapPoint(trackPointer),
+      rotation: connector ? connector.heading : trackSettings.rotation,
+      direction: trackSettings.direction,
+    }
+
+    return {
+      object: preview,
+      snapped: connector !== null,
+      withinOrigin: (() => {
+        const bounds = getTrackBounds(preview)
+        return bounds.minX >= -0.001 && bounds.minY >= -0.001
+      })(),
+    }
+  }, [
+    activeToolId,
+    trackLayer,
+    trackPointer,
+    trackSettings,
+    visibleTrackObjects,
+  ])
 
   const cancelDrawing = useCallback(() => {
     setDrawingDraft(null)
@@ -107,50 +238,212 @@ function CanvasWorkspace({
   const cancelInteractions = useCallback(() => {
     cancelDrawing()
     cancelMovement()
+    setAreaSelectionDraft(null)
   }, [cancelDrawing, cancelMovement])
 
   useEffect(() => {
     cancelInteractions()
+    setTrackPointer(null)
   }, [activeLayer.id, activeToolId, cancelInteractions])
 
   useEffect(() => {
-    if (
-      movementDraft &&
-      (!selectedLayer?.visible || selectedLayer.locked)
-    ) {
-      cancelMovement()
+    onZoomChange(DEFAULT_WORKSPACE_ZOOM)
+    setCamera({ x: 0, y: 0 })
+  }, [onZoomChange, projectId, setCamera])
+
+  useEffect(() => {
+    const viewport = viewportRef.current
+    if (!viewport) {
+      return
     }
-  }, [cancelMovement, movementDraft, selectedLayer])
+
+    const updateSize = () => {
+      setViewportSize({
+        width: Math.max(viewport.clientWidth, 1),
+        height: Math.max(viewport.clientHeight, 1),
+      })
+    }
+    const observer = new ResizeObserver(updateSize)
+
+    updateSize()
+    observer.observe(viewport)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (resetViewToken === 0 || !viewportRef.current) {
+      return
+    }
+
+    const viewport = viewportRef.current
+    const nextCamera = getCenteredCamera(
+      getCombinedBounds(objectsRef.current),
+      DEFAULT_WORKSPACE_ZOOM,
+      { width: viewport.clientWidth, height: viewport.clientHeight },
+    )
+
+    onZoomChange(DEFAULT_WORKSPACE_ZOOM)
+    setCamera(nextCamera)
+  }, [onZoomChange, resetViewToken, setCamera])
+
+  useEffect(() => {
+    onTrackPreviewChange(
+      trackPreview
+        ? {
+            definitionId: trackPreview.object.definitionId,
+            rotation: trackPreview.object.rotation,
+            direction: trackPreview.object.direction,
+            snapped: trackPreview.snapped,
+          }
+        : null,
+    )
+  }, [onTrackPreviewChange, trackPreview])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Space' && !isTextEntryTarget(event.target)) {
+        event.preventDefault()
+        spacePressedRef.current = true
+      }
+
       if (event.key === 'Escape') {
         cancelInteractions()
+        setTrackPointer(null)
+        setPanDraft(null)
         return
       }
 
       if (
+        activeToolId === 'track' &&
+        !isTextEntryTarget(event.target)
+      ) {
+        if (event.key === '[' || event.key === ']') {
+          event.preventDefault()
+          onTrackSettingsChange({
+            ...trackSettings,
+            rotation: normalizeRotation(
+              trackSettings.rotation + (event.key === '[' ? -15 : 15),
+            ),
+          })
+          return
+        }
+
+        if (
+          event.key.toLowerCase() === 'f' &&
+          getTrackDefinition(trackSettings.definitionId).kind === 'curve'
+        ) {
+          event.preventDefault()
+          onTrackSettingsChange({
+            ...trackSettings,
+            direction:
+              trackSettings.direction === 'left' ? 'right' : 'left',
+          })
+          return
+        }
+      }
+
+      if (
         (event.key === 'Delete' || event.key === 'Backspace') &&
-        selectedObjectId &&
+        selectedObjectIds.length > 0 &&
         !isTextEntryTarget(event.target)
       ) {
         event.preventDefault()
-        onRemoveObject(selectedObjectId)
+        onRemoveObjects(selectedObjectIds)
+      }
+    }
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.code === 'Space') {
+        spacePressedRef.current = false
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [cancelInteractions, onRemoveObject, selectedObjectId])
+    window.addEventListener('keyup', handleKeyUp)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [
+    activeToolId,
+    cancelInteractions,
+    onRemoveObjects,
+    onTrackSettingsChange,
+    selectedObjectIds,
+    trackSettings,
+  ])
 
   const getPointerPosition = (event: PointerEvent<HTMLElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect()
 
-    return pointFromPixels(
+    return pointFromViewportPixels(
       event.clientX - bounds.left,
       event.clientY - bounds.top,
+      cameraRef.current.x,
+      cameraRef.current.y,
+      zoom,
     )
   }
+
+  const handleWheel = useCallback((event: WheelEvent) => {
+    event.preventDefault()
+    const viewport = viewportRef.current
+    if (!viewport) {
+      return
+    }
+
+    if (event.altKey) {
+      setCamera({
+        ...cameraRef.current,
+        x: getCanvasRelativeWheelCameraOffset(
+          cameraRef.current.x,
+          event.deltaY,
+          zoom,
+        ),
+      })
+      return
+    }
+
+    if (event.shiftKey) {
+      setCamera({
+        ...cameraRef.current,
+        y: getCanvasRelativeWheelCameraOffset(
+          cameraRef.current.y,
+          event.deltaY,
+          zoom,
+        ),
+      })
+      return
+    }
+
+    const nextZoom = stepZoom(zoom, event.deltaY)
+    if (nextZoom === zoom) {
+      return
+    }
+
+    const bounds = viewport.getBoundingClientRect()
+    const nextCamera = getCursorAnchoredCamera(
+      cameraRef.current,
+      {
+        x: event.clientX - bounds.left,
+        y: event.clientY - bounds.top,
+      },
+      zoom,
+      nextZoom,
+    )
+
+    setCamera(nextCamera)
+    onZoomChange(nextZoom)
+  }, [onZoomChange, setCamera, zoom])
+
+  useEffect(() => {
+    const viewport = viewportRef.current
+    if (!viewport) {
+      return
+    }
+
+    viewport.addEventListener('wheel', handleWheel, { passive: false })
+    return () => viewport.removeEventListener('wheel', handleWheel)
+  }, [handleWheel])
 
   const getTargetObject = (event: PointerEvent<HTMLElement>) => {
     if (!(event.target instanceof Element)) {
@@ -193,16 +486,38 @@ function CanvasWorkspace({
       x: pointerPosition.x - draft.startPointer.x,
       y: pointerPosition.y - draft.startPointer.y,
     })
-    const delta = clampTranslationToOrigin(draft.original, snappedDelta)
+    const delta = clampGroupTranslationToOrigin(
+      draft.originals,
+      snappedDelta,
+    )
 
     return {
       ...draft,
       delta,
-      preview: translateObject(draft.original, delta),
+      previews: draft.originals.map((object) =>
+        translateObject(object, delta),
+      ),
     }
   }
 
   const handlePointerDown = (event: PointerEvent<HTMLElement>) => {
+    const isPanStart =
+      event.button === 1 ||
+      (event.button === 0 && spacePressedRef.current)
+
+    if (isPanStart) {
+      event.preventDefault()
+      event.currentTarget.setPointerCapture(event.pointerId)
+      setPanDraft({
+        pointerId: event.pointerId,
+        startClient: { x: event.clientX, y: event.clientY },
+        startCamera: cameraRef.current,
+        clearSelectionOnClick: false,
+      })
+      cancelInteractions()
+      return
+    }
+
     if (event.button !== 0) {
       return
     }
@@ -212,21 +527,56 @@ function CanvasWorkspace({
       (layer) => layer.id === targetObject?.layerId,
     )
 
-    if (activeToolId === 'select') {
+    if (activeToolId === 'select' || activeToolId === 'area-select') {
       if (!targetObject || !targetLayer) {
-        onSelectObject(null)
+        if (activeToolId === 'area-select') {
+          onSelectObjects([])
+          const start = getPointerPosition(event)
+          event.currentTarget.setPointerCapture(event.pointerId)
+          setAreaSelectionDraft({
+            start,
+            end: start,
+            pointerId: event.pointerId,
+          })
+        } else {
+          event.currentTarget.setPointerCapture(event.pointerId)
+          setPanDraft({
+            pointerId: event.pointerId,
+            startClient: { x: event.clientX, y: event.clientY },
+            startCamera: cameraRef.current,
+            clearSelectionOnClick: true,
+          })
+        }
         return
       }
 
-      onSelectObject(targetObject.id)
-      if (targetLayer.locked) {
+      const targetWasSelected = selectedObjectIds.includes(targetObject.id)
+      const nextSelection = targetWasSelected
+        ? selectedObjects
+        : [targetObject]
+      if (!targetWasSelected) {
+        onSelectObjects([targetObject.id])
+      }
+
+      const movableObjects = nextSelection.filter((object) => {
+        const layer = layers.find(
+          (candidate) => candidate.id === object.layerId,
+        )
+        return Boolean(layer?.visible && !layer.locked)
+      })
+      if (movableObjects.length === 0 || targetLayer.locked) {
+        onSelectObjects([targetObject.id])
         return
       }
 
       const startPointer = getPointerPosition(event)
       const nextDraft: MovementDraft = {
-        original: targetObject,
-        preview: targetObject,
+        originals: movableObjects,
+        previews: movableObjects,
+        collapseToObjectId:
+          targetWasSelected && selectedObjectIds.length > 1
+            ? targetObject.id
+            : null,
         startPointer,
         delta: { x: 0, y: 0 },
         pointerId: event.pointerId,
@@ -239,13 +589,27 @@ function CanvasWorkspace({
 
     if (activeToolId === 'delete') {
       if (!targetObject || !targetLayer) {
-        onSelectObject(null)
+        onSelectObjects([])
         return
       }
 
-      onSelectObject(targetObject.id)
+      onSelectObjects([targetObject.id])
       if (!targetLayer.locked) {
         onRemoveObject(targetObject.id)
+      }
+      return
+    }
+
+    if (activeToolId === 'track') {
+      if (
+        trackLayer?.visible &&
+        !trackLayer.locked &&
+        trackPreview?.withinOrigin
+      ) {
+        onAddObject({
+          ...trackPreview.object,
+          id: crypto.randomUUID(),
+        })
       }
       return
     }
@@ -268,8 +632,28 @@ function CanvasWorkspace({
   }
 
   const handlePointerMove = (event: PointerEvent<HTMLElement>) => {
+    if (panDraft?.pointerId === event.pointerId) {
+      setCamera({
+        x: Math.max(
+          0,
+          panDraft.startCamera.x -
+            (event.clientX - panDraft.startClient.x) / zoom,
+        ),
+        y: Math.max(
+          0,
+          panDraft.startCamera.y -
+            (event.clientY - panDraft.startClient.y) / zoom,
+        ),
+      })
+      return
+    }
+
     const pointerPosition = getPointerPosition(event)
     onCursorMove(pointerPosition)
+
+    if (activeToolId === 'track') {
+      setTrackPointer(pointerPosition)
+    }
 
     if (
       movementDraft &&
@@ -278,6 +662,17 @@ function CanvasWorkspace({
       const nextDraft = getMovementPreview(movementDraft, pointerPosition)
       setMovementDraft(nextDraft)
       onMovementDeltaChange(nextDraft.delta)
+      return
+    }
+
+    if (
+      areaSelectionDraft &&
+      areaSelectionDraft.pointerId === event.pointerId
+    ) {
+      setAreaSelectionDraft({
+        ...areaSelectionDraft,
+        end: pointerPosition,
+      })
       return
     }
 
@@ -301,6 +696,22 @@ function CanvasWorkspace({
   }
 
   const handlePointerUp = (event: PointerEvent<HTMLElement>) => {
+    if (panDraft?.pointerId === event.pointerId) {
+      const dragDistance = Math.hypot(
+        event.clientX - panDraft.startClient.x,
+        event.clientY - panDraft.startClient.y,
+      )
+      releasePointer(event)
+      if (
+        panDraft.clearSelectionOnClick &&
+        dragDistance < PAN_DRAG_THRESHOLD_PX
+      ) {
+        onSelectObjects([])
+      }
+      setPanDraft(null)
+      return
+    }
+
     if (
       movementDraft &&
       movementDraft.pointerId === event.pointerId
@@ -312,9 +723,41 @@ function CanvasWorkspace({
       releasePointer(event)
 
       if (completedDraft.delta.x !== 0 || completedDraft.delta.y !== 0) {
-        onUpdateObject(completedDraft.preview)
+        onUpdateObjects(completedDraft.previews)
+      } else if (completedDraft.collapseToObjectId) {
+        onSelectObjects([completedDraft.collapseToObjectId])
       }
       cancelMovement()
+      return
+    }
+
+    if (
+      areaSelectionDraft &&
+      areaSelectionDraft.pointerId === event.pointerId
+    ) {
+      const completedDraft = {
+        ...areaSelectionDraft,
+        end: getPointerPosition(event),
+      }
+      const marquee = normalizeRectangle(
+        completedDraft.start,
+        completedDraft.end,
+      )
+      const marqueeBounds = {
+        minX: marquee.x,
+        minY: marquee.y,
+        maxX: marquee.x + marquee.width,
+        maxY: marquee.y + marquee.height,
+      }
+      releasePointer(event)
+      onSelectObjects(
+        visibleObjects
+          .filter((object) =>
+            boundsIntersect(getObjectBounds(object), marqueeBounds),
+          )
+          .map((object) => object.id),
+      )
+      setAreaSelectionDraft(null)
       return
     }
 
@@ -364,9 +807,14 @@ function CanvasWorkspace({
   }
 
   const handlePointerCancel = (event: PointerEvent<HTMLElement>) => {
+    if (panDraft?.pointerId === event.pointerId) {
+      setPanDraft(null)
+      return
+    }
     if (
       drawingDraft?.pointerId === event.pointerId ||
-      movementDraft?.pointerId === event.pointerId
+      movementDraft?.pointerId === event.pointerId ||
+      areaSelectionDraft?.pointerId === event.pointerId
     ) {
       cancelInteractions()
     }
@@ -377,6 +825,10 @@ function CanvasWorkspace({
     className: string,
     dataObjectId?: string,
   ) => {
+    if (object.type === 'track-piece') {
+      return null
+    }
+
     if (object.type === 'line') {
       return (
         <line
@@ -429,12 +881,25 @@ function CanvasWorkspace({
   }
 
   const renderObject = (object: CanvasObject) => {
-    const renderedObject =
-      movementDraft?.original.id === object.id
-        ? movementDraft.preview
-        : object
-    const isSelected = selectedObjectId === object.id
-    const isMoving = movementDraft?.original.id === object.id
+    const movementPreview = movementDraft?.previews.find(
+      (preview) => preview.id === object.id,
+    )
+    const renderedObject = movementPreview ?? object
+    const isSelected = selectedObjectIds.includes(object.id)
+    const isMoving = Boolean(movementPreview)
+    if (renderedObject.type === 'track-piece') {
+      return (
+        <TrackGeometry
+          key={object.id}
+          className={`track-object ${
+            isSelected ? 'is-selected' : ''
+          } ${isMoving ? 'is-moving' : ''}`.trim()}
+          dataObjectId={object.id}
+          object={renderedObject}
+        />
+      )
+    }
+
     const semanticClass =
       renderedObject.type === 'line' ? '' : `is-${renderedObject.type}`
 
@@ -478,15 +943,24 @@ function CanvasWorkspace({
 
   const workspaceClassName = [
     'canvas-workspace',
-    isDrawingTool(activeToolId) ? 'is-drawing-tool' : '',
-    activeToolId === 'select' ? 'is-selection-tool' : '',
+    isDrawingTool(activeToolId) || activeToolId === 'track'
+      ? 'is-drawing-tool'
+      : '',
+    activeToolId === 'select' || activeToolId === 'area-select'
+      ? 'is-selection-tool'
+      : '',
+    activeToolId === 'area-select' ? 'is-area-selection-tool' : '',
     activeToolId === 'delete' ? 'is-delete-tool' : '',
+    panDraft ? 'is-panning' : '',
   ]
     .filter(Boolean)
     .join(' ')
+  const viewWidth = viewportSize.width / zoom
+  const viewHeight = viewportSize.height / zoom
 
   return (
     <section
+      ref={viewportRef}
       className={workspaceClassName}
       aria-label="Layout workspace"
       onPointerCancel={handlePointerCancel}
@@ -494,9 +968,45 @@ function CanvasWorkspace({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
     >
-      <svg className="drawing-surface" aria-label="Layout drawing">
-        {visibleObjects.map(renderObject)}
-        {draftObject && (
+      <div
+        className="workspace-content"
+        style={{
+          backgroundSize: `${10 * zoom}px ${10 * zoom}px, ${
+            100 * zoom
+          }px ${100 * zoom}px, ${100 * zoom}px ${100 * zoom}px`,
+          backgroundPosition: `${
+            -camera.x * zoom - 1
+          }px ${-camera.y * zoom - 1}px`,
+        }}
+      >
+        <svg
+          className="drawing-surface"
+          aria-label="Layout drawing"
+          width="100%"
+          height="100%"
+          preserveAspectRatio="none"
+          viewBox={`${camera.x} ${camera.y} ${viewWidth} ${viewHeight}`}
+        >
+          {visibleObjects.map(renderObject)}
+        {activeToolId === 'track' &&
+          availableTrackConnectors.map((connector) => (
+            <circle
+              className="track-connector"
+              key={`${connector.objectId}-${connector.end}`}
+              cx={millimetresToPixels(connector.position.x)}
+              cy={millimetresToPixels(connector.position.y)}
+              r="4"
+            />
+          ))}
+        {trackPreview && (
+          <TrackGeometry
+            className={`track-object is-preview ${
+              trackPreview.snapped ? 'is-snapped' : ''
+            } ${trackPreview.withinOrigin ? '' : 'is-invalid'}`.trim()}
+            object={trackPreview.object}
+          />
+        )}
+          {draftObject && (
           <g>
             {renderGeometry(
               draftObject,
@@ -508,10 +1018,47 @@ function CanvasWorkspace({
             )}
             {renderRoomInset(draftObject)}
           </g>
-        )}
-      </svg>
-      <div className="canvas-origin" aria-hidden="true">
-        0,0
+          )}
+          {areaSelectionDraft && (
+            <rect
+              className="area-selection-marquee"
+              x={millimetresToPixels(
+                Math.min(
+                  areaSelectionDraft.start.x,
+                  areaSelectionDraft.end.x,
+                ),
+              )}
+              y={millimetresToPixels(
+                Math.min(
+                  areaSelectionDraft.start.y,
+                  areaSelectionDraft.end.y,
+                ),
+              )}
+              width={millimetresToPixels(
+                Math.abs(
+                  areaSelectionDraft.end.x -
+                    areaSelectionDraft.start.x,
+                ),
+              )}
+              height={millimetresToPixels(
+                Math.abs(
+                  areaSelectionDraft.end.y -
+                    areaSelectionDraft.start.y,
+                ),
+              )}
+            />
+          )}
+        </svg>
+        <div
+          className="canvas-origin"
+          aria-hidden="true"
+          style={{
+            left: 14 - camera.x * zoom,
+            top: 12 - camera.y * zoom,
+          }}
+        >
+          0,0
+        </div>
       </div>
       {objects.length === 0 && (
         <div className="empty-state">

@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import type { ProjectDocumentV1 } from '../types'
+import type {
+  ProjectDocumentV1,
+  ProjectDocumentV2,
+  ProjectDocumentV3,
+} from '../types'
 import {
   getProjectFilename,
   parseProjectDocument,
@@ -8,8 +12,8 @@ import {
   validateProjectDocument,
 } from './projectDocument'
 
-const validProject = (): ProjectDocumentV1 => ({
-  schemaVersion: 1,
+const validProject = (): ProjectDocumentV3 => ({
+  schemaVersion: 3,
   metadata: {
     id: 'project-1',
     name: 'Main Layout',
@@ -18,6 +22,7 @@ const validProject = (): ProjectDocumentV1 => ({
   },
   settings: {
     measurementSystem: 'imperial',
+    layoutScaleId: 'oo',
   },
   layers: [
     { id: 'room', name: 'Room', visible: true, locked: false },
@@ -72,16 +77,128 @@ describe('project document', () => {
     })
   })
 
+  it('migrates schema version 1 projects to version 3 with HO scale', () => {
+    const project = validProject()
+    const legacyProject: ProjectDocumentV1 = {
+      ...project,
+      schemaVersion: 1,
+      settings: { measurementSystem: project.settings.measurementSystem },
+      objects: project.objects.filter(
+        (object) => object.type !== 'track-piece',
+      ) as ProjectDocumentV1['objects'],
+    }
+
+    expect(validateProjectDocument(legacyProject)).toEqual({
+      ok: true,
+      project: {
+        ...project,
+        schemaVersion: 3,
+        settings: {
+          measurementSystem: project.settings.measurementSystem,
+          layoutScaleId: 'ho',
+        },
+      },
+    })
+  })
+
+  it('migrates schema version 2 track projects to version 3 with HO scale', () => {
+    const project = validProject()
+    const trackPiece = {
+      id: 'track-piece-1',
+      type: 'track-piece' as const,
+      layerId: 'track' as const,
+      definitionId: 'curve-r450-30' as const,
+      position: { x: 1000, y: 1000 },
+      rotation: 30,
+      direction: 'left' as const,
+    }
+    const legacyProject: ProjectDocumentV2 = {
+      ...project,
+      schemaVersion: 2,
+      settings: { measurementSystem: project.settings.measurementSystem },
+      layers: [
+        ...project.layers,
+        { id: 'track', name: 'Track', visible: true, locked: false },
+      ],
+      objects: [...project.objects, trackPiece],
+    }
+
+    expect(validateProjectDocument(legacyProject)).toEqual({
+      ok: true,
+      project: {
+        ...legacyProject,
+        schemaVersion: 3,
+        settings: {
+          measurementSystem: project.settings.measurementSystem,
+          layoutScaleId: 'ho',
+        },
+      },
+    })
+  })
+
+  it('round trips a valid track piece and rejects invalid catalog data', () => {
+    const project = validProject()
+    const trackPiece = {
+      id: 'track-piece-1',
+      type: 'track-piece' as const,
+      layerId: 'track' as const,
+      definitionId: 'curve-r450-30' as const,
+      position: { x: 1000, y: 1000 },
+      rotation: 30,
+      direction: 'left' as const,
+    }
+    const withTrack: ProjectDocumentV3 = {
+      ...project,
+      layers: [
+        ...project.layers,
+        { id: 'track', name: 'Track', visible: true, locked: false },
+      ],
+      objects: [...project.objects, trackPiece],
+    }
+
+    expect(parseProjectDocument(serializeProjectDocument(withTrack))).toEqual({
+      ok: true,
+      project: withTrack,
+    })
+    expect(
+      validateProjectDocument({
+        ...withTrack,
+        objects: [{ ...trackPiece, definitionId: 'unknown-track' }],
+      }).ok,
+    ).toBe(false)
+    expect(
+      validateProjectDocument({
+        ...withTrack,
+        objects: [{ ...trackPiece, rotation: 17 }],
+      }).ok,
+    ).toBe(false)
+  })
+
   it('rejects malformed JSON and unsupported versions', () => {
     expect(parseProjectDocument('{broken')).toEqual({
       ok: false,
       error: 'The selected file is not valid JSON.',
     })
     expect(
-      validateProjectDocument({ ...validProject(), schemaVersion: 2 }),
+      validateProjectDocument({ ...validProject(), schemaVersion: 4 }),
     ).toEqual({
       ok: false,
-      error: 'Unsupported project schema version: 2.',
+      error: 'Unsupported project schema version: 4.',
+    })
+  })
+
+  it('rejects unknown version 3 layout scales', () => {
+    expect(
+      validateProjectDocument({
+        ...validProject(),
+        settings: {
+          measurementSystem: 'metric',
+          layoutScaleId: 'custom',
+        },
+      }),
+    ).toEqual({
+      ok: false,
+      error: 'Project layout scale is invalid.',
     })
   })
 

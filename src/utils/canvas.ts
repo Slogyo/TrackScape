@@ -5,6 +5,7 @@ import type {
   Point,
   RectangularCanvasObject,
 } from '../types'
+import { getTrackBounds } from './trackGeometry'
 
 export const MILLIMETRES_PER_PIXEL = 10
 export const SNAP_INTERVAL_MM = 100
@@ -19,6 +20,15 @@ export const pointFromPixels = (x: number, y: number): Point => ({
   x: Math.max(0, Math.round(pixelsToMillimetres(x))),
   y: Math.max(0, Math.round(pixelsToMillimetres(y))),
 })
+
+export const pointFromViewportPixels = (
+  x: number,
+  y: number,
+  cameraX: number,
+  cameraY: number,
+  zoom = 1,
+): Point =>
+  pointFromPixels(x / zoom + cameraX, y / zoom + cameraY)
 
 export const snapValue = (
   value: number,
@@ -66,6 +76,10 @@ export const isNonZeroRectangle = (
 ): boolean => rectangle.width > 0 && rectangle.height > 0
 
 export const getObjectBounds = (object: CanvasObject) => {
+  if (object.type === 'track-piece') {
+    return getTrackBounds(object)
+  }
+
   if (object.type === 'line') {
     return {
       minX: Math.min(object.start.x, object.end.x),
@@ -81,6 +95,49 @@ export const getObjectBounds = (object: CanvasObject) => {
     maxX: object.x + object.width,
     maxY: object.y + object.height,
   }
+}
+
+export interface Bounds {
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
+}
+
+export const boundsIntersect = (
+  first: Bounds,
+  second: Bounds,
+): boolean =>
+  first.minX <= second.maxX &&
+  first.maxX >= second.minX &&
+  first.minY <= second.maxY &&
+  first.maxY >= second.minY
+
+export const getCombinedBounds = (objects: CanvasObject[]): Bounds | null => {
+  if (objects.length === 0) {
+    return null
+  }
+
+  const bounds = objects.map(getObjectBounds)
+  return {
+    minX: Math.min(...bounds.map((candidate) => candidate.minX)),
+    minY: Math.min(...bounds.map((candidate) => candidate.minY)),
+    maxX: Math.max(...bounds.map((candidate) => candidate.maxX)),
+    maxY: Math.max(...bounds.map((candidate) => candidate.maxY)),
+  }
+}
+
+export const clampGroupTranslationToOrigin = (
+  objects: CanvasObject[],
+  delta: MovementDelta,
+): MovementDelta => {
+  const bounds = getCombinedBounds(objects)
+  return bounds
+    ? {
+        x: Math.max(delta.x, -bounds.minX),
+        y: Math.max(delta.y, -bounds.minY),
+      }
+    : { x: 0, y: 0 }
 }
 
 export const clampTranslationToOrigin = (
@@ -99,6 +156,16 @@ export const translateObject = (
   object: CanvasObject,
   delta: MovementDelta,
 ): CanvasObject => {
+  if (object.type === 'track-piece') {
+    return {
+      ...object,
+      position: {
+        x: object.position.x + delta.x,
+        y: object.position.y + delta.y,
+      },
+    }
+  }
+
   if (object.type === 'line') {
     return {
       ...object,

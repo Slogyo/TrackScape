@@ -1,4 +1,4 @@
-import type { ProjectDocumentV1 } from '../types'
+import type { ProjectDocumentV3 } from '../types'
 import {
   parseProjectDocument,
   serializeProjectDocument,
@@ -7,7 +7,7 @@ import {
 export const PROJECT_STORAGE_KEY = 'trackscape.project.v1'
 
 export type ProjectLoadResult =
-  | { ok: true; project: ProjectDocumentV1 | null }
+  | { ok: true; project: ProjectDocumentV3 | null }
   | { ok: false; error: string }
 
 export type ProjectSaveResult =
@@ -16,7 +16,7 @@ export type ProjectSaveResult =
 
 export interface ProjectStorage {
   load: () => ProjectLoadResult
-  save: (project: ProjectDocumentV1) => ProjectSaveResult
+  save: (project: ProjectDocumentV3) => ProjectSaveResult
   clear: () => ProjectSaveResult
 }
 

@@ -6,11 +6,27 @@ TrackScape starts as a client-only Vite, React, and TypeScript application. Reac
 
 There is no backend, account system, or drawing engine. The browser persistence layer stores one explicitly saved project document in local storage.
 
+## Workspace Navigation
+
+The workspace is a virtual, unbounded positive-coordinate surface with an upper-left origin. The SVG remains the size of the visible viewport while a transient camera determines which model coordinates are shown. Screen-to-model conversion includes the camera position and zoom, so drawing and snapping use the same millimetre geometry anywhere in the workspace.
+
+Camera position, zoom, panning state, marquee drafts, and single or multiple selection remain transient interface state. They are not written into project documents. Keeping the rendered surface viewport-sized also prevents zoom from resizing a very large DOM element.
+
+## Interface Preferences
+
+Theme preference is stored separately from project data under `trackscape.theme`. A saved manual choice wins; otherwise TrackScape follows the operating system colour scheme and reacts to system changes. Importing a project never changes the interface theme.
+
 ## Why Measurements Are Stored in Millimetres
 
 All physical measurements should be stored as millimetres, even when the interface displays centimetres, metres, inches, or feet.
 
 Millimetres provide a practical base unit for model railway work, avoid mixing unit systems in saved project data, and keep conversion at the display/input boundary. A length of `1000` always means the same real-world length in the object model. The functions in `src/utils/units.ts` convert values when they enter or leave the interface.
+
+## Layout Scale
+
+The project stores a scale preset ID separately from object geometry. HO, N, OO, and O presets map to fixed ratios, while every canvas coordinate and dimension remains an exact model measurement in millimetres.
+
+Prototype-equivalent readouts are derived by multiplying model millimetres by the selected ratio. Scale changes therefore update labels and readouts only; they never resize objects, change snapping, or alter track connection geometry.
 
 ## Adding Tools
 
@@ -41,6 +57,7 @@ For example:
 type CanvasObject =
   | { id: string; type: 'line'; layerId: string; start: Point; end: Point }
   | { id: string; type: 'rectangle' | 'room' | 'tabletop'; layerId: string; x: number; y: number; width: number; height: number }
+  | { id: string; type: 'track-piece'; layerId: 'track'; definitionId: string; position: Point; rotation: number; direction: 'left' | 'right' }
 ```
 
 Object data should be independent of React components and rendering technology. This will make undo/redo, JSON export, alternate renderers, and project migrations easier to add.
@@ -51,11 +68,15 @@ When drawing begins, a reducer is a sensible next state step because object edit
 
 ## Project Documents and Browser Storage
 
-Saved projects use a versioned `ProjectDocumentV1` JSON structure. The document contains project metadata, measurement settings, ordered layers, and ordered canvas objects. Geometry remains in millimetres. Theme, cursor position, selected tool, active layer, selection, and drawing drafts are interface state and are not persisted.
+Saved projects use a versioned `ProjectDocumentV3` JSON structure. The document contains project metadata, measurement and layout-scale settings, ordered layers, and ordered canvas objects. Geometry remains in millimetres. Theme, cursor position, selected tool, active layer, selection, and drawing drafts are interface state and are not persisted.
 
-Unknown JSON is validated before it reaches React state. A failed import or restore leaves the current project untouched. Schema version checks provide a clear point for future migrations without adding migration machinery before a second version exists.
+Unknown JSON is validated before it reaches React state. A failed import or restore leaves the current project untouched. Version 1 and version 2 documents are migrated in memory to version 3 with HO as the default scale, while new saves and exports always use version 3.
 
-Browser storage sits behind a small adapter with load, save, and clear operations. The current adapter uses the `trackscape.project.v1` local storage key. JSON import and export use the same project document format, while imports remain unsaved until the user explicitly chooses Save.
+Browser storage sits behind a small adapter with load, save, and clear operations. The adapter retains the `trackscape.project.v1` local storage key so existing browser saves remain discoverable. JSON import and export use the same project document format, while imports remain unsaved until the user explicitly chooses Save.
+
+## Fixed Track Geometry
+
+Track pieces reference a small catalog definition rather than copying dimensions into every object. Each piece stores its start connector, rotation, and curve direction in millimetres and degrees. Pure geometry helpers derive SVG paths, lengths, bounds, and connection points. This keeps rendering and snapping independent from React and provides a path toward manufacturer-specific catalogs later.
 
 ## Desktop App Path
 

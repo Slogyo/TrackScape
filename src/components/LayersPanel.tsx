@@ -1,17 +1,29 @@
 import type {
   CanvasObject,
   Layer,
+  LayoutScaleId,
   MeasurementSystem,
+  ToolId,
+  TrackPlacementSettings,
 } from '../types'
 import ObjectProperties from './ObjectProperties'
+import TrackPalette from './TrackPalette'
+import MultiSelectionProperties from './MultiSelectionProperties'
+import invisibleIcon from '../../SVG/Invisible.svg?url'
+import visibleIcon from '../../SVG/Visible.svg?url'
 
 interface LayersPanelProps {
   activeLayerId: string
+  activeToolId: ToolId
   layers: Layer[]
+  layoutScaleId: LayoutScaleId
   measurementSystem: MeasurementSystem
   selectedLayer: Layer | null
   selectedObject: CanvasObject | null
+  selectedObjects: CanvasObject[]
+  trackSettings: TrackPlacementSettings
   onSelectLayer: (layerId: string) => void
+  onTrackSettingsChange: (settings: TrackPlacementSettings) => void
   onToggleVisibility: (layerId: string) => void
   onToggleLock: (layerId: string) => void
   onUpdateObject: (object: CanvasObject) => void
@@ -19,11 +31,16 @@ interface LayersPanelProps {
 
 function LayersPanel({
   activeLayerId,
+  activeToolId,
   layers,
+  layoutScaleId,
   measurementSystem,
   selectedLayer,
   selectedObject,
+  selectedObjects,
+  trackSettings,
   onSelectLayer,
+  onTrackSettingsChange,
   onToggleVisibility,
   onToggleLock,
   onUpdateObject,
@@ -57,7 +74,15 @@ function LayersPanel({
                 title={`${layer.visible ? 'Hide' : 'Show'} ${layer.name}`}
                 onClick={() => onToggleVisibility(layer.id)}
               >
-                {layer.visible ? 'VIS' : 'OFF'}
+                <span
+                  className="layer-visibility-icon"
+                  aria-hidden="true"
+                  style={{
+                    '--visibility-icon': `url("${
+                      layer.visible ? visibleIcon : invisibleIcon
+                    }")`,
+                  } as React.CSSProperties}
+                />
               </button>
               <button
                 className="layer-name-button"
@@ -85,14 +110,30 @@ function LayersPanel({
 
       <div className="panel-footer">
         <span>{layers.length} default layers</span>
-        <span>Phase 2</span>
+        <span>Phase 4</span>
       </div>
-      <ObjectProperties
-        layer={selectedLayer}
-        measurementSystem={measurementSystem}
-        object={selectedObject}
-        onUpdateObject={onUpdateObject}
-      />
+      {activeToolId === 'track' ? (
+        <TrackPalette
+          layoutScaleId={layoutScaleId}
+          measurementSystem={measurementSystem}
+          settings={trackSettings}
+          onChange={onTrackSettingsChange}
+        />
+      ) : selectedObjects.length > 1 ? (
+        <MultiSelectionProperties
+          layers={layers}
+          measurementSystem={measurementSystem}
+          objects={selectedObjects}
+        />
+      ) : (
+        <ObjectProperties
+          layer={selectedLayer}
+          layoutScaleId={layoutScaleId}
+          measurementSystem={measurementSystem}
+          object={selectedObject}
+          onUpdateObject={onUpdateObject}
+        />
+      )}
     </aside>
   )
 }

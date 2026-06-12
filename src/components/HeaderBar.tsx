@@ -6,16 +6,20 @@ import {
   useState,
 } from 'react'
 import type {
+  LayoutScaleId,
   MeasurementSystem,
   ProjectFeedback,
   Theme,
 } from '../types'
+import { layoutScalePresets } from '../data/layoutScales'
+import saveIcon from '../../SVG/Save.svg?url'
 import {
   PROJECT_NAME_MAX_LENGTH,
   validateProjectName,
 } from '../utils/projectDocument'
 
 interface HeaderBarProps {
+  layoutScaleId: LayoutScaleId
   measurementSystem: MeasurementSystem
   projectFeedback: ProjectFeedback | null
   projectName: string
@@ -23,12 +27,14 @@ interface HeaderBarProps {
   onExportProject: (projectName: string) => void
   onImportProject: (file: File) => void
   onSaveProject: (projectName: string) => void
+  onSelectLayoutScale: (scaleId: LayoutScaleId) => void
   onUpdateProjectName: (name: string) => void
   onToggleMeasurementSystem: () => void
   onToggleTheme: () => void
 }
 
 function HeaderBar({
+  layoutScaleId,
   measurementSystem,
   projectFeedback,
   projectName,
@@ -36,6 +42,7 @@ function HeaderBar({
   onExportProject,
   onImportProject,
   onSaveProject,
+  onSelectLayoutScale,
   onUpdateProjectName,
   onToggleMeasurementSystem,
   onToggleTheme,
@@ -133,8 +140,24 @@ function HeaderBar({
       </div>
 
       <div className="header-actions">
+        <label className="header-scale-field">
+          <span className="button-label">Scale</span>
+          <select
+            aria-label="Layout scale"
+            value={layoutScaleId}
+            onChange={(event) =>
+              onSelectLayoutScale(event.target.value as LayoutScaleId)
+            }
+          >
+            {layoutScalePresets.map((preset) => (
+              <option key={preset.id} value={preset.id}>
+                {preset.name} 1:{preset.ratio}
+              </option>
+            ))}
+          </select>
+        </label>
         <button
-          className="header-button"
+          className="header-button unit-toggle"
           type="button"
           onClick={onToggleMeasurementSystem}
           aria-label="Toggle measurement system"
@@ -152,11 +175,17 @@ function HeaderBar({
           {theme === 'light' ? 'Dark' : 'Light'}
         </button>
         <button
-          className="header-button"
+          className="header-button save-button"
           type="button"
+          aria-label="Save"
+          title="Save"
           onClick={() => runProjectAction(onSaveProject)}
         >
-          Save
+          <span
+            className="header-action-icon"
+            aria-hidden="true"
+            style={{ '--header-icon': `url("${saveIcon}")` } as React.CSSProperties}
+          />
         </button>
         <button
           className="header-button"

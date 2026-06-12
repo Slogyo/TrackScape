@@ -2,15 +2,21 @@ import type {
   CanvasObject,
   Layer,
   Point,
-  ProjectDocumentV1,
+  ProjectDocumentV3,
   ProjectMetadata,
 } from '../types'
+import { isTrackDefinitionId } from '../data/trackCatalog'
+import {
+  DEFAULT_LAYOUT_SCALE_ID,
+  isLayoutScaleId,
+} from '../data/layoutScales'
+import { getTrackBounds } from './trackGeometry'
 
-export const PROJECT_SCHEMA_VERSION = 1
+export const PROJECT_SCHEMA_VERSION = 3
 export const PROJECT_NAME_MAX_LENGTH = 80
 
 export type ProjectValidationResult =
-  | { ok: true; project: ProjectDocumentV1 }
+  | { ok: true; project: ProjectDocumentV3 }
   | { ok: false; error: string }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -111,6 +117,7 @@ const validatePoint = (value: unknown): value is Point =>
 const validateObjects = (
   value: unknown,
   layers: Layer[],
+  allowTrackPieces: boolean,
 ): { ok: true; objects: CanvasObject[] } | { ok: false; error: string } => {
   if (!Array.isArray(value)) {
     return { ok: false, error: 'Project objects must be an array.' }
@@ -155,6 +162,55 @@ const validateObjects = (
         start: { x: candidate.start.x, y: candidate.start.y },
         end: { x: candidate.end.x, y: candidate.end.y },
       })
+      continue
+    }
+
+    if (candidate.type === 'track-piece') {
+      if (!allowTrackPieces) {
+        return {
+          ok: false,
+          error: 'Track pieces are not supported by project schema version 1.',
+        }
+      }
+
+      if (
+        candidate.layerId !== 'track' ||
+        !isTrackDefinitionId(candidate.definitionId) ||
+        !validatePoint(candidate.position) ||
+        typeof candidate.rotation !== 'number' ||
+        !Number.isFinite(candidate.rotation) ||
+        candidate.rotation < 0 ||
+        candidate.rotation >= 360 ||
+        candidate.rotation % 15 !== 0 ||
+        (candidate.direction !== 'left' && candidate.direction !== 'right')
+      ) {
+        return {
+          ok: false,
+          error: `Track piece ${candidate.id} has invalid geometry or catalog data.`,
+        }
+      }
+
+      const trackPiece: CanvasObject = {
+        id: candidate.id,
+        type: 'track-piece',
+        layerId: 'track',
+        definitionId: candidate.definitionId,
+        position: {
+          x: candidate.position.x,
+          y: candidate.position.y,
+        },
+        rotation: candidate.rotation,
+        direction: candidate.direction,
+      }
+      const bounds = getTrackBounds(trackPiece)
+      if (bounds.minX < -0.001 || bounds.minY < -0.001) {
+        return {
+          ok: false,
+          error: `Track piece ${candidate.id} crosses the workspace origin.`,
+        }
+      }
+
+      objects.push(trackPiece)
       continue
     }
 
@@ -213,7 +269,11 @@ export const validateProjectDocument = (
     return { ok: false, error: 'Project data must be a JSON object.' }
   }
 
-  if (value.schemaVersion !== PROJECT_SCHEMA_VERSION) {
+  if (
+    value.schemaVersion !== 1 &&
+    value.schemaVersion !== 2 &&
+    value.schemaVersion !== 3
+  ) {
     return {
       ok: false,
       error: `Unsupported project schema version: ${String(value.schemaVersion)}.`,
@@ -233,12 +293,25 @@ export const validateProjectDocument = (
     return { ok: false, error: 'Project measurement settings are invalid.' }
   }
 
+  let layoutScaleId = DEFAULT_LAYOUT_SCALE_ID
+  if (value.schemaVersion === 3) {
+    const candidateScaleId = value.settings.layoutScaleId
+    if (!isLayoutScaleId(candidateScaleId)) {
+      return { ok: false, error: 'Project layout scale is invalid.' }
+    }
+    layoutScaleId = candidateScaleId
+  }
+
   const layersResult = validateLayers(value.layers)
   if (!layersResult.ok) {
     return layersResult
   }
 
-  const objectsResult = validateObjects(value.objects, layersResult.layers)
+  const objectsResult = validateObjects(
+    value.objects,
+    layersResult.layers,
+    value.schemaVersion >= 2,
+  )
   if (!objectsResult.ok) {
     return objectsResult
   }
@@ -250,6 +323,7 @@ export const validateProjectDocument = (
       metadata: metadataResult.metadata,
       settings: {
         measurementSystem: value.settings.measurementSystem,
+        layoutScaleId,
       },
       layers: layersResult.layers,
       objects: objectsResult.objects,
@@ -268,7 +342,7 @@ export const parseProjectDocument = (
 }
 
 export const serializeProjectDocument = (
-  project: ProjectDocumentV1,
+  project: ProjectDocumentV3,
 ): string => JSON.stringify(project, null, 2)
 
 export const validateProjectName = (name: string): string | null => {

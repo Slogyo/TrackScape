@@ -3,6 +3,7 @@ import type {
   LineObject,
   RoomObject,
   TabletopObject,
+  TrackPieceObject,
 } from '../types'
 import { canvasObjectsReducer } from './canvasObjects'
 
@@ -145,5 +146,31 @@ describe('canvasObjectsReducer', () => {
 
     expect(result).toEqual(replacements)
     expect(result).not.toBe(replacements)
+  })
+
+  it('adds, updates, and removes track pieces with the shared reducer', () => {
+    const track: TrackPieceObject = {
+      id: 'track-1',
+      type: 'track-piece',
+      layerId: 'track',
+      definitionId: 'straight-100',
+      position: { x: 100, y: 100 },
+      rotation: 0,
+      direction: 'right',
+    }
+    const added = canvasObjectsReducer([], { type: 'add', object: track })
+    const updatedTrack = {
+      ...track,
+      position: { x: 200, y: 100 },
+    }
+    const updated = canvasObjectsReducer(added, {
+      type: 'update',
+      object: updatedTrack,
+    })
+
+    expect(updated).toEqual([updatedTrack])
+    expect(
+      canvasObjectsReducer(updated, { type: 'remove', id: track.id }),
+    ).toEqual([])
   })
 })

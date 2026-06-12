@@ -1,13 +1,18 @@
 import { describe, expect, it } from 'vitest'
+import type { TrackPieceObject } from '../types'
 import {
   canDrawOnLayer,
+  boundsIntersect,
+  clampGroupTranslationToOrigin,
   clampTranslationToOrigin,
+  getCombinedBounds,
   getObjectBounds,
   isNonZeroLine,
   isNonZeroRectangle,
   lineLength,
   normalizeRectangle,
   pointFromPixels,
+  pointFromViewportPixels,
   snapDelta,
   snapPoint,
   translateObject,
@@ -20,6 +25,24 @@ describe('canvas geometry', () => {
 
   it('clamps pointer coordinates to the positive workspace', () => {
     expect(pointFromPixels(-4, -10)).toEqual({ x: 0, y: 0 })
+  })
+
+  it('includes the viewport camera offset without an upper limit', () => {
+    expect(pointFromViewportPixels(20, 30, 400, 500)).toEqual({
+      x: 4200,
+      y: 5300,
+    })
+    expect(pointFromPixels(20_000, 20_000)).toEqual({
+      x: 200_000,
+      y: 200_000,
+    })
+  })
+
+  it('accounts for workspace zoom when converting pointer coordinates', () => {
+    expect(pointFromViewportPixels(200, 100, 400, 600, 2)).toEqual({
+      x: 5000,
+      y: 6500,
+    })
   })
 
   it('snaps points to the nearest 100 millimetres', () => {
@@ -83,6 +106,43 @@ describe('canvas geometry', () => {
     })
   })
 
+  it('combines bounds and detects any marquee intersection', () => {
+    const objects = [
+      {
+        id: 'a',
+        type: 'rectangle' as const,
+        layerId: 'room',
+        x: 100,
+        y: 200,
+        width: 300,
+        height: 400,
+      },
+      {
+        id: 'b',
+        type: 'line' as const,
+        layerId: 'room',
+        start: { x: 600, y: 100 },
+        end: { x: 800, y: 300 },
+      },
+    ]
+
+    expect(getCombinedBounds(objects)).toEqual({
+      minX: 100,
+      minY: 100,
+      maxX: 800,
+      maxY: 600,
+    })
+    expect(
+      boundsIntersect(
+        { minX: 350, minY: 500, maxX: 450, maxY: 700 },
+        { minX: 100, minY: 200, maxX: 400, maxY: 600 },
+      ),
+    ).toBe(true)
+    expect(
+      clampGroupTranslationToOrigin(objects, { x: -500, y: -300 }),
+    ).toEqual({ x: -100, y: -100 })
+  })
+
   it('translates objects without changing dimensions or line orientation', () => {
     expect(
       translateObject(
@@ -128,6 +188,29 @@ describe('canvas geometry', () => {
       y: 100,
       width: 300,
       height: 400,
+    })
+  })
+
+  it('translates and clamps track pieces using rotated bounds', () => {
+    const track: TrackPieceObject = {
+      id: 'track-1',
+      type: 'track-piece',
+      layerId: 'track',
+      definitionId: 'straight-200',
+      position: { x: 300, y: 200 },
+      rotation: 180,
+      direction: 'right',
+    }
+
+    expect(clampTranslationToOrigin(track, { x: -500, y: -500 })).toEqual({
+      x: -100,
+      y: -200,
+    })
+    expect(translateObject(track, { x: 100, y: 200 })).toMatchObject({
+      type: 'track-piece',
+      definitionId: 'straight-200',
+      position: { x: 400, y: 400 },
+      rotation: 180,
     })
   })
 })

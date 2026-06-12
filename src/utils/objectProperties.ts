@@ -7,6 +7,7 @@ import {
   displayValueToMillimetres,
   millimetresTo,
 } from './units'
+import { getTrackBounds } from './trackGeometry'
 
 export const propertyUnitForSystem = (
   measurementSystem: MeasurementSystem,
@@ -45,6 +46,15 @@ export const getGeometryValue = (
   object: CanvasObject,
   field: GeometryField,
 ): number | null => {
+  if (object.type === 'track-piece') {
+    const values: Partial<Record<GeometryField, number>> = {
+      x: object.position.x,
+      y: object.position.y,
+      rotation: object.rotation,
+    }
+    return values[field] ?? null
+  }
+
   if (object.type === 'line') {
     const values: Partial<Record<GeometryField, number>> = {
       x1: object.start.x,
@@ -71,6 +81,39 @@ export const updateGeometryValue = (
 ): CanvasObject | null => {
   if (!Number.isFinite(millimetres)) {
     return null
+  }
+
+  if (object.type === 'track-piece') {
+    if (field === 'rotation') {
+      if (
+        millimetres < 0 ||
+        millimetres >= 360 ||
+        millimetres % 15 !== 0
+      ) {
+        return null
+      }
+      const rotatedObject = { ...object, rotation: millimetres }
+      const bounds = getTrackBounds(rotatedObject)
+      return bounds.minX < -0.001 || bounds.minY < -0.001
+        ? null
+        : rotatedObject
+    }
+
+    if ((field !== 'x' && field !== 'y') || millimetres < 0) {
+      return null
+    }
+
+    const positionedObject = {
+      ...object,
+      position: {
+        ...object.position,
+        [field]: millimetres,
+      },
+    }
+    const bounds = getTrackBounds(positionedObject)
+    return bounds.minX < -0.001 || bounds.minY < -0.001
+      ? null
+      : positionedObject
   }
 
   if (object.type === 'line') {

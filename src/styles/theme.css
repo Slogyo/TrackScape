@@ -44,6 +44,7 @@
   --canvas-object: #222222;
   --room-inner: #777777;
   --tabletop-fill: rgba(34, 34, 34, 0.08);
+  --track-gap: #ffffff;
   --disabled: #9a9a9a;
 }
 
@@ -65,6 +66,7 @@
   --canvas-object: #e0e0e0;
   --room-inner: #9a9a9a;
   --tabletop-fill: rgba(224, 224, 224, 0.1);
+  --track-gap: #232323;
   --disabled: #6f6f6f;
 }
 

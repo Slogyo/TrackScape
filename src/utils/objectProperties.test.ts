@@ -4,9 +4,11 @@ import type {
   RectangleObject,
   RoomObject,
   TabletopObject,
+  TrackPieceObject,
 } from '../types'
 import {
   formatPropertyValue,
+  getGeometryValue,
   parsePropertyValue,
   propertyUnitForSystem,
   updateGeometryValue,
@@ -40,6 +42,15 @@ describe('object property helpers', () => {
     id: 'tabletop',
     type: 'tabletop',
     layerId: 'tabletop',
+  }
+  const trackPiece: TrackPieceObject = {
+    id: 'track',
+    type: 'track-piece',
+    layerId: 'track',
+    definitionId: 'straight-200',
+    position: { x: 500, y: 600 },
+    rotation: 30,
+    direction: 'right',
   }
 
   it('uses centimetres for metric properties and inches for imperial', () => {
@@ -82,6 +93,35 @@ describe('object property helpers', () => {
         { ...line, start: { x: 100, y: 400 } },
         'x1',
         300,
+      ),
+    ).toBeNull()
+  })
+
+  it('reads and updates track position and rotation exactly', () => {
+    expect(getGeometryValue(trackPiece, 'x')).toBe(500)
+    expect(getGeometryValue(trackPiece, 'y')).toBe(600)
+    expect(getGeometryValue(trackPiece, 'rotation')).toBe(30)
+    expect(updateGeometryValue(trackPiece, 'x', 525.4)).toMatchObject({
+      position: { x: 525.4, y: 600 },
+    })
+    expect(updateGeometryValue(trackPiece, 'rotation', 45)).toMatchObject({
+      rotation: 45,
+    })
+  })
+
+  it('rejects invalid track rotations and origin-crossing edits', () => {
+    expect(updateGeometryValue(trackPiece, 'rotation', 17)).toBeNull()
+    expect(updateGeometryValue(trackPiece, 'rotation', 360)).toBeNull()
+    expect(
+      updateGeometryValue(
+        {
+          ...trackPiece,
+          definitionId: 'curve-r450-30',
+          position: { x: 10, y: 10 },
+          rotation: 180,
+        },
+        'x',
+        0,
       ),
     ).toBeNull()
   })

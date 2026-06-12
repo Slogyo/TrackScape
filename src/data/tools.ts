@@ -15,5 +15,14 @@ export const tools: Tool[] = [
   { id: 'text', label: 'Text / Label', shortLabel: 'A', shortcut: 'A' },
 ]
 
+export const areaSelectTool: Tool = {
+  id: 'area-select',
+  label: 'Area Select',
+  shortLabel: 'A',
+  shortcut: 'V',
+}
+
 export const getTool = (toolId: Tool['id']) =>
-  tools.find((tool) => tool.id === toolId) ?? tools[0]
+  toolId === 'area-select'
+    ? areaSelectTool
+    : tools.find((tool) => tool.id === toolId) ?? tools[0]

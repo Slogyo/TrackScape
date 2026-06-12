@@ -3,9 +3,10 @@ import { defaultLayers } from '../data/defaultLayers'
 import type {
   CanvasObject,
   Layer,
+  LayoutScaleId,
   MeasurementSystem,
   Point,
-  ProjectDocumentV1,
+  ProjectDocumentV3,
   ProjectMetadata,
   Theme,
   ToolId,
@@ -16,7 +17,12 @@ import { canvasObjectsReducer } from './canvasObjects'
 const initialLayers = () => defaultLayers.map((layer) => ({ ...layer }))
 
 const cloneCanvasObject = (object: CanvasObject): CanvasObject =>
-  object.type === 'line'
+  object.type === 'track-piece'
+    ? {
+        ...object,
+        position: { ...object.position },
+      }
+    : object.type === 'line'
     ? {
         ...object,
         start: { ...object.start },
@@ -24,17 +30,21 @@ const cloneCanvasObject = (object: CanvasObject): CanvasObject =>
       }
     : { ...object }
 
-export const getProjectHydration = (project: ProjectDocumentV1) => ({
+export const getProjectHydration = (project: ProjectDocumentV3) => ({
   metadata: { ...project.metadata },
   measurementSystem: project.settings.measurementSystem,
+  layoutScaleId: project.settings.layoutScaleId,
   layers: project.layers.map((layer) => ({ ...layer })),
   objects: project.objects.map(cloneCanvasObject),
   activeLayerId: project.layers[0].id,
   activeToolId: 'select' as const,
-  selectedObjectId: null,
+  selectedObjectIds: [] as string[],
 })
 
-export function useAppState(initialProject: ProjectDocumentV1 | null = null) {
+export function useAppState(
+  initialProject: ProjectDocumentV3 | null = null,
+  initialTheme: Theme = 'light',
+) {
   const initialHydration = initialProject
     ? getProjectHydration(initialProject)
     : null
@@ -50,11 +60,14 @@ export function useAppState(initialProject: ProjectDocumentV1 | null = null) {
           new Date().toISOString(),
         ),
   )
-  const [theme, setTheme] = useState<Theme>('light')
+  const [theme, setTheme] = useState<Theme>(initialTheme)
   const [measurementSystem, setMeasurementSystem] =
     useState<MeasurementSystem>(
       initialHydration?.measurementSystem ?? 'metric',
     )
+  const [layoutScaleId, setLayoutScaleId] = useState<LayoutScaleId>(
+    initialHydration?.layoutScaleId ?? 'ho',
+  )
   const [activeToolId, setActiveToolId] = useState<ToolId>('select')
   const [layers, setLayers] = useState<Layer[]>(
     initialHydration?.layers ?? initialLayers,
@@ -62,7 +75,7 @@ export function useAppState(initialProject: ProjectDocumentV1 | null = null) {
   const [activeLayerId, setActiveLayerId] = useState(
     initialHydration?.activeLayerId ?? defaultLayers[0].id,
   )
-  const [selectedObjectId, setSelectedObjectId] = useState<string | null>(null)
+  const [selectedObjectIds, setSelectedObjectIds] = useState<string[]>([])
   const [cursorPositionMm, setCursorPositionMm] = useState<Point>({
     x: 0,
     y: 0,
@@ -82,15 +95,15 @@ export function useAppState(initialProject: ProjectDocumentV1 | null = null) {
 
   const toggleLayerVisibility = (layerId: string) => {
     const layer = layers.find((candidate) => candidate.id === layerId)
-    const selectedObject = objects.find(
-      (object) => object.id === selectedObjectId,
-    )
-
-    if (
-      layer?.visible &&
-      selectedObject?.layerId === layerId
-    ) {
-      setSelectedObjectId(null)
+    if (layer?.visible) {
+      const objectIdsOnLayer = new Set(
+        objects
+          .filter((object) => object.layerId === layerId)
+          .map((object) => object.id),
+      )
+      setSelectedObjectIds((currentIds) =>
+        currentIds.filter((id) => !objectIdsOnLayer.has(id)),
+      )
     }
 
     setLayers((currentLayers) =>
@@ -111,7 +124,7 @@ export function useAppState(initialProject: ProjectDocumentV1 | null = null) {
   const addCanvasObject = (object: CanvasObject, selectObject = false) => {
     dispatchObjects({ type: 'add', object })
     if (selectObject) {
-      setSelectedObjectId(object.id)
+      setSelectedObjectIds([object.id])
     }
   }
 
@@ -124,6 +137,30 @@ export function useAppState(initialProject: ProjectDocumentV1 | null = null) {
     dispatchObjects({ type: 'update', object })
   }
 
+  const updateCanvasObjects = (updatedObjects: CanvasObject[]) => {
+    const updatesById = new Map(
+      updatedObjects
+        .filter((object) => {
+          const layer = layers.find(
+            (candidate) => candidate.id === object.layerId,
+          )
+          return Boolean(layer?.visible && !layer.locked)
+        })
+        .map((object) => [object.id, object]),
+    )
+
+    if (updatesById.size === 0) {
+      return
+    }
+
+    dispatchObjects({
+      type: 'replace',
+      objects: objects.map(
+        (object) => updatesById.get(object.id) ?? object,
+      ),
+    })
+  }
+
   const removeCanvasObject = (objectId: string) => {
     const object = objects.find((candidate) => candidate.id === objectId)
     const layer = layers.find((candidate) => candidate.id === object?.layerId)
@@ -132,8 +169,37 @@ export function useAppState(initialProject: ProjectDocumentV1 | null = null) {
     }
 
     dispatchObjects({ type: 'remove', id: objectId })
-    setSelectedObjectId((currentId) =>
-      currentId === objectId ? null : currentId,
+    setSelectedObjectIds((currentIds) =>
+      currentIds.filter((id) => id !== objectId),
+    )
+  }
+
+  const removeCanvasObjects = (objectIds: string[]) => {
+    const requestedIds = new Set(objectIds)
+    const removableIds = new Set(
+      objects
+        .filter((object) => {
+          if (!requestedIds.has(object.id)) {
+            return false
+          }
+          const layer = layers.find(
+            (candidate) => candidate.id === object.layerId,
+          )
+          return Boolean(layer?.visible && !layer.locked)
+        })
+        .map((object) => object.id),
+    )
+
+    if (removableIds.size === 0) {
+      return
+    }
+
+    dispatchObjects({
+      type: 'replace',
+      objects: objects.filter((object) => !removableIds.has(object.id)),
+    })
+    setSelectedObjectIds((currentIds) =>
+      currentIds.filter((id) => !removableIds.has(id)),
     )
   }
 
@@ -151,29 +217,31 @@ export function useAppState(initialProject: ProjectDocumentV1 | null = null) {
     }))
   }
 
-  const hydrateProject = (project: ProjectDocumentV1) => {
+  const hydrateProject = (project: ProjectDocumentV3) => {
     const hydration = getProjectHydration(project)
 
     setMetadata(hydration.metadata)
     setMeasurementSystem(hydration.measurementSystem)
+    setLayoutScaleId(hydration.layoutScaleId)
     setLayers(hydration.layers)
     dispatchObjects({ type: 'replace', objects: hydration.objects })
     setActiveLayerId(hydration.activeLayerId)
     setActiveToolId(hydration.activeToolId)
-    setSelectedObjectId(hydration.selectedObjectId)
+    setSelectedObjectIds(hydration.selectedObjectIds)
     setCursorPositionMm({ x: 0, y: 0 })
   }
 
   const getProjectDocument = (
     updatedAt = metadata.updatedAt,
-  ): ProjectDocumentV1 => ({
-    schemaVersion: 1,
+  ): ProjectDocumentV3 => ({
+    schemaVersion: 3,
     metadata: {
       ...metadata,
       updatedAt,
     },
     settings: {
       measurementSystem,
+      layoutScaleId,
     },
     layers: layers.map((layer) => ({ ...layer })),
     objects: objects.map(cloneCanvasObject),
@@ -184,18 +252,23 @@ export function useAppState(initialProject: ProjectDocumentV1 | null = null) {
     metadata,
     theme,
     measurementSystem,
+    layoutScaleId,
     activeToolId,
     layers,
     activeLayerId,
-    selectedObjectId,
+    selectedObjectIds,
     cursorPositionMm,
     setActiveToolId,
     setActiveLayerId,
-    setSelectedObjectId,
+    setSelectedObjectIds,
     setCursorPositionMm,
+    setLayoutScaleId,
+    setTheme,
     addCanvasObject,
     updateCanvasObject,
+    updateCanvasObjects,
     removeCanvasObject,
+    removeCanvasObjects,
     updateProjectName,
     markProjectSaved,
     hydrateProject,
