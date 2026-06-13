@@ -81,6 +81,7 @@ export type TrackDefinitionId = string
 
 export type TrackCurveDirection = 'left' | 'right'
 export type TrackGaugeId = 'generic' | 'ho-oo' | 'n' | 'o'
+export type TrackManufacturer = 'Generic' | 'PECO'
 export type TrackKind =
   | 'straight'
   | 'curve'
@@ -113,7 +114,7 @@ export interface TrackDefinition {
   id: TrackDefinitionId
   name: string
   kind: TrackKind
-  manufacturer: 'Generic' | 'PECO'
+  manufacturer: TrackManufacturer
   productCode?: string
   gaugeId: TrackGaugeId
   gaugeMm?: number

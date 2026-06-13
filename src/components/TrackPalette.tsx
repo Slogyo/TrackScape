@@ -10,6 +10,7 @@ import type {
   MeasurementSystem,
   TrackDefinition,
   TrackGaugeId,
+  TrackManufacturer,
   TrackPlacementSettings,
 } from '../types'
 import { formatPrototypeLength } from '../utils/layoutScale'
@@ -29,6 +30,12 @@ const gaugeLabels: Record<Exclude<TrackGaugeId, 'generic'>, string> = {
   o: 'O (32 mm)',
 }
 
+type TrackLibraryManufacturer = Exclude<TrackManufacturer, 'Generic'>
+
+const manufacturerLabels: Record<TrackLibraryManufacturer, string> = {
+  PECO: 'PECO',
+}
+
 const directionForDefinition = (
   definition: TrackDefinition,
   current: TrackPlacementSettings['direction'],
@@ -45,6 +52,12 @@ function TrackPalette({
   onChange,
 }: TrackPaletteProps) {
   const definition = getTrackDefinition(settings.definitionId)
+  const [manufacturer, setManufacturer] =
+    useState<TrackLibraryManufacturer>(
+      definition.manufacturer === 'Generic'
+        ? 'PECO'
+        : definition.manufacturer,
+    )
   const [gaugeId, setGaugeId] = useState<
     Exclude<TrackGaugeId, 'generic'>
   >(
@@ -55,14 +68,33 @@ function TrackPalette({
   const [range, setRange] = useState('all')
   const [query, setQuery] = useState('')
   const displayUnit = defaultUnitForSystem(measurementSystem)
-  const gaugeDefinitions = useMemo(
+  const manufacturerDefinitions = useMemo(
     () =>
       trackCatalog.filter(
-        (candidate) =>
-          candidate.manufacturer === 'PECO' &&
-          candidate.gaugeId === gaugeId,
+        (candidate) => candidate.manufacturer === manufacturer,
       ),
-    [gaugeId],
+    [manufacturer],
+  )
+  const availableGaugeIds = useMemo(
+    () =>
+      [...new Set(
+        manufacturerDefinitions
+          .map((candidate) => candidate.gaugeId)
+          .filter(
+            (
+              candidate,
+            ): candidate is Exclude<TrackGaugeId, 'generic'> =>
+              candidate !== 'generic',
+          ),
+      )],
+    [manufacturerDefinitions],
+  )
+  const gaugeDefinitions = useMemo(
+    () =>
+      manufacturerDefinitions.filter(
+        (candidate) => candidate.gaugeId === gaugeId,
+      ),
+    [gaugeId, manufacturerDefinitions],
   )
   const ranges = useMemo(
     () =>
@@ -100,14 +132,22 @@ function TrackPalette({
 
   useEffect(() => {
     if (
+      definition.manufacturer !== 'Generic' &&
       definition.gaugeId !== 'generic' &&
-      definition.gaugeId !== gaugeId
+      (definition.manufacturer !== manufacturer ||
+        definition.gaugeId !== gaugeId)
     ) {
+      setManufacturer(definition.manufacturer)
       setGaugeId(definition.gaugeId)
       setRange('all')
       setQuery('')
     }
-  }, [definition.gaugeId, gaugeId])
+  }, [
+    definition.gaugeId,
+    definition.manufacturer,
+    gaugeId,
+    manufacturer,
+  ])
 
   const chooseDefinition = (candidate: TrackDefinition) => {
     if (!candidate.isPlaceable) {
@@ -124,10 +164,50 @@ function TrackPalette({
     setGaugeId(nextGauge)
     setRange('all')
     setQuery('')
-    const nextDefinition = getTrackDefinition(
+    const preferredDefinition = getTrackDefinition(
       getDefaultTrackDefinitionId(nextGauge),
     )
-    chooseDefinition(nextDefinition)
+    const nextDefinition =
+      preferredDefinition.manufacturer === manufacturer
+        ? preferredDefinition
+        : manufacturerDefinitions.find(
+            (candidate) =>
+              candidate.gaugeId === nextGauge &&
+              candidate.isPlaceable,
+          )
+
+    if (nextDefinition) {
+      chooseDefinition(nextDefinition)
+    }
+  }
+
+  const chooseManufacturer = (
+    nextManufacturer: TrackLibraryManufacturer,
+  ) => {
+    setManufacturer(nextManufacturer)
+    setRange('all')
+    setQuery('')
+
+    const nextDefinition =
+      trackCatalog.find(
+        (candidate) =>
+          candidate.manufacturer === nextManufacturer &&
+          candidate.gaugeId === gaugeId &&
+          candidate.isPlaceable,
+      ) ??
+      trackCatalog.find(
+        (candidate) =>
+          candidate.manufacturer === nextManufacturer &&
+          candidate.isPlaceable,
+      )
+
+    if (
+      nextDefinition &&
+      nextDefinition.gaugeId !== 'generic'
+    ) {
+      setGaugeId(nextDefinition.gaugeId)
+      chooseDefinition(nextDefinition)
+    }
   }
 
   return (
@@ -137,12 +217,29 @@ function TrackPalette({
     >
       <div className="properties-heading">
         <div>
-          <span className="eyebrow">PECO Track Library</span>
+          <span className="eyebrow">Track Library</span>
           <h2 id="track-palette-heading">Track Pieces</h2>
         </div>
       </div>
       <div className="track-palette-content">
         <div className="track-library-filters">
+          <label className="track-brand-field">
+            <span className="status-label">Brand</span>
+            <select
+              value={manufacturer}
+              onChange={(event) =>
+                chooseManufacturer(
+                  event.target.value as TrackLibraryManufacturer,
+                )
+              }
+            >
+              {Object.entries(manufacturerLabels).map(([id, label]) => (
+                <option key={id} value={id}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
           <label>
             <span className="status-label">Gauge</span>
             <select
@@ -153,9 +250,9 @@ function TrackPalette({
                 )
               }
             >
-              {Object.entries(gaugeLabels).map(([id, label]) => (
+              {availableGaugeIds.map((id) => (
                 <option key={id} value={id}>
-                  {label}
+                  {gaugeLabels[id]}
                 </option>
               ))}
             </select>
@@ -201,7 +298,7 @@ function TrackPalette({
                 title={
                   candidate.isPlaceable
                     ? candidate.name
-                    : 'PECO does not publish enough geometry to place this item.'
+                    : `${manufacturer} does not publish enough geometry to place this item.`
                 }
                 onClick={() => chooseDefinition(candidate)}
               >
@@ -221,7 +318,7 @@ function TrackPalette({
           })}
         </div>
         <p className="track-library-count">
-          {filteredDefinitions.length} PECO products
+          {filteredDefinitions.length} {manufacturer} products
         </p>
         <div className="track-palette-controls">
           <span className="status-label">Rotation</span>

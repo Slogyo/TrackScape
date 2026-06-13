@@ -958,6 +958,10 @@
   grid-column: 1 / -1;
 }
 
+.track-brand-field {
+  grid-column: 1 / -1;
+}
+
 .track-library-count {
   margin: 8px 0 0;
   color: var(--text-muted);
