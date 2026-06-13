@@ -20,6 +20,11 @@ import {
   saveThemePreference,
 } from '../utils/themePreference'
 import { DEFAULT_WORKSPACE_ZOOM } from '../utils/viewport'
+import {
+  getDefaultTrackDefinitionId,
+  getTrackDefinition,
+  layoutScaleToTrackGauge,
+} from '../data/trackCatalog'
 import CanvasWorkspace from './CanvasWorkspace'
 import HeaderBar from './HeaderBar'
 import LayersPanel from './LayersPanel'
@@ -58,7 +63,9 @@ function AppShell({ initialThemePreference }: AppShellProps) {
     })
   const [trackSettings, setTrackSettings] =
     useState<TrackPlacementSettings>({
-      definitionId: 'straight-100',
+      definitionId: getDefaultTrackDefinitionId(
+        layoutScaleToTrackGauge(appState.layoutScaleId),
+      ),
       rotation: 0,
       direction: 'right',
     })
@@ -69,6 +76,7 @@ function AppShell({ initialThemePreference }: AppShellProps) {
   const [workspaceZoom, setWorkspaceZoom] = useState(
     DEFAULT_WORKSPACE_ZOOM,
   )
+  const [isSnappingEnabled, setIsSnappingEnabled] = useState(true)
   const [resetViewToken, setResetViewToken] = useState(0)
   const activeLayer =
     appState.layers.find((layer) => layer.id === appState.activeLayerId) ??
@@ -211,7 +219,22 @@ function AppShell({ initialThemePreference }: AppShellProps) {
         onExportProject={handleExportProject}
         onImportProject={handleImportProject}
         onSaveProject={handleSaveProject}
-        onSelectLayoutScale={appState.setLayoutScaleId}
+        onSelectLayoutScale={(layoutScaleId) => {
+          appState.setLayoutScaleId(layoutScaleId)
+          const definitionId = getDefaultTrackDefinitionId(
+            layoutScaleToTrackGauge(layoutScaleId),
+          )
+          const definition = getTrackDefinition(definitionId)
+          setTrackSettings((settings) => ({
+            ...settings,
+            definitionId,
+            direction:
+              definition.handedness === 'left' ||
+              definition.handedness === 'right'
+                ? definition.handedness
+                : settings.direction,
+          }))
+        }}
         onUpdateProjectName={(name) => {
           appState.updateProjectName(name)
           setProjectFeedback(null)
@@ -235,6 +258,7 @@ function AppShell({ initialThemePreference }: AppShellProps) {
           projectId={appState.metadata.id}
           resetViewToken={resetViewToken}
           selectedObjectIds={appState.selectedObjectIds}
+          isSnappingEnabled={isSnappingEnabled}
           trackSettings={trackSettings}
           zoom={workspaceZoom}
           onAddObject={appState.addCanvasObject}
@@ -282,9 +306,13 @@ function AppShell({ initialThemePreference }: AppShellProps) {
           appState.layers.find((layer) => layer.id === object.layerId)
             ?.locked,
         ).length}
+        isSnappingEnabled={isSnappingEnabled}
         trackLayer={trackLayer}
         trackPreviewStatus={trackPreviewStatus}
         workspaceZoom={workspaceZoom}
+        onToggleSnapping={() =>
+          setIsSnappingEnabled((isEnabled) => !isEnabled)
+        }
         onResetView={() => setResetViewToken((token) => token + 1)}
       />
     </div>

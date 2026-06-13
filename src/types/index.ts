@@ -77,13 +77,17 @@ export interface TabletopObject extends BaseRectangularObject {
   layerId: 'tabletop'
 }
 
-export type TrackDefinitionId =
-  | 'straight-100'
-  | 'straight-200'
-  | 'curve-r300-30'
-  | 'curve-r450-30'
+export type TrackDefinitionId = string
 
 export type TrackCurveDirection = 'left' | 'right'
+export type TrackGaugeId = 'generic' | 'ho-oo' | 'n' | 'o'
+export type TrackKind =
+  | 'straight'
+  | 'curve'
+  | 'flex'
+  | 'turnout'
+  | 'crossing'
+export type TrackHandedness = TrackCurveDirection | 'symmetric' | null
 
 export interface TrackPieceObject extends BaseCanvasObject {
   type: 'track-piece'
@@ -108,15 +112,28 @@ export type CanvasObject = LegacyCanvasObject | TrackPieceObject
 export interface TrackDefinition {
   id: TrackDefinitionId
   name: string
-  kind: 'straight' | 'curve'
+  kind: TrackKind
+  manufacturer: 'Generic' | 'PECO'
+  productCode?: string
+  gaugeId: TrackGaugeId
+  gaugeMm?: number
+  productRange?: string
+  railCode?: number
+  frogType?: string | null
+  sourceUrl?: string
+  technicalSpecifications?: Record<string, string>
+  handedness?: TrackHandedness
+  isPlaceable: boolean
   lengthMm?: number
+  routeLengthsMm?: number[]
   radiusMm?: number
+  radiiMm?: number[]
   angleDegrees?: number
 }
 
 export interface TrackConnector {
   objectId: string
-  end: 'start' | 'end'
+  end: string
   position: Point
   heading: number
 }

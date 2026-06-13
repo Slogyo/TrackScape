@@ -43,6 +43,16 @@ export const snapPoint = (
   y: snapValue(point.y, interval),
 })
 
+export const resolvePointSnapping = (
+  point: Point,
+  bypassSnapping: boolean,
+): Point => (bypassSnapping ? point : snapPoint(point))
+
+export const shouldBypassSnapping = (
+  isSnappingEnabled: boolean,
+  isShiftPressed: boolean,
+): boolean => !isSnappingEnabled || isShiftPressed
+
 export const snapDelta = (
   delta: MovementDelta,
   interval = SNAP_INTERVAL_MM,
@@ -50,6 +60,11 @@ export const snapDelta = (
   x: Math.round(delta.x / interval) * interval,
   y: Math.round(delta.y / interval) * interval,
 })
+
+export const resolveDeltaSnapping = (
+  delta: MovementDelta,
+  bypassSnapping: boolean,
+): MovementDelta => (bypassSnapping ? delta : snapDelta(delta))
 
 export const normalizeRectangle = (
   start: Point,

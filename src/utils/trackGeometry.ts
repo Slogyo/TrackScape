@@ -3,6 +3,7 @@ import type {
   Point,
   TrackConnector,
   TrackCurveDirection,
+  TrackDefinition,
   TrackPieceObject,
 } from '../types'
 
@@ -10,7 +11,18 @@ export const TRACK_SNAP_DISTANCE_MM = 150
 export const CONNECTOR_OCCUPIED_TOLERANCE_MM = 1
 export const TRACK_ROTATION_STEP = 15
 
+interface LocalRoute {
+  id: string
+  path: string
+  points: Point[]
+  start: Point
+  end: Point
+  startHeading: number
+  endHeading: number
+}
+
 const degreesToRadians = (degrees: number) => (degrees * Math.PI) / 180
+const radiansToDegrees = (radians: number) => (radians * 180) / Math.PI
 
 export const normalizeRotation = (rotation: number): number =>
   ((rotation % 360) + 360) % 360
@@ -32,81 +44,327 @@ export const rotatePoint = (point: Point, rotation: number): Point => {
 const directionSign = (direction: TrackCurveDirection) =>
   direction === 'right' ? 1 : -1
 
-export const getTrackLength = (object: TrackPieceObject): number => {
-  const definition = getTrackDefinition(object.definitionId)
-  if (definition.kind === 'straight') {
-    return definition.lengthMm ?? 0
+const getDefinitionDirection = (
+  definition: TrackDefinition,
+  object: TrackPieceObject,
+): TrackCurveDirection => {
+  if (
+    definition.handedness === 'left' ||
+    definition.handedness === 'right'
+  ) {
+    return definition.handedness
   }
+  return object.direction
+}
 
-  return (
-    (definition.radiusMm ?? 0) *
-    degreesToRadians(definition.angleDegrees ?? 0)
+const lineRoute = (
+  id: string,
+  start: Point,
+  end: Point,
+  heading: number,
+): LocalRoute => ({
+  id,
+  path: `M ${start.x} ${start.y} L ${end.x} ${end.y}`,
+  points: [start, end],
+  start,
+  end,
+  startHeading: normalizeRotation(heading),
+  endHeading: normalizeRotation(heading),
+})
+
+const angledLineRoute = (
+  id: string,
+  length: number,
+  heading: number,
+): LocalRoute => {
+  const radians = degreesToRadians(heading)
+  return lineRoute(
+    id,
+    { x: 0, y: 0 },
+    {
+      x: length * Math.cos(radians),
+      y: length * Math.sin(radians),
+    },
+    heading,
   )
 }
 
-export const getTrackLocalEnd = (object: TrackPieceObject): Point => {
-  const definition = getTrackDefinition(object.definitionId)
-  if (definition.kind === 'straight') {
-    return { x: definition.lengthMm ?? 0, y: 0 }
-  }
-
-  const radius = definition.radiusMm ?? 0
-  const angle = degreesToRadians(definition.angleDegrees ?? 0)
-  const sign = directionSign(object.direction)
-
-  return {
+const arcRoute = (
+  id: string,
+  radius: number,
+  angleDegrees: number,
+  direction: TrackCurveDirection,
+  targetLength?: number,
+): LocalRoute => {
+  const sign = directionSign(direction)
+  const angle = degreesToRadians(angleDegrees)
+  const arcEnd = {
     x: radius * Math.sin(angle),
     y: sign * radius * (1 - Math.cos(angle)),
   }
-}
+  const points: Point[] = [{ x: 0, y: 0 }]
 
-export const getTrackEndHeading = (object: TrackPieceObject): number => {
-  const definition = getTrackDefinition(object.definitionId)
-  const turn =
-    definition.kind === 'curve'
-      ? directionSign(object.direction) * (definition.angleDegrees ?? 0)
-      : 0
+  for (let step = 1; step <= angleDegrees; step += 1) {
+    const sampleAngle = degreesToRadians(Math.min(step, angleDegrees))
+    points.push({
+      x: radius * Math.sin(sampleAngle),
+      y: sign * radius * (1 - Math.cos(sampleAngle)),
+    })
+  }
+  const lastPoint = points[points.length - 1]
+  if (
+    Math.abs(lastPoint.x - arcEnd.x) > 1e-9 ||
+    Math.abs(lastPoint.y - arcEnd.y) > 1e-9
+  ) {
+    points.push(arcEnd)
+  }
 
-  return normalizeRotation(object.rotation + turn)
-}
+  let end = arcEnd
+  let path = `M 0 0 A ${radius} ${radius} 0 0 ${
+    direction === 'right' ? 1 : 0
+  } ${arcEnd.x} ${arcEnd.y}`
 
-export const getTrackEndPoint = (object: TrackPieceObject): Point => {
-  const offset = rotatePoint(getTrackLocalEnd(object), object.rotation)
+  if (targetLength && targetLength > arcEnd.x) {
+    const extension = (targetLength - arcEnd.x) / Math.cos(angle)
+    end = {
+      x: arcEnd.x + extension * Math.cos(angle),
+      y: arcEnd.y + sign * extension * Math.sin(angle),
+    }
+    points.push(end)
+    path += ` L ${end.x} ${end.y}`
+  }
+
   return {
-    x: object.position.x + offset.x,
-    y: object.position.y + offset.y,
+    id,
+    path,
+    points,
+    start: { x: 0, y: 0 },
+    end,
+    startHeading: 0,
+    endHeading: sign * angleDegrees,
   }
 }
+
+const getCrossingRoutes = (
+  definition: TrackDefinition,
+): LocalRoute[] => {
+  const length = definition.lengthMm ?? 0
+  const angle = definition.angleDegrees ?? 90
+  const height =
+    Math.abs(angle - 90) < 0.001
+      ? length
+      : Math.abs(length * Math.tan(degreesToRadians(angle)))
+
+  return [
+    lineRoute(
+      'route-a',
+      { x: 0, y: height / 2 },
+      { x: length, y: height / 2 },
+      0,
+    ),
+    lineRoute(
+      'route-b',
+      { x: 0, y: 0 },
+      { x: length, y: height },
+      angle,
+    ),
+  ]
+}
+
+const getTurnoutRoutes = (
+  definition: TrackDefinition,
+  object: TrackPieceObject,
+): LocalRoute[] => {
+  const radii = definition.radiiMm ?? []
+  const radius = definition.radiusMm ?? radii[0]
+  const angle = definition.angleDegrees ?? 10
+  const length = definition.lengthMm
+  const routeLengths = definition.routeLengthsMm ?? []
+  const direction = getDefinitionDirection(definition, object)
+  const angleForRadius = (candidateRadius: number) =>
+    definition.angleDegrees ??
+    (length && length <= candidateRadius
+      ? radiansToDegrees(Math.asin(length / candidateRadius))
+      : angle)
+
+  if (
+    /curved turnout/i.test(definition.name) &&
+    radii.length < 2 &&
+    routeLengths.length >= 2
+  ) {
+    const [innerLength, outerLength] = routeLengths
+    return [
+      angledLineRoute('route-outer', outerLength, 0),
+      angledLineRoute(
+        'route-inner',
+        innerLength,
+        directionSign(direction) * angle,
+      ),
+    ]
+  }
+
+  if (/curved turnout/i.test(definition.name) && radii.length >= 2) {
+    return radii.slice(0, 2).map((candidate, index) =>
+      arcRoute(
+        `route-${index + 1}`,
+        candidate,
+        angleForRadius(candidate),
+        direction,
+      ),
+    )
+  }
+
+  if (definition.handedness === 'symmetric') {
+    const branchRadius = radius ?? Math.max(length ?? 100, 100)
+    const routes = [
+      arcRoute('route-left', branchRadius, angle, 'left', length),
+      arcRoute('route-right', branchRadius, angle, 'right', length),
+    ]
+    if (/3 way/i.test(definition.name) && length) {
+      routes.splice(
+        1,
+        0,
+        lineRoute(
+          'route-centre',
+          { x: 0, y: 0 },
+          { x: length, y: 0 },
+          0,
+        ),
+      )
+    }
+    return routes
+  }
+
+  const mainLength =
+    length ??
+    (radius && angle ? radius * degreesToRadians(angle) : 100)
+  const branch = radius
+    ? arcRoute(
+        'route-branch',
+        radius,
+        angleForRadius(radius),
+        direction,
+        length,
+      )
+    : lineRoute(
+        'route-branch',
+        { x: 0, y: 0 },
+        {
+          x: mainLength,
+          y:
+            directionSign(direction) *
+            mainLength *
+            Math.tan(degreesToRadians(angle)),
+        },
+        directionSign(direction) * angle,
+      )
+
+  return [
+    lineRoute(
+      'route-main',
+      { x: 0, y: 0 },
+      { x: mainLength, y: 0 },
+      0,
+    ),
+    branch,
+  ]
+}
+
+const getLocalRoutes = (object: TrackPieceObject): LocalRoute[] => {
+  const definition = getTrackDefinition(object.definitionId)
+  const radius = definition.radiusMm ?? definition.radiiMm?.[0]
+  const angle = definition.angleDegrees ?? 0
+
+  if (definition.kind === 'curve' && radius && angle) {
+    return [
+      arcRoute(
+        'route-main',
+        radius,
+        angle,
+        getDefinitionDirection(definition, object),
+      ),
+    ]
+  }
+  if (definition.kind === 'turnout') {
+    return getTurnoutRoutes(definition, object)
+  }
+  if (definition.kind === 'crossing') {
+    return getCrossingRoutes(definition)
+  }
+
+  const length = definition.lengthMm ?? 0
+  return [
+    lineRoute(
+      'route-main',
+      { x: 0, y: 0 },
+      { x: length, y: 0 },
+      0,
+    ),
+  ]
+}
+
+const toWorldPoint = (
+  point: Point,
+  object: TrackPieceObject,
+): Point => {
+  const rotated = rotatePoint(point, object.rotation)
+  return {
+    x: object.position.x + rotated.x,
+    y: object.position.y + rotated.y,
+  }
+}
+
+export const getTrackLength = (object: TrackPieceObject): number => {
+  const definition = getTrackDefinition(object.definitionId)
+  if (definition.routeLengthsMm?.length) {
+    return Math.max(...definition.routeLengthsMm)
+  }
+  if (definition.lengthMm) {
+    return definition.lengthMm
+  }
+
+  const radii = definition.radiiMm ?? []
+  const radius = Math.max(definition.radiusMm ?? 0, ...radii, 0)
+  return radius * degreesToRadians(definition.angleDegrees ?? 0)
+}
+
+export const getTrackPathDataList = (
+  object: TrackPieceObject,
+): string[] => getLocalRoutes(object).map((route) => route.path)
+
+export const getTrackPathData = (object: TrackPieceObject): string =>
+  getTrackPathDataList(object)[0] ?? 'M 0 0'
+
+export const getTrackLocalEnd = (object: TrackPieceObject): Point =>
+  getLocalRoutes(object)[0]?.end ?? { x: 0, y: 0 }
+
+export const getTrackEndHeading = (object: TrackPieceObject): number =>
+  normalizeRotation(
+    object.rotation + (getLocalRoutes(object)[0]?.endHeading ?? 0),
+  )
+
+export const getTrackEndPoint = (object: TrackPieceObject): Point =>
+  toWorldPoint(getTrackLocalEnd(object), object)
 
 export const getTrackConnectors = (
   object: TrackPieceObject,
-): TrackConnector[] => [
-  {
-    objectId: object.id,
-    end: 'start',
-    position: { ...object.position },
-    heading: normalizeRotation(object.rotation + 180),
-  },
-  {
-    objectId: object.id,
-    end: 'end',
-    position: getTrackEndPoint(object),
-    heading: getTrackEndHeading(object),
-  },
-]
-
-export const getTrackPathData = (object: TrackPieceObject): string => {
-  const end = getTrackEndPoint(object)
-  const definition = getTrackDefinition(object.definitionId)
-
-  if (definition.kind === 'straight') {
-    return `M ${object.position.x} ${object.position.y} L ${end.x} ${end.y}`
-  }
-
-  const radius = definition.radiusMm ?? 0
-  const sweep = object.direction === 'right' ? 1 : 0
-  return `M ${object.position.x} ${object.position.y} A ${radius} ${radius} 0 0 ${sweep} ${end.x} ${end.y}`
-}
+): TrackConnector[] =>
+  getLocalRoutes(object).flatMap((route) => [
+    {
+      objectId: object.id,
+      end: `${route.id}-start`,
+      position: toWorldPoint(route.start, object),
+      heading: normalizeRotation(
+        object.rotation + route.startHeading + 180,
+      ),
+    },
+    {
+      objectId: object.id,
+      end: `${route.id}-end`,
+      position: toWorldPoint(route.end, object),
+      heading: normalizeRotation(object.rotation + route.endHeading),
+    },
+  ])
 
 const distance = (first: Point, second: Point) =>
   Math.hypot(first.x - second.x, first.y - second.y)
@@ -117,9 +375,10 @@ export const getAvailableTrackConnectors = (
   const connectors = objects.flatMap(getTrackConnectors)
 
   return connectors.filter(
-    (connector) =>
+    (connector, index) =>
       !connectors.some(
-        (candidate) =>
+        (candidate, candidateIndex) =>
+          candidateIndex !== index &&
           candidate.objectId !== connector.objectId &&
           distance(candidate.position, connector.position) <=
             CONNECTOR_OCCUPIED_TOLERANCE_MM,
@@ -147,26 +406,12 @@ export const findNearestTrackConnector = (
 }
 
 export const getTrackBounds = (object: TrackPieceObject) => {
-  const definition = getTrackDefinition(object.definitionId)
-  const points: Point[] = [{ ...object.position }, getTrackEndPoint(object)]
+  const points = getLocalRoutes(object).flatMap((route) =>
+    route.points.map((point) => toWorldPoint(point, object)),
+  )
 
-  if (definition.kind === 'curve') {
-    const angle = definition.angleDegrees ?? 0
-    const radius = definition.radiusMm ?? 0
-    const sign = directionSign(object.direction)
-
-    for (let step = 1; step < angle; step += 1) {
-      const radians = degreesToRadians(step)
-      const local = {
-        x: radius * Math.sin(radians),
-        y: sign * radius * (1 - Math.cos(radians)),
-      }
-      const rotated = rotatePoint(local, object.rotation)
-      points.push({
-        x: object.position.x + rotated.x,
-        y: object.position.y + rotated.y,
-      })
-    }
+  if (points.length === 0) {
+    points.push({ ...object.position })
   }
 
   return {
@@ -174,5 +419,16 @@ export const getTrackBounds = (object: TrackPieceObject) => {
     minY: Math.min(...points.map((point) => point.y)),
     maxX: Math.max(...points.map((point) => point.x)),
     maxY: Math.max(...points.map((point) => point.y)),
+  }
+}
+
+export const getTrackLabelPosition = (
+  object: TrackPieceObject,
+): Point => {
+  const bounds = getTrackBounds(object)
+  const placeBelow = bounds.minY < 100
+  return {
+    x: (bounds.minX + bounds.maxX) / 2,
+    y: placeBelow ? bounds.maxY + 80 : bounds.minY - 60,
   }
 }

@@ -7,6 +7,7 @@ import {
   getTrackConnectors,
   getTrackEndPoint,
   getTrackLength,
+  getTrackLabelPosition,
   normalizeRotation,
 } from './trackGeometry'
 
@@ -40,13 +41,13 @@ describe('track geometry', () => {
     expect(getTrackConnectors(object)).toEqual([
       {
         objectId: 'track-1',
-        end: 'start',
+        end: 'route-main-start',
         position: { x: 100, y: 200 },
         heading: 270,
       },
       {
         objectId: 'track-1',
-        end: 'end',
+        end: 'route-main-end',
         position: { x: 100, y: 400 },
         heading: 90,
       },
@@ -110,11 +111,80 @@ describe('track geometry', () => {
       findNearestTrackConnector({ x: 395, y: 5 }, [first, second]),
     ).toMatchObject({
       objectId: 'second',
-      end: 'end',
+      end: 'route-main-end',
       heading: 0,
     })
     expect(
       findNearestTrackConnector({ x: 1000, y: 1000 }, [first, second]),
     ).toBeNull()
+  })
+
+  it('renders PECO turnouts with main and diverging routes', () => {
+    const turnout = piece({
+      definitionId: 'peco-o-sl-e791bh',
+      position: { x: 0, y: 0 },
+    })
+
+    expect(getTrackLength(turnout)).toBe(416)
+    expect(getTrackConnectors(turnout)).toHaveLength(4)
+    expect(getTrackBounds(turnout).maxX).toBeCloseTo(416)
+    expect(getTrackBounds(turnout).maxY).toBeGreaterThan(0)
+  })
+
+  it('keeps curved turnouts within PECO published length', () => {
+    const turnout = piece({
+      definitionId: 'peco-ho-oo-sl-86',
+      position: { x: 0, y: 0 },
+    })
+    const endConnectors = getTrackConnectors(turnout).filter((connector) =>
+      connector.end.endsWith('-end'),
+    )
+
+    expect(getTrackBounds(turnout).maxX).toBeCloseTo(258)
+    expect(endConnectors).toHaveLength(2)
+    expect(endConnectors[0].position.x).toBeCloseTo(258)
+    expect(endConnectors[1].position.x).toBeCloseTo(258)
+  })
+
+  it('uses both published N Setrack curved-turnout route lengths', () => {
+    const turnout = piece({
+      definitionId: 'peco-n-st-44',
+      position: { x: 0, y: 0 },
+    })
+    const endConnectors = getTrackConnectors(turnout).filter((connector) =>
+      connector.end.endsWith('-end'),
+    )
+
+    expect(getTrackLength(turnout)).toBe(156)
+    expect(
+      Math.hypot(
+        endConnectors[0].position.x,
+        endConnectors[0].position.y,
+      ),
+    ).toBeCloseTo(156)
+    expect(
+      Math.hypot(
+        endConnectors[1].position.x,
+        endConnectors[1].position.y,
+      ),
+    ).toBeCloseTo(138.5)
+  })
+
+  it('places radius labels below track at the origin and above elsewhere', () => {
+    const nearOrigin = piece({
+      definitionId: 'curve-r300-30',
+      position: { x: 0, y: 0 },
+    })
+    const awayFromOrigin = {
+      ...nearOrigin,
+      position: { x: 1000, y: 1000 },
+    }
+
+    expect(getTrackLabelPosition(nearOrigin).y).toBeGreaterThan(
+      getTrackBounds(nearOrigin).maxY,
+    )
+    expect(getTrackLabelPosition(awayFromOrigin).y).toBeLessThan(
+      getTrackBounds(awayFromOrigin).minY,
+    )
   })
 })

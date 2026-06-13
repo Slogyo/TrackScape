@@ -25,6 +25,7 @@ interface StatusBarProps {
   layoutScaleId: LayoutScaleId
   measurementSystem: MeasurementSystem
   movementDelta: MovementDelta | null
+  isSnappingEnabled: boolean
   selectedLayer: Layer | null
   selectedObject: CanvasObject | null
   selectedObjectCount: number
@@ -32,6 +33,7 @@ interface StatusBarProps {
   trackLayer: Layer | null
   trackPreviewStatus: TrackPreviewStatus | null
   workspaceZoom: number
+  onToggleSnapping: () => void
   onResetView: () => void
 }
 
@@ -43,6 +45,7 @@ function StatusBar({
   layoutScaleId,
   measurementSystem,
   movementDelta,
+  isSnappingEnabled,
   selectedLayer,
   selectedObject,
   selectedObjectCount,
@@ -50,6 +53,7 @@ function StatusBar({
   trackLayer,
   trackPreviewStatus,
   workspaceZoom,
+  onToggleSnapping,
   onResetView,
 }: StatusBarProps) {
   const activeTool = getTool(activeToolId)
@@ -78,6 +82,9 @@ function StatusBar({
     attributeValue = 'Track layer is locked'
   } else if (activeToolId === 'track' && trackPreviewStatus) {
     const definition = getTrackDefinition(trackPreviewStatus.definitionId)
+    const radii = definition.radiiMm ?? (
+      definition.radiusMm ? [definition.radiusMm] : []
+    )
     const previewObject = {
       id: 'status-preview',
       type: 'track-piece' as const,
@@ -96,11 +103,12 @@ function StatusBar({
       layoutScaleId,
       measurementSystem,
     )} | ${trackPreviewStatus.rotation} degrees${
-      definition.kind === 'curve'
-        ? ` | R${formatMillimetres(
-            definition.radiusMm ?? 0,
-            displayUnit,
-          )} ${trackPreviewStatus.direction}`
+      radii.length > 0
+        ? ` | R${radii
+            .map((radius) => formatMillimetres(radius, displayUnit))
+            .join('/')} ${
+            definition.handedness ?? trackPreviewStatus.direction
+          }`
         : ''
     }`
   } else if (isDrawingTool && !activeLayer.visible) {
@@ -175,6 +183,22 @@ function StatusBar({
       <div className="status-item">
         <span className="status-label">Tool</span>
         <strong className="status-accent">{activeToolLabel}</strong>
+      </div>
+      <div className="status-item status-snap">
+        <span className="status-label">Snap</span>
+        <button
+          className={`status-toggle-button ${
+            isSnappingEnabled ? 'is-active' : ''
+          }`}
+          type="button"
+          aria-pressed={isSnappingEnabled}
+          aria-label={`Turn snapping ${
+            isSnappingEnabled ? 'off' : 'on'
+          }`}
+          onClick={onToggleSnapping}
+        >
+          {isSnappingEnabled ? 'On' : 'Off'}
+        </button>
       </div>
       <div className="status-item">
         <span className="status-label">Units</span>

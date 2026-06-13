@@ -29,8 +29,9 @@ import {
   millimetresToPixels,
   normalizeRectangle,
   pointFromViewportPixels,
-  snapDelta,
-  snapPoint,
+  resolveDeltaSnapping,
+  resolvePointSnapping,
+  shouldBypassSnapping,
   translateObject,
 } from '../utils/canvas'
 import {
@@ -59,6 +60,7 @@ interface CanvasWorkspaceProps {
   projectId: string
   resetViewToken: number
   selectedObjectIds: string[]
+  isSnappingEnabled: boolean
   trackSettings: TrackPlacementSettings
   zoom: number
   onAddObject: (object: CanvasObject, selectObject?: boolean) => void
@@ -123,6 +125,7 @@ function CanvasWorkspace({
   projectId,
   resetViewToken,
   selectedObjectIds,
+  isSnappingEnabled,
   trackSettings,
   zoom,
   onAddObject,
@@ -153,6 +156,7 @@ function CanvasWorkspace({
     useState<AreaSelectionDraft | null>(null)
   const [panDraft, setPanDraft] = useState<PanDraft | null>(null)
   const [trackPointer, setTrackPointer] = useState<Point | null>(null)
+  const [isShiftPressed, setIsShiftPressed] = useState(false)
   const setCamera = useCallback((nextCamera: CameraPosition) => {
     cameraRef.current = nextCamera
     setCameraState(nextCamera)
@@ -195,16 +199,21 @@ function CanvasWorkspace({
       return null
     }
 
-    const connector = findNearestTrackConnector(
-      trackPointer,
-      visibleTrackObjects,
+    const bypassSnapping = shouldBypassSnapping(
+      isSnappingEnabled,
+      isShiftPressed,
     )
+    const connector = bypassSnapping
+      ? null
+      : findNearestTrackConnector(trackPointer, visibleTrackObjects)
     const preview: TrackPieceObject = {
       id: 'track-preview',
       type: 'track-piece',
       layerId: 'track',
       definitionId: trackSettings.definitionId,
-      position: connector ? connector.position : snapPoint(trackPointer),
+      position: connector
+        ? connector.position
+        : resolvePointSnapping(trackPointer, bypassSnapping),
       rotation: connector ? connector.heading : trackSettings.rotation,
       direction: trackSettings.direction,
     }
@@ -219,6 +228,8 @@ function CanvasWorkspace({
     }
   }, [
     activeToolId,
+    isSnappingEnabled,
+    isShiftPressed,
     trackLayer,
     trackPointer,
     trackSettings,
@@ -301,6 +312,10 @@ function CanvasWorkspace({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Shift') {
+        setIsShiftPressed(true)
+      }
+
       if (event.code === 'Space' && !isTextEntryTarget(event.target)) {
         event.preventDefault()
         spacePressedRef.current = true
@@ -330,7 +345,8 @@ function CanvasWorkspace({
 
         if (
           event.key.toLowerCase() === 'f' &&
-          getTrackDefinition(trackSettings.definitionId).kind === 'curve'
+          getTrackDefinition(trackSettings.definitionId).kind === 'curve' &&
+          !getTrackDefinition(trackSettings.definitionId).handedness
         ) {
           event.preventDefault()
           onTrackSettingsChange({
@@ -352,16 +368,26 @@ function CanvasWorkspace({
       }
     }
     const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === 'Shift') {
+        setIsShiftPressed(false)
+      }
+
       if (event.code === 'Space') {
         spacePressedRef.current = false
       }
     }
+    const handleBlur = () => {
+      setIsShiftPressed(false)
+      spacePressedRef.current = false
+    }
 
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
+    window.addEventListener('blur', handleBlur)
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
+      window.removeEventListener('blur', handleBlur)
     }
   }, [
     activeToolId,
@@ -481,11 +507,15 @@ function CanvasWorkspace({
   const getMovementPreview = (
     draft: MovementDraft,
     pointerPosition: Point,
+    bypassSnapping: boolean,
   ): MovementDraft => {
-    const snappedDelta = snapDelta({
-      x: pointerPosition.x - draft.startPointer.x,
-      y: pointerPosition.y - draft.startPointer.y,
-    })
+    const snappedDelta = resolveDeltaSnapping(
+      {
+        x: pointerPosition.x - draft.startPointer.x,
+        y: pointerPosition.y - draft.startPointer.y,
+      },
+      bypassSnapping,
+    )
     const delta = clampGroupTranslationToOrigin(
       draft.originals,
       snappedDelta,
@@ -618,7 +648,10 @@ function CanvasWorkspace({
       return
     }
 
-    const start = snapPoint(getPointerPosition(event))
+    const start = resolvePointSnapping(
+      getPointerPosition(event),
+      shouldBypassSnapping(isSnappingEnabled, event.shiftKey),
+    )
     const nextDraft: DrawingDraft = {
       toolId: activeToolId,
       start,
@@ -659,7 +692,11 @@ function CanvasWorkspace({
       movementDraft &&
       movementDraft.pointerId === event.pointerId
     ) {
-      const nextDraft = getMovementPreview(movementDraft, pointerPosition)
+      const nextDraft = getMovementPreview(
+        movementDraft,
+        pointerPosition,
+        shouldBypassSnapping(isSnappingEnabled, event.shiftKey),
+      )
       setMovementDraft(nextDraft)
       onMovementDeltaChange(nextDraft.delta)
       return
@@ -682,7 +719,10 @@ function CanvasWorkspace({
     ) {
       const nextDraft = {
         ...drawingDraft,
-        end: snapPoint(pointerPosition),
+        end: resolvePointSnapping(
+          pointerPosition,
+          shouldBypassSnapping(isSnappingEnabled, event.shiftKey),
+        ),
       }
       setDrawingDraft(nextDraft)
       updateDrawingMeasurement(nextDraft)
@@ -719,6 +759,7 @@ function CanvasWorkspace({
       const completedDraft = getMovementPreview(
         movementDraft,
         getPointerPosition(event),
+        shouldBypassSnapping(isSnappingEnabled, event.shiftKey),
       )
       releasePointer(event)
 
@@ -770,7 +811,10 @@ function CanvasWorkspace({
 
     const completedDraft = {
       ...drawingDraft,
-      end: snapPoint(getPointerPosition(event)),
+      end: resolvePointSnapping(
+        getPointerPosition(event),
+        shouldBypassSnapping(isSnappingEnabled, event.shiftKey),
+      ),
     }
     releasePointer(event)
 

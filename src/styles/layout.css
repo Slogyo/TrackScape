@@ -837,8 +837,11 @@
 
 .track-piece-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
+  max-height: 280px;
+  padding-right: 3px;
+  overflow-y: auto;
 }
 
 .track-piece-button {
@@ -858,6 +861,11 @@
 .track-piece-button.is-active {
   color: var(--accent);
   border-color: var(--accent);
+}
+
+.track-piece-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .track-piece-button strong {
@@ -911,6 +919,106 @@
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid var(--border);
+}
+
+.track-library-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.track-library-filters label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.track-library-filters select,
+.track-library-filters input {
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  padding: 0 7px;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 10px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 0;
+}
+
+.track-library-filters select:focus,
+.track-library-filters input:focus {
+  border-color: var(--accent);
+  outline: 0;
+}
+
+.track-search-field {
+  grid-column: 1 / -1;
+}
+
+.track-library-count {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.track-source-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--text-primary);
+  font-size: 10px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 120ms ease;
+}
+
+.track-source-link:hover,
+.track-source-link:focus-visible {
+  color: var(--accent);
+  outline: 0;
+}
+
+.track-technical-specifications {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.track-technical-specifications dl {
+  display: grid;
+  gap: 7px;
+  margin: 9px 0 0;
+}
+
+.track-technical-specifications dl div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 12px;
+}
+
+.track-technical-specifications dt {
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.track-technical-specifications dd {
+  margin: 0;
+  font-size: 10px;
+  text-align: right;
+}
+
+.track-radius-label {
+  fill: var(--text-muted);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--background);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
 }
 
 .properties-summary {
@@ -1033,7 +1141,8 @@
   white-space: nowrap;
 }
 
-.status-view-button {
+.status-view-button,
+.status-toggle-button {
   padding: 3px 5px;
   color: var(--text-primary);
   font: inherit;
@@ -1047,7 +1156,10 @@
 }
 
 .status-view-button:hover,
-.status-view-button:focus-visible {
+.status-view-button:focus-visible,
+.status-toggle-button:hover,
+.status-toggle-button:focus-visible,
+.status-toggle-button.is-active {
   color: var(--accent);
   border-color: var(--accent);
   outline: 0;

@@ -11,6 +11,7 @@
 7. Prototype track pieces and snapping before choosing a larger rendering dependency. Complete.
 8. Add project scale presets and prototype-equivalent measurement readouts. Complete.
 9. Add scrollable workspace navigation, area selection, SVG controls, and persistent theme preference. Complete.
+10. Add the official PECO HO/OO, N, and O track catalogue with product specifications, multi-route geometry, and radius labels. Complete.
 
 Each step should include focused tests for measurement conversion and object-state behavior before moving to the next feature group.
 

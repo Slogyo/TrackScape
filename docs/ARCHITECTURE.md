@@ -74,9 +74,24 @@ Unknown JSON is validated before it reaches React state. A failed import or rest
 
 Browser storage sits behind a small adapter with load, save, and clear operations. The adapter retains the `trackscape.project.v1` local storage key so existing browser saves remain discoverable. JSON import and export use the same project document format, while imports remain unsaved until the user explicitly chooses Save.
 
-## Fixed Track Geometry
+## Track Catalogues and Geometry
 
-Track pieces reference a small catalog definition rather than copying dimensions into every object. Each piece stores its start connector, rotation, and curve direction in millimetres and degrees. Pure geometry helpers derive SVG paths, lengths, bounds, and connection points. This keeps rendering and snapping independent from React and provides a path toward manufacturer-specific catalogs later.
+Track pieces reference catalogue definitions rather than copying product dimensions into every object. Each placed piece stores a stable definition ID, its start connector, rotation, and curve direction. Project geometry remains in millimetres and degrees.
+
+The PECO source snapshot lives in `src/data/pecoCatalog.source.json`. It is generated from PECO's official track collection and each official product page by `scripts/import-peco-catalog.mjs`. The importer records:
+
+- Gauge, catalogue product code, range, and rail code.
+- Published length, route lengths, radius or radii, and angle.
+- Frog type and the complete Technical Specification table.
+- The official PECO product URL for provenance.
+
+The runtime catalogue in `src/data/trackCatalog.ts` converts that source data into stable definitions for HO/OO (16.5 mm), N (9 mm), and O (32 mm). Pack products inherit the geometry of their corresponding individual piece when PECO's pack page omits dimensions. A small number of Setrack family relationships are filled from the matching published curve family, and those rules remain explicit in the catalogue module.
+
+Scenic accessories that happen to be tagged as track, such as platforms and way gauges, are not exposed as placeable track. A genuine track product remains visible but disabled when PECO publishes insufficient geometry; TrackScape does not invent a length.
+
+Pure helpers in `src/utils/trackGeometry.ts` derive SVG routes, lengths, bounds, connector positions, and radius-label positions. Curves use their published radius and angle. Turnouts and crossings may expose multiple routes and connectors. Definitions can preserve separate route lengths when PECO publishes them, while `lengthMm` remains the normal single-piece length.
+
+The original generic definitions remain available so older saved projects continue to load. New manufacturer catalogue IDs are string-based and validated against the bundled catalogue during project import.
 
 ## Desktop App Path
 

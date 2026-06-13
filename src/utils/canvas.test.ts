@@ -13,6 +13,9 @@ import {
   normalizeRectangle,
   pointFromPixels,
   pointFromViewportPixels,
+  resolveDeltaSnapping,
+  resolvePointSnapping,
+  shouldBypassSnapping,
   snapDelta,
   snapPoint,
   translateObject,
@@ -47,6 +50,17 @@ describe('canvas geometry', () => {
 
   it('snaps points to the nearest 100 millimetres', () => {
     expect(snapPoint({ x: 149, y: 151 })).toEqual({ x: 100, y: 200 })
+    expect(resolvePointSnapping({ x: 149, y: 151 }, true)).toEqual({
+      x: 149,
+      y: 151,
+    })
+  })
+
+  it('bypasses snapping when disabled or while Shift is held', () => {
+    expect(shouldBypassSnapping(true, false)).toBe(false)
+    expect(shouldBypassSnapping(true, true)).toBe(true)
+    expect(shouldBypassSnapping(false, false)).toBe(true)
+    expect(shouldBypassSnapping(false, true)).toBe(true)
   })
 
   it('normalizes rectangles drawn in reverse directions', () => {
@@ -83,6 +97,10 @@ describe('canvas geometry', () => {
 
   it('snaps signed movement deltas', () => {
     expect(snapDelta({ x: 149, y: -151 })).toEqual({ x: 100, y: -200 })
+    expect(resolveDeltaSnapping({ x: 149, y: -151 }, true)).toEqual({
+      x: 149,
+      y: -151,
+    })
   })
 
   it('calculates bounds and clamps movement at the origin', () => {

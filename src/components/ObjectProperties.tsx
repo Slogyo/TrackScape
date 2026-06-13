@@ -262,6 +262,9 @@ function ObjectProperties({
 
           {object.type === 'track-piece' && (() => {
             const definition = getTrackDefinition(object.definitionId)
+            const radii = definition.radiiMm ?? (
+              definition.radiusMm ? [definition.radiusMm] : []
+            )
             return (
               <>
                 <div className="property-readout">
@@ -269,11 +272,61 @@ function ObjectProperties({
                   <strong>{definition.name}</strong>
                 </div>
                 <div className="property-readout">
-                  <span>Length</span>
+                  <span>Manufacturer</span>
+                  <strong>{definition.manufacturer}</strong>
+                </div>
+                {definition.productCode && (
+                  <div className="property-readout">
+                    <span>Product code</span>
+                    <strong>{definition.productCode}</strong>
+                  </div>
+                )}
+                {definition.railCode && (
+                  <div className="property-readout">
+                    <span>Rail code</span>
+                    <strong>Code {definition.railCode}</strong>
+                  </div>
+                )}
+                {definition.productRange && (
+                  <div className="property-readout">
+                    <span>Range</span>
+                    <strong>{definition.productRange}</strong>
+                  </div>
+                )}
+                {definition.gaugeMm && (
+                  <div className="property-readout">
+                    <span>Gauge</span>
+                    <strong>{definition.gaugeMm} mm</strong>
+                  </div>
+                )}
+                {definition.frogType && (
+                  <div className="property-readout">
+                    <span>Frog</span>
+                    <strong>{definition.frogType}</strong>
+                  </div>
+                )}
+                <div className="property-readout">
+                  <span>
+                    {definition.routeLengthsMm?.length
+                      ? 'Max length'
+                      : 'Length'}
+                  </span>
                   <strong>
                     {formatMillimetres(getTrackLength(object), unit)}
                   </strong>
                 </div>
+                {definition.routeLengthsMm?.length && (
+                  <div className="property-readout">
+                    <span>Route lengths</span>
+                    <strong>
+                      {definition.routeLengthsMm
+                        .map((length) =>
+                          formatMillimetres(length, unit),
+                        )
+                        .join(' / ')}
+                    </strong>
+                  </div>
+                )}
                 <div className="property-readout">
                   <span>Prototype length</span>
                   <strong>
@@ -284,34 +337,63 @@ function ObjectProperties({
                     )}
                   </strong>
                 </div>
-                {definition.kind === 'curve' && (
+                {radii.length > 0 && (
                   <>
                     <div className="property-readout">
                       <span>Radius</span>
-                      <strong>
-                        {formatMillimetres(
-                          definition.radiusMm ?? 0,
-                          unit,
-                        )}
-                      </strong>
+                      <strong>R{radii.join('/')} mm</strong>
                     </div>
                     <div className="property-readout">
                       <span>Prototype radius</span>
                       <strong>
-                        {formatPrototypeLength(
-                          definition.radiusMm ?? 0,
-                          layoutScaleId,
-                          measurementSystem,
-                        )}
+                        {radii
+                          .map((radius) =>
+                            formatPrototypeLength(
+                              radius,
+                              layoutScaleId,
+                              measurementSystem,
+                            ),
+                          )
+                          .join(' / ')}
                       </strong>
                     </div>
                     <div className="property-readout">
                       <span>Curve</span>
                       <strong>
-                        {definition.angleDegrees}° {object.direction}
+                        {definition.angleDegrees}°{' '}
+                        {definition.handedness ?? object.direction}
                       </strong>
                     </div>
                   </>
+                )}
+                {definition.technicalSpecifications &&
+                  Object.keys(definition.technicalSpecifications).length >
+                    0 && (
+                    <div className="track-technical-specifications">
+                      <span className="status-label">
+                        Official specifications
+                      </span>
+                      <dl>
+                        {Object.entries(
+                          definition.technicalSpecifications,
+                        ).map(([label, value]) => (
+                          <div key={label}>
+                            <dt>{label}</dt>
+                            <dd>{value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  )}
+                {definition.sourceUrl && (
+                  <a
+                    className="track-source-link"
+                    href={definition.sourceUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    View official PECO product
+                  </a>
                 )}
               </>
             )

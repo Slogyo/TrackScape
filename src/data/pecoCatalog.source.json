@@ -1,0 +1,4943 @@
+{
+  "generatedAt": "2026-06-13T03:09:46.557Z",
+  "source": "https://peco-uk.com/pages/peco-products",
+  "products": [
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-80",
+      "name": "Crossing, Single Slip",
+      "handle": "crossing-single-slip4",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 249,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-single-slip4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "249mm",
+        "Frog Angle": "12 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-84",
+      "name": "Catch Turnout, Right Hand",
+      "handle": "catch-turnout-right-hand",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 98,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/catch-turnout-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "98mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-85",
+      "name": "Catch Turnout, Left Hand",
+      "handle": "catch-turnout-left-hand",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 98,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/catch-turnout-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "98mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-86",
+      "name": "Curved Turnout, Large Radius, Right Hand",
+      "handle": "curved-turnout-large-radius-right-hand3",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524,
+        762
+      ],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-right-hand3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Radius": "Outer: 1524mm Inner: 762mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-87",
+      "name": "Curved Turnout, Large Radius, Left Hand",
+      "handle": "curved-turnout-large-radius-left-hand3",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524,
+        762
+      ],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-left-hand3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Radius": "Outer: 1524mm Inner: 762mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-88",
+      "name": "Turnout, Large Radius, Right Hand",
+      "handle": "turnout-large-radius-right-hand5",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524
+      ],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-right-hand5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1524mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-89",
+      "name": "Turnout, Large Radius, Left Hand",
+      "handle": "turnout-large-radius-left-hand5",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524
+      ],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-left-hand5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1524mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-90",
+      "name": "Crossing, Double Slip",
+      "handle": "crossing-double-slip4",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 249,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-double-slip4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "249mm",
+        "Frog Angle": "12 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-91",
+      "name": "Turnout, Small Radius, Right Hand",
+      "handle": "turnout-small-radius-right-hand5",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 185,
+      "radiusMm": 610,
+      "radiiMm": [
+        610
+      ],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-small-radius-right-hand5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "185mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "610mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-92",
+      "name": "Turnout, Small Radius, Left Hand",
+      "handle": "turnout-small-radius-left-hand5",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 185,
+      "radiusMm": 610,
+      "radiiMm": [
+        610
+      ],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-small-radius-left-hand5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "185mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "610mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-93",
+      "name": "Crossing, Short",
+      "handle": "crossing-short5",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 127,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 24,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-short5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "127mm",
+        "Frog Angle": "24 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-94",
+      "name": "Crossing, Long",
+      "handle": "crossing-long5",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 249,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-long5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "249mm",
+        "Frog Angle": "12 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-95",
+      "name": "Turnout, Medium Radius, Right Hand",
+      "handle": "turnout-medium-radius-right-hand6",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 219,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-right-hand6",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "219mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-96",
+      "name": "Turnout, Medium Radius, Left Hand",
+      "handle": "turnout-medium-radius-left-hand6",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 219,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-left-hand6",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "219mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-98",
+      "name": "Y Turnout, Large Radius",
+      "handle": "y-turnout-large-radius2",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 220,
+      "radiusMm": 1828,
+      "radiiMm": [
+        1828
+      ],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/y-turnout-large-radius2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "220mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1828mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-99",
+      "name": "3 Way Turnout, Medium Radius",
+      "handle": "3-way-turnout-medium-radius2",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 220,
+      "radiusMm": 610,
+      "radiiMm": [
+        610
+      ],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/3-way-turnout-medium-radius2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "220mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "610mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-100",
+      "name": "Flexible Track, Wooden Sleeper",
+      "handle": "flexible-track-wooden-sleeper2",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-wooden-sleeper2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-100F",
+      "name": "Flexible Track, Wooden Sleeper",
+      "handle": "flexible-track-wooden-sleeper3",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-wooden-sleeper3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-102",
+      "name": "Flexible Track, Concrete Sleeper",
+      "handle": "flexible-track-concrete-sleeper2",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-concrete-sleeper2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-102F",
+      "name": "Flexible Track, Concrete Sleeper",
+      "handle": "flexible-track-concrete-sleeper3",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-concrete-sleeper3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-103",
+      "name": "Flexible Track, Concrete Sleeper",
+      "handle": "flexible-track-concrete-sleeper-2",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-concrete-sleeper-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-104F",
+      "name": "Flexible Track, Steel Sleeper",
+      "handle": "flexible-track-steel-sleeper",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-steel-sleeper",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-106F",
+      "name": "Flexible Track, Bibloc Sleeper",
+      "handle": "flexible-track-bibloc-sleeper",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-bibloc-sleeper",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-108F",
+      "name": "Bullhead 00 Gauge Streamline Track",
+      "handle": "streamline-bullhead-track",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/streamline-bullhead-track",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-113",
+      "name": "Transition Tracks",
+      "handle": "transition-track",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/transition-track",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {}
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-115",
+      "name": "PECO Streamline OO/HO Transition Track Code 83/Code 70",
+      "handle": "peco-streamline-oo-ho-transition-track-code-83-code-70",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/peco-streamline-oo-ho-transition-track-code-83-code-70",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-180",
+      "name": "Crossing, Single Slip",
+      "handle": "crossing-single-slip2",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 249,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-single-slip2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "249mm",
+        "Frog Angle": "12 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-184",
+      "name": "Catch Turnout, Right Hand",
+      "handle": "catch-turnout-right-hand2",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 91,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/catch-turnout-right-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "91mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-185",
+      "name": "Catch Turnout, Left Hand",
+      "handle": "catch-turnout-left-hand2",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 91,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/catch-turnout-left-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "91mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-190",
+      "name": "Crossing, Double Slip",
+      "handle": "crossing-double-slip2",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 249,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-double-slip2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "249mm",
+        "Frog Angle": "12 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-193",
+      "name": "Crossing, Short",
+      "handle": "crossing-short2",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 127,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 24,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-short2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "127mm",
+        "Frog Angle": "24 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-194",
+      "name": "Crossing, Long",
+      "handle": "crossing-long2",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 249,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-long2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "249mm",
+        "Frog Angle": "12 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-7000",
+      "name": "70 Line Flexible Track, Wooden Sleeper",
+      "handle": "70-line-flexible-track-wooden-sleeper",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/70-line-flexible-track-wooden-sleeper",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-8300",
+      "name": "Flexible Track, Wooden Sleeper",
+      "handle": "flexible-track-wooden-sleepe60",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-wooden-sleepe60",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-8302",
+      "name": "Flexible Track, Concrete Sleeper",
+      "handle": "flexible-track-concrete-sleeper",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-concrete-sleeper",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-8348",
+      "name": "Wye Turnout, 4th Radius",
+      "handle": "wye-turnout-4th-radius2",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 183,
+      "radiusMm": 978,
+      "radiiMm": [
+        978
+      ],
+      "angleDegrees": 14.3,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/wye-turnout-4th-radius2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "183mm",
+        "Frog Angle": "14.3 Degrees",
+        "Radius": "978mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-8351",
+      "name": "Turnout, 5th Radius, Right Hand",
+      "handle": "turnout-5th-radius-right-hand2",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 211,
+      "radiusMm": 660,
+      "radiiMm": [
+        660
+      ],
+      "angleDegrees": 11.4,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-5th-radius-right-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "211mm",
+        "Frog Angle": "11.4 Degrees",
+        "Radius": "660mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-8352",
+      "name": "Turnout, 5th Radius, Left Hand",
+      "handle": "turnout-5th-radius-left-hand2",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 211,
+      "radiusMm": 660,
+      "radiiMm": [
+        660
+      ],
+      "angleDegrees": 11.4,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-5th-radius-left-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "211mm",
+        "Frog Angle": "11.4 Degrees",
+        "Radius": "660mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-8356",
+      "name": "Inspection Pit",
+      "handle": "inspection-pit-2",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 297,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/inspection-pit-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "297mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-8376",
+      "name": "Curved Turnout, 7th Radius, Right Hand",
+      "handle": "curved-turnout-7th-radius-right-hand2",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 223.5,
+      "radiusMm": 1092,
+      "radiiMm": [
+        1092
+      ],
+      "angleDegrees": 9.5,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-7th-radius-right-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "223.5mm",
+        "Frog Angle": "9.5 Degrees",
+        "Radius": "1092mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-8377",
+      "name": "Curved Turnout, #7 Radius, Left Hand",
+      "handle": "curved-turnout-7th-radius-left-hand2",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 223.5,
+      "radiusMm": 1092,
+      "radiiMm": [
+        1092
+      ],
+      "angleDegrees": 9.5,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-7th-radius-left-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "223.5mm",
+        "Frog Angle": "9.5 Degrees",
+        "Radius": "1092mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-8381",
+      "name": "Turnout, 8th Radius, Right Hand",
+      "handle": "turnout-8th-radius-right-hand2",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 322,
+      "radiusMm": 1702,
+      "radiiMm": [
+        1702
+      ],
+      "angleDegrees": 7.15,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-8th-radius-right-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "322mm",
+        "Frog Angle": "7.15 Degrees",
+        "Radius": "1702mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-8382",
+      "name": "Turnout, 8th Radius, Left Hand",
+      "handle": "turnout-8th-radius-left-hand2",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 322,
+      "radiusMm": 1702,
+      "radiiMm": [
+        1702
+      ],
+      "angleDegrees": 7.15,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-8th-radius-left-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "322mm",
+        "Frog Angle": "7.15 Degrees",
+        "Radius": "1702mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-8390",
+      "name": "Crossing, 90 Degrees",
+      "handle": "crossing-90-degrees",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 50.8,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 90,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-90-degrees",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "50.8mm",
+        "Frog Angle": "90 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E86",
+      "name": "Curved Turnout, Large Radius, Right Hand",
+      "handle": "curved-turnout-large-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524,
+        762
+      ],
+      "angleDegrees": null,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Radius": "Outer: 1524mm Inner: 762mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E87",
+      "name": "Curved Turnout, Large Radius, Left Hand",
+      "handle": "curved-turnout-large-radius-left-hand",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524,
+        762
+      ],
+      "angleDegrees": null,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Radius": "Outer: 1524mm Inner: 762mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E88",
+      "name": "Turnout, Large Radius, Right Hand",
+      "handle": "turnout-large-radius-right-hand-2",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-right-hand-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1524mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E89",
+      "name": "Turnout, Large Radius, Left Hand",
+      "handle": "turnout-large-radius-left-hand-2",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-left-hand-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1524mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E91",
+      "name": "Turnout, Small Radius, Right Hand",
+      "handle": "turnout-small-radius-right-hand15",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 185,
+      "radiusMm": 610,
+      "radiiMm": [
+        610
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-small-radius-right-hand15",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "185mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "610mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E95",
+      "name": "Turnout, Medium Radius, Right Hand",
+      "handle": "turnout-medium-radius-right-hand16",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 219,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-right-hand16",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "219mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E96",
+      "name": "Turnout, Medium Radius, Left Hand",
+      "handle": "turnout-medium-radius-left-hand15",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 219,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-left-hand15",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "219mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E98",
+      "name": "Y Turnout, Large Radius",
+      "handle": "y-turnout-large-radius",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 220,
+      "radiusMm": 1828,
+      "radiiMm": [
+        1828
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/y-turnout-large-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "220mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1828mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E99",
+      "name": "3 Way Turnout, Medium Radius",
+      "handle": "3-way-turnout-medium-radius",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 220,
+      "radiusMm": 610,
+      "radiiMm": [
+        610
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/3-way-turnout-medium-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "220mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "610mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E180",
+      "name": "Crossing, Single Slip",
+      "handle": "crossing-single-slip",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 249,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-single-slip",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "249mm",
+        "Frog Angle": "12 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E186",
+      "name": "Curved Turnout, Large Radius, Right Hand",
+      "handle": "curved-turnout-large-radius-right-hand7",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524,
+        762
+      ],
+      "angleDegrees": null,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-right-hand7",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Radius": "1524mm & 762mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E187",
+      "name": "Curved Turnout, Large Radius, Left Hand",
+      "handle": "curved-turnout-large-radius-left-hand7",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524,
+        762
+      ],
+      "angleDegrees": null,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-left-hand7",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Radius": "1524mm & 762mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E188",
+      "name": "Turnout, Large Radius, Right Hand",
+      "handle": "turnout-large-radius-right-hand7",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-right-hand7",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1524mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E189",
+      "name": "Turnout, Large Radius, Left Hand",
+      "handle": "turnout-large-radius-left-hand7",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-left-hand7",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1524mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E190",
+      "name": "Crossing, Double Slip",
+      "handle": "crossing-double-slip8",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 249,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-double-slip8",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "249mm",
+        "Frog Angle": "12 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E191",
+      "name": "Turnout, Small Radius, Right Hand",
+      "handle": "turnout-small-radius-right-hand7",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 185,
+      "radiusMm": 610,
+      "radiiMm": [
+        610
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-small-radius-right-hand7",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "185mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "610mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E192",
+      "name": "Turnout, Small Radius, Left Hand",
+      "handle": "turnout-small-radius-left-hand7",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 185,
+      "radiusMm": 610,
+      "radiiMm": [
+        610
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-small-radius-left-hand7",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "185mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "610mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E193",
+      "name": "Crossing, Short",
+      "handle": "crossing-short8",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 127,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 24,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-short8",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "127mm",
+        "Frog Angle": "24 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E194",
+      "name": "Crossing, Long",
+      "handle": "crossing-long9",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 249,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-long9",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "249mm",
+        "Frog Angle": "12 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E195",
+      "name": "Turnout, Medium Radius, Right Hand",
+      "handle": "turnout-medium-radius-right-hand8",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 219,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-right-hand8",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "219mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E196",
+      "name": "Turnout, Medium Radius, Left Hand",
+      "handle": "turnout-medium-radius-left-hand9",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 219,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-left-hand9",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "219mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E197",
+      "name": "Y Turnout, Small Radius",
+      "handle": "y-turnout-small-radius3",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 148,
+      "radiusMm": 610,
+      "radiiMm": [
+        610
+      ],
+      "angleDegrees": 24,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/y-turnout-small-radius3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "148mm",
+        "Frog Angle": "24 Degrees",
+        "Radius": "610mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E198",
+      "name": "Y Turnout, Large Radius",
+      "handle": "y-turnout-large-radius3",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 220,
+      "radiusMm": 1829,
+      "radiiMm": [
+        1829
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/y-turnout-large-radius3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "220mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1829mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E199",
+      "name": "3 Way Asymmetric Turnout, Medium Radius",
+      "handle": "3-way-asymmetric-turnout-medium-radius",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 273,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/3-way-asymmetric-turnout-medium-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "273mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E1095",
+      "name": "Turnout, Medium Radius, Concrete, Right Hand",
+      "handle": "turnout-medium-radius-concrete-right-hand",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 219,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-concrete-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "219mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E1096",
+      "name": "Turnout, Medium Radius, Concrete, Left Hand",
+      "handle": "turnout-medium-radius-concrete-left-hand",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 219,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-concrete-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "219mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E8348",
+      "name": "Wye Turnout, #4 Radius",
+      "handle": "wye-turnout-4th-radius",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 183,
+      "radiusMm": 978,
+      "radiiMm": [
+        978
+      ],
+      "angleDegrees": 14.3,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/wye-turnout-4th-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "183mm",
+        "Frog Angle": "14.3 Degrees",
+        "Radius": "978mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E8351",
+      "name": "Turnout, #5 Radius, Right Hand",
+      "handle": "turnout-5th-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 211,
+      "radiusMm": 660,
+      "radiiMm": [
+        660
+      ],
+      "angleDegrees": 11.4,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-5th-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "211mm",
+        "Frog Angle": "11.4 Degrees",
+        "Radius": "660mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E8352",
+      "name": "Turnout, #5 Radius, Left Hand",
+      "handle": "turnout-5th-radius-left-hand",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 211,
+      "radiusMm": 660,
+      "radiiMm": [
+        660
+      ],
+      "angleDegrees": 11.4,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-5th-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "211mm",
+        "Frog Angle": "11.4 Degrees",
+        "Radius": "660mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E8376",
+      "name": "Curved Turnout, #7 Radius, Right Hand",
+      "handle": "curved-turnout-7th-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 223.5,
+      "radiusMm": 1092,
+      "radiiMm": [
+        1092
+      ],
+      "angleDegrees": 9.5,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-7th-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "223.5mm",
+        "Frog Angle": "9.5 Degrees",
+        "Radius": "1092mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E8377",
+      "name": "Curved Turnout, #7 Radius, Left Hand",
+      "handle": "curved-turnout-7th-radius-left-hand",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 223.5,
+      "radiusMm": 1092,
+      "radiiMm": [
+        1092
+      ],
+      "angleDegrees": 9.5,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-7th-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "223.5mm",
+        "Frog Angle": "9.5 Degrees",
+        "Radius": "1092mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E8381",
+      "name": "Turnout, #8 Radius, Right Hand",
+      "handle": "turnout-8th-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 322,
+      "radiusMm": 1702,
+      "radiiMm": [
+        1702
+      ],
+      "angleDegrees": 7.15,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-8th-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "322mm",
+        "Frog Angle": "7.15 Degrees",
+        "Radius": "1702mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-E8382",
+      "name": "Turnout, #8 Radius, Left Hand",
+      "handle": "turnout-8th-radius-left-hand",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 322,
+      "radiusMm": 1702,
+      "radiiMm": [
+        1702
+      ],
+      "angleDegrees": 7.15,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-8th-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "322mm",
+        "Frog Angle": "7.15 Degrees",
+        "Radius": "1702mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U76",
+      "name": "Curved Turnout, Small Radius, Right Hand",
+      "handle": "curved-turnout-small-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 168,
+      "radiusMm": 438,
+      "radiiMm": [
+        438
+      ],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-small-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "168mm",
+        "Radius": "438mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U77",
+      "name": "Curved Turnout, Small Radius, Left Hand",
+      "handle": "curved-turnout-small-radius-left-hand",
+      "productType": "Streamline",
+      "railCode": 100,
+      "lengthMm": 168,
+      "radiusMm": 438,
+      "radiiMm": [
+        438
+      ],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-small-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "168mm",
+        "Radius": "438mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U97",
+      "name": "OO/HO Small Radius Y Turnout, Unifrog",
+      "handle": "oo-ho-small-radius-y-turnout-unifrog",
+      "productType": "Streamline",
+      "railCode": null,
+      "lengthMm": null,
+      "radiusMm": 610,
+      "radiiMm": [
+        610
+      ],
+      "angleDegrees": 24,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/oo-ho-small-radius-y-turnout-unifrog",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Exit Angle": "24 Degrees",
+        "Radius": "610mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U1180",
+      "name": "Bullhead OO Gauge Slip - Single",
+      "handle": "single-slip",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524
+      ],
+      "angleDegrees": 12,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/single-slip",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1524mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U1188",
+      "name": "Bullhead OO Gauge RH Turnout - Large Radius",
+      "handle": "turnout-large-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524
+      ],
+      "angleDegrees": 12,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1524mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U1189",
+      "name": "Bullhead OO Gauge LH Turnout - Large Radius",
+      "handle": "turnout-large-radius-left-hand",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524
+      ],
+      "angleDegrees": 12,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1524mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U1190",
+      "name": "Bullhead OO Gauge Slip - Double",
+      "handle": "double-slip",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524
+      ],
+      "angleDegrees": 12,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/double-slip",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1524mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U1194",
+      "name": "Bullhead OO Gauge Crossing",
+      "handle": "crossing",
+      "productType": "Streamline",
+      "railCode": 75,
+      "lengthMm": 258,
+      "radiusMm": 1524,
+      "radiiMm": [
+        1524
+      ],
+      "angleDegrees": 12,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "258mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "1524mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U1195",
+      "name": "OO Bullhead Medium Radius Turnout - Right Hand",
+      "handle": "oo-bullhead-medium-radius-turnout-right-hand",
+      "productType": "Streamline",
+      "railCode": null,
+      "lengthMm": 219,
+      "radiusMm": 610,
+      "radiiMm": [
+        610
+      ],
+      "angleDegrees": 12,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/oo-bullhead-medium-radius-turnout-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "219mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "610mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U1196",
+      "name": "OO Bullhead Medium Radius Turnout - Left Hand",
+      "handle": "oo-bullhead-medium-radius-turnout-left-hand",
+      "productType": "Streamline",
+      "railCode": null,
+      "lengthMm": 219,
+      "radiusMm": 610,
+      "radiiMm": [
+        610
+      ],
+      "angleDegrees": 12,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/oo-bullhead-medium-radius-turnout-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "219mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "610mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U7061",
+      "name": "Code 70, No.6 Turnout Right Hand, Unifrog",
+      "handle": "code-70-no-6-turnout-right-hand-uniofrog",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 223.5,
+      "radiusMm": 1092,
+      "radiiMm": [
+        1092
+      ],
+      "angleDegrees": 9.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/code-70-no-6-turnout-right-hand-uniofrog",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "223.5mm",
+        "Frog Angle": "9.5 Degrees",
+        "Radius": "1092mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U7062",
+      "name": "Code 70, No.6 Turnout Left Hand, Unifrog",
+      "handle": "code-70-no-6-turnout-left-hand-uniofrog",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 223.5,
+      "radiusMm": 1092,
+      "radiiMm": [
+        1092
+      ],
+      "angleDegrees": 9.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/code-70-no-6-turnout-left-hand-uniofrog",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "223.5mm",
+        "Frog Angle": "9.5 Degrees",
+        "Radius": "1092mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U7081",
+      "name": "Code 70, No.8, Right Hand Turnout, Unifrog",
+      "handle": "code-70-no-8-right-hand-turnout-unifrog",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 322,
+      "radiusMm": 1702,
+      "radiiMm": [
+        1702
+      ],
+      "angleDegrees": 7.15,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/code-70-no-8-right-hand-turnout-unifrog",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "322mm",
+        "Frog Angle": "7.15 Degrees",
+        "Radius": "1702mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U7082",
+      "name": "Code 70, No.8, Left Hand Turnout, Unifrog",
+      "handle": "code-70-no-8-left-hand-turnout-unifrog",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 322,
+      "radiusMm": 1702,
+      "radiiMm": [
+        1702
+      ],
+      "angleDegrees": 7.15,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/code-70-no-8-left-hand-turnout-unifrog",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "322mm",
+        "Frog Angle": "7.15 Degrees",
+        "Radius": "1702mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U8361",
+      "name": "Unifrog Turnout, 6th Radius, Right Hand",
+      "handle": "unifrog-turnout-6th-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 223.5,
+      "radiusMm": 1092,
+      "radiiMm": [
+        1092
+      ],
+      "angleDegrees": 9.5,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/unifrog-turnout-6th-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "223.5mm",
+        "Frog Angle": "9.5 Degrees",
+        "Radius": "1092mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U8362",
+      "name": "Turnout, 6th Radius, Left Hand, Unifrog",
+      "handle": "unifrog-turnout-6th-radius-left-hand",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 223.5,
+      "radiusMm": 1092,
+      "radiiMm": [
+        1092
+      ],
+      "angleDegrees": 9.5,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/unifrog-turnout-6th-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "223.5mm",
+        "Frog Angle": "9.5 Degrees",
+        "Radius": "1092mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U8363",
+      "name": "Crossing, #6 Radius, Double Slip",
+      "handle": "crossing-6th-radius-double-slip",
+      "productType": "Streamline",
+      "railCode": 83,
+      "lengthMm": 305.7,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 9.5,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-6th-radius-double-slip",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "305.7mm",
+        "Frog Angle": "9.5 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "SL-U8364",
+      "name": "Code 83, Diamond Crossing, Unifrog",
+      "handle": "unifrog-diamond-crossing",
+      "productType": "Streamline",
+      "railCode": null,
+      "lengthMm": 305.7,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 9.5,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/unifrog-diamond-crossing",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "305.7mm",
+        "Frog Angle": "9.5 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-200",
+      "name": "Standard Straight",
+      "handle": "standard-straight2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 168,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-straight2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "168mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-201",
+      "name": "Double Straight",
+      "handle": "double-straight2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 335,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-straight2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "335mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-202",
+      "name": "Short Straight",
+      "handle": "short-straight-2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 79,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/short-straight-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "79mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-203",
+      "name": "Special Short Straight",
+      "handle": "special-short-straight",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 22,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/special-short-straight",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {}
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-204",
+      "name": "Long Straight",
+      "handle": "long-straight",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 670,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/long-straight",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "670mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-205",
+      "name": "Isolating Standard Straight",
+      "handle": "isolating-standard-straight",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 168,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/isolating-standard-straight",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "168mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-220",
+      "name": "Standard Curve, 1st Radius",
+      "handle": "standard-curve-1st-radius",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 371,
+      "radiiMm": [
+        371
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-1st-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "371mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-221",
+      "name": "Double Curve, 1st Radius",
+      "handle": "double-curve-1st-radius-2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 371,
+      "radiiMm": [
+        371
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-1st-radius-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "371mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-222",
+      "name": "Half Curve, 1st Radius",
+      "handle": "half-curve-1st-radius",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 371,
+      "radiiMm": [
+        371
+      ],
+      "angleDegrees": 11.25,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/half-curve-1st-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "11.25 Degrees",
+        "Pieces Per Circle": "32",
+        "Radius": "371mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-225",
+      "name": "Standard Curve, 2nd Radius",
+      "handle": "standard-curve-2nd-radius2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 438,
+      "radiiMm": [
+        438
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-2nd-radius2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "438mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-226",
+      "name": "Double Curve, 2nd Radius",
+      "handle": "double-curve-2nd-radius-2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 438,
+      "radiiMm": [
+        438
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-2nd-radius-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "438mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-227",
+      "name": "Half Curve, 2nd Radius",
+      "handle": "half-curve-2nd-radius",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 438,
+      "radiiMm": [
+        438
+      ],
+      "angleDegrees": 11.25,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/half-curve-2nd-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "11.25 Degrees",
+        "Pieces Per Circle": "32",
+        "Radius": "438mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-230",
+      "name": "Standard Curve, 3rd Radius",
+      "handle": "standard-curve-3rd-radius-2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 505,
+      "radiiMm": [
+        505
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-3rd-radius-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "505mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-231",
+      "name": "Double Curve, 3rd Radius",
+      "handle": "double-curve-3rd-radius-2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 505,
+      "radiiMm": [
+        505
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-3rd-radius-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "505mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-235",
+      "name": "Standard Curve, 4th Radius",
+      "handle": "standard-curve-4th-radius-2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 571.5,
+      "radiiMm": [
+        571.5
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-4th-radius-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "571.5mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-238",
+      "name": "Special Curve",
+      "handle": "special-curve",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 571.5,
+      "radiiMm": [
+        571.5
+      ],
+      "angleDegrees": 11.25,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/special-curve",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "11.25 Degrees",
+        "Pieces Per Circle": "32",
+        "Radius": "571.5mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-240",
+      "name": "Turnout, 2nd Radius, Right Hand",
+      "handle": "turnout-2nd-radius-right-hand",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 168,
+      "radiusMm": 438,
+      "radiiMm": [
+        438
+      ],
+      "angleDegrees": 22.5,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-2nd-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "168mm",
+        "Arc Angle": "22.5 Degrees",
+        "Radius": "438mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-241",
+      "name": "Turnout, 2nd Radius, Left Hand",
+      "handle": "turnout-2nd-radius-left-hand",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 168,
+      "radiusMm": 438,
+      "radiiMm": [
+        438
+      ],
+      "angleDegrees": 22.5,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-2nd-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "168mm",
+        "Arc Angle": "22.5 Degrees",
+        "Radius": "438mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-244",
+      "name": "Curved Turnout, Right Hand",
+      "handle": "curved-turnout-right-hand",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 11.25,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "11.25 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-245",
+      "name": "Curved Turnout, Left Hand",
+      "handle": "curved-turnout-left-hand",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 11.25,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "11.25 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-247",
+      "name": "Y Turnout, Medium Radius",
+      "handle": "y-turnout-medium-radius3",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 170,
+      "radiusMm": 859.6,
+      "radiiMm": [
+        859.6
+      ],
+      "angleDegrees": 22.5,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/y-turnout-medium-radius3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "170mm",
+        "Arc Angle": "22.5 Degrees",
+        "Radius": "859.6mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-250",
+      "name": "Medium Crossing",
+      "handle": "medium-crossing",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 168,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 22.5,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/medium-crossing",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "168mm",
+        "Arc Angle": "22.5 Degrees"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-261",
+      "name": "Level Crossing, 2nd Radius",
+      "handle": "level-crossing-2nd-radius",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 438,
+      "radiiMm": [
+        438
+      ],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/level-crossing-2nd-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Radius": "438mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-263",
+      "name": "Curved Level Crossing, 3rd Radius",
+      "handle": "curved-level-crossing-3rd-radius",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 505,
+      "radiiMm": [
+        505
+      ],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/curved-level-crossing-3rd-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Radius": "505mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-264",
+      "name": "Straight Level Crossing, Add On Unit",
+      "handle": "straight-level-crossing-add-on-unit",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 168,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/straight-level-crossing-add-on-unit",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "168mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-266",
+      "name": "Curved Level Crossing, 1st Radius",
+      "handle": "curved-level-crossing-1st-radius",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 371,
+      "radiiMm": [
+        371
+      ],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/curved-level-crossing-1st-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Radius": "371mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-267",
+      "name": "Curved Level Crossing, 4th Radius",
+      "handle": "curved-level-crossing-4th-radius",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 571.5,
+      "radiiMm": [
+        571.5
+      ],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/curved-level-crossing-4th-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Radius": "571.5mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-268",
+      "name": "Straight Level Crossing",
+      "handle": "straight-level-crossing-2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": 168,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/straight-level-crossing-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "168mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-269",
+      "name": "Curved Level Crossing, 2nd Radius, Add On Unit",
+      "handle": "curved-level-crossing-2nd-radius-add-on-unit",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 438,
+      "radiiMm": [
+        438
+      ],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/curved-level-crossing-2nd-radius-add-on-unit",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Radius": "438mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2000",
+      "name": "Standard Straight (Pack of 8)",
+      "handle": "standard-straight-pack-of-8",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-straight-pack-of-8",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {}
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2001",
+      "name": "Double Straight (Pack of 8)",
+      "handle": "double-straight-pack-of-8",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-straight-pack-of-8",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {}
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2002",
+      "name": "Short Straight (Pack of 4)",
+      "handle": "short-straight-pack-of-4",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/short-straight-pack-of-4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {}
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2003",
+      "name": "Special Short Straight (Pack of 4)",
+      "handle": "special-short-straight-pack-of-4",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/special-short-straight-pack-of-4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {}
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2005",
+      "name": "Isolating Standard Straight (Pack of 2)",
+      "handle": "isolating-standard-straight-pack-of-2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/isolating-standard-straight-pack-of-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {}
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2020",
+      "name": "Standard Curve, 1st Radius (Pack of 8)",
+      "handle": "standard-curve-1st-radius-pack-of-8",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 371,
+      "radiiMm": [
+        371
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-1st-radius-pack-of-8",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "371mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2021",
+      "name": "Double Curve, 1st Radius (Pack of 4)",
+      "handle": "double-curve-1st-radius-pack-of-4",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 371,
+      "radiiMm": [
+        371
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-1st-radius-pack-of-4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "371mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2025",
+      "name": "Standard Curve, 2nd Radius (Pack of 8)",
+      "handle": "standard-curve-2nd-radius-pack-of-8",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 438,
+      "radiiMm": [
+        438
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-2nd-radius-pack-of-8",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "438mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2026",
+      "name": "Double Curve, 2nd Radius (Pack of 4)",
+      "handle": "double-curve-2nd-radius-pack-of-4",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 438,
+      "radiiMm": [
+        438
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-2nd-radius-pack-of-4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "438mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2030",
+      "name": "Standard Curve, 3rd Radius (Pack of 8)",
+      "handle": "standard-curve-3rd-radius-pack-of-8",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 505,
+      "radiiMm": [
+        505
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-3rd-radius-pack-of-8",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "505mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2031",
+      "name": "Double Curve, 3rd Radius (Pack of 4)",
+      "handle": "double-curve-3rd-radius-pack-of-4",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 505,
+      "radiiMm": [
+        505
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-3rd-radius-pack-of-4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "505mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2035",
+      "name": "Standard Curve, 4th Radius (Pack of 8)",
+      "handle": "standard-curve-4th-radius-pack-of-8",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 571.5,
+      "radiiMm": [
+        571.5
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-4th-radius-pack-of-8",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "571.5mm"
+      }
+    },
+    {
+      "gauge": "ho-oo",
+      "gaugeMm": 16.5,
+      "productCode": "ST-2038",
+      "name": "Special Curve (Pack of 2)",
+      "handle": "special-curve-pack-of-2",
+      "productType": "Setrack",
+      "railCode": 100,
+      "lengthMm": null,
+      "radiusMm": 429.8,
+      "radiiMm": [
+        429.8
+      ],
+      "angleDegrees": 11.25,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/special-curve-pack-of-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "11.25 Degrees",
+        "Pieces Per Circle": "32",
+        "Radius": "429.8mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-300F",
+      "name": "Flexible Track with Wooden Sleeper",
+      "handle": "flexible-track-with-wooden-sleeper-4",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-with-wooden-sleeper-4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-302",
+      "name": "Flexible Track with Concrete Sleeper",
+      "handle": "flexible-track-with-concrete-sleeper-4",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-with-concrete-sleeper-4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-302F",
+      "name": "Flexible Track with Concrete Sleeper",
+      "handle": "flexible-track-with-concrete-sleeper-5",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-with-concrete-sleeper-5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-303",
+      "name": "Streamline Flexible Track with Concrete Sleeper",
+      "handle": "streamline-flexible-code-80-track-with-concrete-sleeper",
+      "productType": "Streamline",
+      "railCode": null,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/streamline-flexible-code-80-track-with-concrete-sleeper",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-380F",
+      "name": "Crossing, Single Slip",
+      "handle": "crossing-single-slip3",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 154,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 10,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-single-slip3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "154mm",
+        "Frog Angle": "10 Degrees"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-384",
+      "name": "Catch Turnout, Right Hand",
+      "handle": "catch-turnout-right-hand3",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 86,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/catch-turnout-right-hand3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "86mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-385",
+      "name": "Catch Turnout, Left Hand",
+      "handle": "catch-turnout-left-hand3",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 86,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/catch-turnout-left-hand3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "86mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-386",
+      "name": "Curved Turnout, Large Radius, Right Hand",
+      "handle": "curved-turnout-large-radius-right-hand2",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 160,
+      "radiusMm": 457,
+      "radiiMm": [
+        457,
+        914
+      ],
+      "angleDegrees": 8,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-right-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "160mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "457 x 914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-387",
+      "name": "Curved Turnout, Large Radius, Left Hand",
+      "handle": "curved-turnout-large-radius-left-hand2",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 160,
+      "radiusMm": 457,
+      "radiiMm": [
+        457,
+        914
+      ],
+      "angleDegrees": 8,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-left-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "160mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "457 x 914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-388",
+      "name": "Turnout, Large Radius, Right Hand",
+      "handle": "turnout-large-radius-right-hand2",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 160,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 8,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-right-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "160mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-389",
+      "name": "Turnout, Large Radius, Left Hand",
+      "handle": "turnout-large-radius-left-hand2",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 160,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 8,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-left-hand2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "160mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-390F",
+      "name": "Crossing, Double Slip",
+      "handle": "crossing-double-slip3",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 154,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 10,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-double-slip3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "154mm",
+        "Frog Angle": "10 Degrees"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-393",
+      "name": "Crossing, Short",
+      "handle": "crossing-short3",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 91,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 25,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-short3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "91mm",
+        "Frog Angle": "25 Degrees"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-394",
+      "name": "Crossing, Long",
+      "handle": "crossing-long3",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 187,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 8,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-long3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "187mm",
+        "Frog Angle": "8 Degrees"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-394F",
+      "name": "Crossing, Long",
+      "handle": "crossing-long4",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 154,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 10,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-long4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "154mm",
+        "Frog Angle": "10 Degrees"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-395",
+      "name": "Turnout, Medium Radius, Right Hand",
+      "handle": "turnout-medium-radius-right-hand3",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 123.7,
+      "radiusMm": 457,
+      "radiiMm": [
+        457
+      ],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-right-hand3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "123.7mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "457mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-396",
+      "name": "Turnout, Medium Radius, Left Hand",
+      "handle": "turnout-medium-radius-left-hand4",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 123.7,
+      "radiusMm": 457,
+      "radiiMm": [
+        457
+      ],
+      "angleDegrees": 12,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-left-hand4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "123.7mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "457mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-397",
+      "name": "Y Turnout, Medium Radius, Right Hand",
+      "handle": "y-turnout-medium-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 127,
+      "radiusMm": 762,
+      "radiiMm": [
+        762
+      ],
+      "angleDegrees": 8,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/y-turnout-medium-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "127mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "762mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E380F",
+      "name": "Crossing, Single Slip",
+      "handle": "crossing-single-slip5",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 154,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-single-slip5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "154mm",
+        "Frog Angle": "10 Degrees"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E383F",
+      "name": "Scissors Crossing, Medium Radius",
+      "handle": "scissors-crossing-medium-radius",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 271,
+      "radiusMm": 511,
+      "radiiMm": [
+        511
+      ],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/scissors-crossing-medium-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "271mm",
+        "Frog Angle": "10 Degrees",
+        "Radius": "511mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E386",
+      "name": "Curved Turnout, Large Radius, Right Hand",
+      "handle": "curved-turnout-large-radius-right-hand8",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 160,
+      "radiusMm": 457,
+      "radiiMm": [
+        457,
+        914
+      ],
+      "angleDegrees": 8,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-right-hand8",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "160mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "457 x 914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E386F",
+      "name": "Curved Turnout, Large Radius, Right Hand",
+      "handle": "curved-turnout-large-radius-right-hand9",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 160,
+      "radiusMm": 457,
+      "radiiMm": [
+        457,
+        914
+      ],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-right-hand9",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "160mm",
+        "Frog Angle": "10 Degrees",
+        "Radius": "457 x 914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E387",
+      "name": "Curved Turnout, Large Radius, Left Hand",
+      "handle": "curved-turnout-large-radius-left-hand8",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 160,
+      "radiusMm": 457,
+      "radiiMm": [
+        457,
+        914
+      ],
+      "angleDegrees": 8,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-left-hand8",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "160mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "457 x 914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E387F",
+      "name": "Curved Turnout, Large Radius, Left Hand",
+      "handle": "curved-turnout-large-radius-left-hand9",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 160,
+      "radiusMm": 457,
+      "radiiMm": [
+        457,
+        914
+      ],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-large-radius-left-hand9",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "160mm",
+        "Frog Angle": "10 Degrees",
+        "Radius": "457 x 914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E388",
+      "name": "Turnout, Large Radius, Right Hand",
+      "handle": "turnout-large-radius-right-hand10",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 160,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 8,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-right-hand10",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "160mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E388F",
+      "name": "Turnout, Large Radius, Right Hand",
+      "handle": "turnout-large-radius-right-hand11",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 164,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-right-hand11",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "164mm",
+        "Frog Angle": "10 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E389",
+      "name": "Turnout, Large Radius, Left Hand",
+      "handle": "turnout-large-radius-left-hand10",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 160,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 8,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-left-hand10",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "160mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E389F",
+      "name": "Turnout, Large Radius, Left Hand",
+      "handle": "turnout-large-radius-left-hand11",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 164,
+      "radiusMm": 914,
+      "radiiMm": [
+        914
+      ],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-large-radius-left-hand11",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "164mm",
+        "Frog Angle": "10 Degrees",
+        "Radius": "914mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E390F",
+      "name": "Crossing, Double Slip",
+      "handle": "crossing-double-slip",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 154,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-double-slip",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "154mm",
+        "Frog Angle": "10 Degrees"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E391F",
+      "name": "Turnout, Small Radius, Right Hand",
+      "handle": "turnout-small-radius-right-hand11",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 123,
+      "radiusMm": 305,
+      "radiiMm": [
+        305
+      ],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-small-radius-right-hand11",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "123mm",
+        "Frog Angle": "10 Degrees",
+        "Radius": "305mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E392F",
+      "name": "Turnout, Small Radius, Left Hand",
+      "handle": "turnout-small-radius-left-hand12",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 123,
+      "radiusMm": 305,
+      "radiiMm": [
+        305
+      ],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-small-radius-left-hand12",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "123mm",
+        "Frog Angle": "10 Degrees",
+        "Radius": "305mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E393F",
+      "name": "Crossing, Short",
+      "handle": "crossing-short",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 104,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 20,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-short",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "104mm",
+        "Frog Angle": "20 Degrees"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E394F",
+      "name": "Crossing, Long",
+      "handle": "crossing-long",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 154,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-long",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "154mm",
+        "Frog Angle": "10 Degrees"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E395",
+      "name": "Turnout, Medium Radius, Right Hand",
+      "handle": "turnout-medium-radius-right-hand13",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 123.7,
+      "radiusMm": 457,
+      "radiiMm": [
+        457
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-right-hand13",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "123.7mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "457mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E396",
+      "name": "Turnout, Medium Radius, Left Hand",
+      "handle": "turnout-medium-radius-left-hand10",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 123.7,
+      "radiusMm": 457,
+      "radiiMm": [
+        457
+      ],
+      "angleDegrees": 12,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-medium-radius-left-hand10",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "123.7mm",
+        "Frog Angle": "12 Degrees",
+        "Radius": "457mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E397",
+      "name": "Y Turnout, Medium Radius",
+      "handle": "y-turnout-medium-radius5",
+      "productType": "Streamline",
+      "railCode": 80,
+      "lengthMm": 127,
+      "radiusMm": 762,
+      "radiiMm": [
+        762
+      ],
+      "angleDegrees": 8,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/y-turnout-medium-radius5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "127mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "762mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E397F",
+      "name": "Y Turnout, Medium Radius",
+      "handle": "y-turnout-medium-radius2",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 127,
+      "radiusMm": 762,
+      "radiiMm": [
+        762
+      ],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/y-turnout-medium-radius2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "127mm",
+        "Frog Angle": "10 Degrees",
+        "Radius": "762mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-E399F",
+      "name": "3 Way Turnout, Medium Radius",
+      "handle": "3-way-turnout-medium-radius3",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 153,
+      "radiusMm": 457,
+      "radiiMm": [
+        457
+      ],
+      "angleDegrees": 10,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/3-way-turnout-medium-radius3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "153mm",
+        "Frog Angle": "10 Degrees",
+        "Radius": "457mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-U395F",
+      "name": "Code 55, Medium Radius, Right Hand, Unifrog",
+      "handle": "unifrog-turnout-medium-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 137,
+      "radiusMm": 457,
+      "radiiMm": [
+        457
+      ],
+      "angleDegrees": 10,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/unifrog-turnout-medium-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "137mm",
+        "Frog Angle": "10 Degrees",
+        "Radius": "457mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "SL-U396F",
+      "name": "Unifrog Turnout, Medium Radius, Left Hand",
+      "handle": "unifrog-turnout-medium-radius-left-hand",
+      "productType": "Streamline",
+      "railCode": 55,
+      "lengthMm": 137,
+      "radiusMm": 457,
+      "radiiMm": [
+        457
+      ],
+      "angleDegrees": 10,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/unifrog-turnout-medium-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "137mm",
+        "Frog Angle": "10 Degrees",
+        "Radius": "457mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-1",
+      "name": "Standard Straight",
+      "handle": "standard-straight",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 87,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-straight",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "87mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-2",
+      "name": "Short Straight",
+      "handle": "short-straight",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 58,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/short-straight",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "58mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3",
+      "name": "Standard Curve, 1st Radius",
+      "handle": "standard-curve-1st-radius3",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 228,
+      "radiiMm": [
+        228
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-1st-radius3",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "228mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-4",
+      "name": "Half Curve, 1st Radius",
+      "handle": "half-curve-1st-radius-2",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 228,
+      "radiiMm": [
+        228
+      ],
+      "angleDegrees": 11.25,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/half-curve-1st-radius-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "11.25 Degrees",
+        "Pieces Per Circle": "32",
+        "Radius": "228mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-5",
+      "name": "Turnout, 1st Radius, Right Hand",
+      "handle": "turnout-1st-radius-right-hand-2",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 87,
+      "radiusMm": 228,
+      "radiiMm": [
+        228
+      ],
+      "angleDegrees": 22.5,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-1st-radius-right-hand-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "87mm",
+        "Arc Angle": "22.5 Degrees",
+        "Radius": "228mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-6",
+      "name": "Turnout, 1st Radius, Left Hand",
+      "handle": "turnout-1st-radius-left-hand-2",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 87,
+      "radiusMm": 228,
+      "radiiMm": [
+        228
+      ],
+      "angleDegrees": 22.5,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/turnout-1st-radius-left-hand-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "87mm",
+        "Arc Angle": "22.5 Degrees",
+        "Radius": "228mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-10",
+      "name": "Standard Straight, Wired",
+      "handle": "standard-straight-wired",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 87,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-straight-wired",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "87mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-11",
+      "name": "Double Straight",
+      "handle": "double-straight",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 174,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-straight",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "174mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-12",
+      "name": "Double Curve, 1st Radius",
+      "handle": "double-curve-1st-radius",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 228,
+      "radiiMm": [
+        228
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-1st-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "228mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-14",
+      "name": "Standard Curve, 2nd Radius",
+      "handle": "standard-curve-2nd-radius",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 263.5,
+      "radiiMm": [
+        263.5
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-2nd-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "263.5mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-15",
+      "name": "Double Curve, 2nd Radius",
+      "handle": "double-curve-2nd-radius",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 263.5,
+      "radiiMm": [
+        263.5
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-2nd-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "263.5mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-16",
+      "name": "Standard Curve, 3rd Radius",
+      "handle": "standard-curve-3rd-radius",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 298.5,
+      "radiiMm": [
+        298.5
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-3rd-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "298.5mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-17",
+      "name": "Double Curve, 3rd Radius",
+      "handle": "double-curve-3rd-radius",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 298.5,
+      "radiiMm": [
+        298.5
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-3rd-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "298.5mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-18",
+      "name": "Standard Curve, 4th Radius",
+      "handle": "standard-curve-4th-radius",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 333.4,
+      "radiiMm": [
+        333.4
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-4th-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "333.4mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-19",
+      "name": "Double Curve, 4th Radius",
+      "handle": "double-curve-4th-radius",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 333.4,
+      "radiiMm": [
+        333.4
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-4th-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "333.4mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-20",
+      "name": "Straight Level Crossing",
+      "handle": "straight-level-crossing",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 87,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/straight-level-crossing",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "87mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-21",
+      "name": "Level Crossing Add On Unit",
+      "handle": "level-crossing-add-on-unit",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 87,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/level-crossing-add-on-unit",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "87mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-44",
+      "name": "Curved Turnout, Right Hand",
+      "handle": "curved-turnout-right-hand20",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 138.5,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-right-hand20",
+      "routeLengthsMm": [
+        138.5,
+        156
+      ],
+      "technicalSpecifications": {
+        "Length": "Inner: 138.5",
+        "Outer": "156mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-45",
+      "name": "Curved Turnout, Left Hand",
+      "handle": "curved-turnout-left-hand-2",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 138.5,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/curved-turnout-left-hand-2",
+      "routeLengthsMm": [
+        138.5,
+        156
+      ],
+      "technicalSpecifications": {
+        "Length": "Inner: 138.5",
+        "Outer": "156mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-50",
+      "name": "Crossing Short, Right Hand",
+      "handle": "crossing-short-right-hand",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 87,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 22.5,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-short-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "87mm",
+        "Frog Angle": "22.5 Degrees"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-51",
+      "name": "Crossing Short, Left Hand",
+      "handle": "crossing-short-left-hand",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 87,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 22.5,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/crossing-short-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "87mm",
+        "Frog Angle": "22.5 Degrees"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3001",
+      "name": "Standard Straight (Pack of 8)",
+      "handle": "standard-straight-pack-of-9",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 87,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-straight-pack-of-9",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "87mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3002",
+      "name": "Short Straight (Pack of 4)",
+      "handle": "short-straight-pack-of-5",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 58,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/short-straight-pack-of-5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "58mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3003",
+      "name": "Standard Curve, 1st Radius (Pack of 8)",
+      "handle": "standard-curve-1st-radius-pack-of-9",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 228,
+      "radiiMm": [
+        228
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-1st-radius-pack-of-9",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "228mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3004",
+      "name": "Half Curve, 1st Radius (Pack of 4)",
+      "handle": "half-curve-1st-radius-pack-of-4",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 228,
+      "radiiMm": [
+        228
+      ],
+      "angleDegrees": 11.25,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/half-curve-1st-radius-pack-of-4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "11.25 Degrees",
+        "Pieces Per Circle": "32",
+        "Radius": "228mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3011",
+      "name": "Double Straight (Pack of 8)",
+      "handle": "double-straight-pack-of-9",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": 174,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-straight-pack-of-9",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "174mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3012",
+      "name": "Double Curve, 1st Radius (Pack of 4)",
+      "handle": "double-curve-1st-radius-pack-of-5",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 228,
+      "radiiMm": [
+        228
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-1st-radius-pack-of-5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "228mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3014",
+      "name": "Standard Curve, 2nd Radius (Pack of 8)",
+      "handle": "standard-curve-2nd-radius-pack-of-9",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 263.5,
+      "radiiMm": [
+        263.5
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-2nd-radius-pack-of-9",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "263.5mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3015",
+      "name": "Double Curve, 2nd Radius (Pack of 4)",
+      "handle": "double-curve-2nd-radius-pack-of-5",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 263.5,
+      "radiiMm": [
+        263.5
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-2nd-radius-pack-of-5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "263.5mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3016",
+      "name": "Standard Curve, 3rd Radius (Pack of 8)",
+      "handle": "standard-curve-3rd-radius-pack-of-9",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 298.5,
+      "radiiMm": [
+        298.5
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-3rd-radius-pack-of-9",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "298.5mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3017",
+      "name": "Double Curve, 3rd Radius (Pack of 4)",
+      "handle": "double-curve-3rd-radius-pack-of-5",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 298.5,
+      "radiiMm": [
+        298.5
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-3rd-radius-pack-of-5",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "298.5mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3018",
+      "name": "Standard Curve, 4th Radius (Pack of 8)",
+      "handle": "standard-curve-4th-radius-pack-of-9",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 333.4,
+      "radiiMm": [
+        333.4
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-4th-radius-pack-of-9",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "333.4mm"
+      }
+    },
+    {
+      "gauge": "n",
+      "gaugeMm": 9,
+      "productCode": "ST-3019",
+      "name": "Double Curve, 4th Radius (Pack of 4)",
+      "handle": "double-curve-4th-radius-pack-of-4",
+      "productType": "Setrack",
+      "railCode": 80,
+      "lengthMm": null,
+      "radiusMm": 333.4,
+      "radiiMm": [
+        333.4
+      ],
+      "angleDegrees": 45,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/double-curve-4th-radius-pack-of-4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "45 Degrees",
+        "Pieces Per Circle": "8",
+        "Radius": "333.4mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-700BH",
+      "name": "Bullhead O Gauge Flexible Track - Wooden Sleeper",
+      "handle": "flexible-bullhead-track-wooden-sleeper-2",
+      "productType": "Streamline",
+      "railCode": 124,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-bullhead-track-wooden-sleeper-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-700FB",
+      "name": "Flat Bottom O Gauge Flexible Track - Wooden Sleeper",
+      "handle": "flexible-flat-bottom-track-wooden-sleeper",
+      "productType": "Streamline",
+      "railCode": 143,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": "Insulfrog",
+      "sourceUrl": "https://peco-uk.com/products/flexible-flat-bottom-track-wooden-sleeper",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-702FB",
+      "name": "Flexible Track with Concrete Sleeper",
+      "handle": "flexible-track-with-concrete-sleeper",
+      "productType": "Streamline",
+      "railCode": null,
+      "lengthMm": 914,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/flexible-track-with-concrete-sleeper",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "914mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-713",
+      "name": "Transition Tracks",
+      "handle": "transition-track-2",
+      "productType": "Streamline",
+      "railCode": null,
+      "lengthMm": 67,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/transition-track-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "67mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-784BH",
+      "name": "Bullhead O Gauge RH Catch Turnout",
+      "handle": "bullhead-catch-turnout-right-hand",
+      "productType": "Streamline",
+      "railCode": 124,
+      "lengthMm": 210,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/bullhead-catch-turnout-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "210mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-785BH",
+      "name": "Bullhead O Gauge LH Catch Turnout",
+      "handle": "bullhead-catch-turnout-left-hand",
+      "productType": "Streamline",
+      "railCode": 124,
+      "lengthMm": 210,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/bullhead-catch-turnout-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "210mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-E786BH",
+      "name": "Bullhead O Gauge RH Turnout - Large Radius",
+      "handle": "bullhead-curved-turnout-large-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 124,
+      "lengthMm": 516,
+      "radiusMm": 3098,
+      "radiiMm": [
+        3098,
+        1727
+      ],
+      "angleDegrees": 8,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/bullhead-curved-turnout-large-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "516mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "3098mm & 1727mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-E787BH",
+      "name": "Bullhead O Gauge LH Turnout - Large Radius",
+      "handle": "bullhead-curved-turnout-large-radius-left-hand",
+      "productType": "Streamline",
+      "railCode": 124,
+      "lengthMm": 516,
+      "radiusMm": 3098,
+      "radiiMm": [
+        3098,
+        1727
+      ],
+      "angleDegrees": 8,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/bullhead-curved-turnout-large-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "516mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "3098mm & 1727mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-E790BH",
+      "name": "Bullhead O Gauge Crossing - Double Slip",
+      "handle": "bullhead-crossing-double-slip",
+      "productType": "Streamline",
+      "railCode": 124,
+      "lengthMm": 573,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 8,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/bullhead-crossing-double-slip",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "573mm",
+        "Frog Angle": "8 Degrees"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-E791BH",
+      "name": "Bullhead O Gauge RH Turnout - Medium Radius",
+      "handle": "bullhead-turnout-medium-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 124,
+      "lengthMm": 416,
+      "radiusMm": 1828,
+      "radiiMm": [
+        1828
+      ],
+      "angleDegrees": 8,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/bullhead-turnout-medium-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "416mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "1828mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-E791FB",
+      "name": "Flat Bottom O Gauge RH Turnout - Medium Radius",
+      "handle": "flat-bottom-turnout-medium-radius-right-hand",
+      "productType": "Streamline",
+      "railCode": 143,
+      "lengthMm": 412,
+      "radiusMm": 1828,
+      "radiiMm": [
+        1828
+      ],
+      "angleDegrees": 8,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/flat-bottom-turnout-medium-radius-right-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "412mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "1828mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-E792BH",
+      "name": "Bullhead O Gauge LH Turnout - Medium Radius",
+      "handle": "bullhead-turnout-medium-radius-left-hand",
+      "productType": "Streamline",
+      "railCode": 124,
+      "lengthMm": 416,
+      "radiusMm": 1828,
+      "radiiMm": [
+        1828
+      ],
+      "angleDegrees": 8,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/bullhead-turnout-medium-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "416mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "1828mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-E792FB",
+      "name": "Flat Bottom O Gauge LH Turnout - Medium Radius",
+      "handle": "flat-bottom-turnout-medium-radius-left-hand",
+      "productType": "Streamline",
+      "railCode": 143,
+      "lengthMm": 412,
+      "radiusMm": 1828,
+      "radiiMm": [
+        1828
+      ],
+      "angleDegrees": 8,
+      "frogType": "Electrofrog",
+      "sourceUrl": "https://peco-uk.com/products/flat-bottom-turnout-medium-radius-left-hand",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "412mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "1828mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-E794BH",
+      "name": "Bullhead O Gauge Crossing - Long",
+      "handle": "bullhead-crossing-long",
+      "productType": "Streamline",
+      "railCode": 124,
+      "lengthMm": 573,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": 8,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/bullhead-crossing-long",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "573mm",
+        "Frog Angle": "8 Degrees"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "SL-E797BH",
+      "name": "Bullhead O Gauge Y Turnout - Medium Radius",
+      "handle": "bullhead-y-turnout-medium-radius",
+      "productType": "Streamline",
+      "railCode": 124,
+      "lengthMm": 382,
+      "radiusMm": 1828,
+      "radiiMm": [
+        1828
+      ],
+      "angleDegrees": 8,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/bullhead-y-turnout-medium-radius",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "382mm",
+        "Frog Angle": "8 Degrees",
+        "Radius": "1828mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "ST-700",
+      "name": "Standard Straight",
+      "handle": "standard-straight4",
+      "productType": "Setrack",
+      "railCode": 124,
+      "lengthMm": 394,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-straight4",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "394mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "ST-702",
+      "name": "Wired Straight",
+      "handle": "wired-straight",
+      "productType": "Setrack",
+      "railCode": 124,
+      "lengthMm": 394,
+      "radiusMm": null,
+      "radiiMm": [],
+      "angleDegrees": null,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/wired-straight",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "394mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "ST-725",
+      "name": "Standard Curve, 2nd Radius",
+      "handle": "standard-curve-2nd-radius-2",
+      "productType": "Setrack",
+      "railCode": 124,
+      "lengthMm": null,
+      "radiusMm": 1028,
+      "radiiMm": [
+        1028
+      ],
+      "angleDegrees": 22.5,
+      "frogType": null,
+      "sourceUrl": "https://peco-uk.com/products/standard-curve-2nd-radius-2",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Arc Angle": "22.5 Degrees",
+        "Pieces Per Circle": "16",
+        "Radius": "1028mm"
+      }
+    },
+    {
+      "gauge": "o",
+      "gaugeMm": 32,
+      "productCode": "ST-U751",
+      "name": "Unifrog Left Hand Turnout",
+      "handle": "unifrog-left-hand-turnout",
+      "productType": "Setrack",
+      "railCode": 124,
+      "lengthMm": 394,
+      "radiusMm": 1028,
+      "radiiMm": [
+        1028
+      ],
+      "angleDegrees": 22.5,
+      "frogType": "Unifrog",
+      "sourceUrl": "https://peco-uk.com/products/unifrog-left-hand-turnout",
+      "routeLengthsMm": [],
+      "technicalSpecifications": {
+        "Length": "394mm",
+        "Arc Angle": "22.5 Degrees",
+        "Radius": "1028mm"
+      }
+    }
+  ]
+}
