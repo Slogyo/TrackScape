@@ -82,6 +82,8 @@ export const getObjectTypeLabel = (
     room: 'Room',
     tabletop: 'Tabletop',
     'track-piece': 'Track Piece',
+    measurement: 'Measurement',
+    text: 'Text / Label',
   } as const
 
   return labels[type]

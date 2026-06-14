@@ -6,12 +6,13 @@ import type {
   LayoutScaleId,
   MeasurementSystem,
   Point,
-  ProjectDocumentV3,
+  ProjectDocumentV4,
   ProjectMetadata,
   Theme,
   ToolId,
 } from '../types'
 import { createProjectMetadata } from '../utils/projectDocument'
+import { detachMeasurementsForDeletedObjects } from '../utils/annotations'
 import { canvasObjectsReducer } from './canvasObjects'
 
 const initialLayers = () => defaultLayers.map((layer) => ({ ...layer }))
@@ -22,6 +23,14 @@ const cloneCanvasObject = (object: CanvasObject): CanvasObject =>
         ...object,
         position: { ...object.position },
       }
+    : object.type === 'text'
+    ? { ...object, position: { ...object.position } }
+    : object.type === 'measurement'
+    ? {
+        ...object,
+        start: { ...object.start, point: { ...object.start.point } },
+        end: { ...object.end, point: { ...object.end.point } },
+      }
     : object.type === 'line'
     ? {
         ...object,
@@ -30,7 +39,7 @@ const cloneCanvasObject = (object: CanvasObject): CanvasObject =>
       }
     : { ...object }
 
-export const getProjectHydration = (project: ProjectDocumentV3) => ({
+export const getProjectHydration = (project: ProjectDocumentV4) => ({
   metadata: { ...project.metadata },
   measurementSystem: project.settings.measurementSystem,
   layoutScaleId: project.settings.layoutScaleId,
@@ -42,7 +51,7 @@ export const getProjectHydration = (project: ProjectDocumentV3) => ({
 })
 
 export function useAppState(
-  initialProject: ProjectDocumentV3 | null = null,
+  initialProject: ProjectDocumentV4 | null = null,
   initialTheme: Theme = 'light',
 ) {
   const initialHydration = initialProject
@@ -168,7 +177,10 @@ export function useAppState(
       return
     }
 
-    dispatchObjects({ type: 'remove', id: objectId })
+    dispatchObjects({
+      type: 'replace',
+      objects: detachMeasurementsForDeletedObjects(objects, new Set([objectId])),
+    })
     setSelectedObjectIds((currentIds) =>
       currentIds.filter((id) => id !== objectId),
     )
@@ -196,7 +208,7 @@ export function useAppState(
 
     dispatchObjects({
       type: 'replace',
-      objects: objects.filter((object) => !removableIds.has(object.id)),
+      objects: detachMeasurementsForDeletedObjects(objects, removableIds),
     })
     setSelectedObjectIds((currentIds) =>
       currentIds.filter((id) => !removableIds.has(id)),
@@ -217,7 +229,7 @@ export function useAppState(
     }))
   }
 
-  const hydrateProject = (project: ProjectDocumentV3) => {
+  const hydrateProject = (project: ProjectDocumentV4) => {
     const hydration = getProjectHydration(project)
 
     setMetadata(hydration.metadata)
@@ -233,8 +245,8 @@ export function useAppState(
 
   const getProjectDocument = (
     updatedAt = metadata.updatedAt,
-  ): ProjectDocumentV3 => ({
-    schemaVersion: 3,
+  ): ProjectDocumentV4 => ({
+    schemaVersion: 4,
     metadata: {
       ...metadata,
       updatedAt,

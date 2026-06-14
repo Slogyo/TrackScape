@@ -111,6 +111,33 @@ export interface TrackPieceObject extends BaseCanvasObject {
   direction: TrackCurveDirection
 }
 
+export type MeasurementAnchor =
+  | {
+      kind: 'fixed'
+      point: Point
+    }
+  | {
+      kind: 'object'
+      objectId: string
+      anchorId: string
+      point: Point
+    }
+
+export interface MeasurementObject extends BaseCanvasObject {
+  type: 'measurement'
+  start: MeasurementAnchor
+  end: MeasurementAnchor
+  offset: number
+}
+
+export interface TextObject extends BaseCanvasObject {
+  type: 'text'
+  position: Point
+  text: string
+  fontSizeMm: number
+  rotation: number
+}
+
 export type RectangularCanvasObject =
   | RectangleObject
   | RoomObject
@@ -120,7 +147,12 @@ export type RectangularObjectType = RectangularCanvasObject['type']
 
 export type LegacyCanvasObject = LineObject | RectangularCanvasObject
 
-export type CanvasObject = LegacyCanvasObject | TrackPieceObject
+export type TrackCanvasObject = LegacyCanvasObject | TrackPieceObject
+
+export type CanvasObject =
+  | TrackCanvasObject
+  | MeasurementObject
+  | TextObject
 
 export interface TrackDefinition {
   id: TrackDefinitionId
@@ -196,11 +228,19 @@ export interface ProjectDocumentV2 {
   metadata: ProjectMetadata
   settings: LegacyProjectSettings
   layers: Layer[]
-  objects: CanvasObject[]
+  objects: TrackCanvasObject[]
 }
 
 export interface ProjectDocumentV3 {
   schemaVersion: 3
+  metadata: ProjectMetadata
+  settings: ProjectSettings
+  layers: Layer[]
+  objects: TrackCanvasObject[]
+}
+
+export interface ProjectDocumentV4 {
+  schemaVersion: 4
   metadata: ProjectMetadata
   settings: ProjectSettings
   layers: Layer[]
@@ -215,6 +255,13 @@ export interface ProjectFeedback {
 export type DraftMeasurement =
   | { type: 'line'; lengthMm: number }
   | { type: 'rectangle'; widthMm: number; heightMm: number }
+  | {
+      type: 'measurement'
+      lengthMm: number
+      startAttached: boolean
+      endAttached: boolean
+      offsetMm: number
+    }
 
 export interface MovementDelta {
   x: number
@@ -230,4 +277,6 @@ export type GeometryField =
   | 'y'
   | 'width'
   | 'height'
+  | 'fontSize'
+  | 'offset'
   | 'rotation'

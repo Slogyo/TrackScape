@@ -10,11 +10,15 @@ import type {
   CanvasObject,
   DraftMeasurement,
   Layer,
+  MeasurementAnchor,
+  MeasurementObject,
+  MeasurementSystem,
   MovementDelta,
   Point,
   TrackPieceObject,
   TrackPlacementSettings,
   TrackPreviewStatus,
+  TextObject,
   ToolId,
 } from '../types'
 import {
@@ -40,6 +44,7 @@ import {
   getCanvasRelativeWheelCameraOffset,
   getCenteredCamera,
   getCursorAnchoredCamera,
+  isHorizontalWheelGesture,
   stepZoom,
 } from '../utils/viewport'
 import { createShapeObject } from '../utils/shapeMode'
@@ -58,6 +63,17 @@ import {
 } from '../utils/trackGeometry'
 import { getTrackDefinition } from '../data/trackCatalog'
 import TrackGeometry from './TrackGeometry'
+import { MeasurementGeometry, TextGeometry } from './AnnotationGeometry'
+import {
+  createFixedAnchor,
+  createObjectAnchor,
+  DEFAULT_MEASUREMENT_OFFSET_MM,
+  DEFAULT_TEXT_SIZE_MM,
+  findNearestObjectAnchor,
+  getMeasurementLayout,
+  getTextCaretIndexAtPoint,
+  resolveMeasurementAnchor,
+} from '../utils/annotations'
 
 interface CanvasWorkspaceProps {
   activeLayer: Layer
@@ -68,6 +84,7 @@ interface CanvasWorkspaceProps {
   resetViewToken: number
   selectedObjectIds: string[]
   isSnappingEnabled: boolean
+  measurementSystem: MeasurementSystem
   trackSettings: TrackPlacementSettings
   zoom: number
   onAddObject: (object: CanvasObject, selectObject?: boolean) => void
@@ -114,6 +131,37 @@ interface PanDraft {
   clearSelectionOnClick: boolean
 }
 
+interface MeasurementDraft {
+  start: MeasurementAnchor
+  end: MeasurementAnchor
+  pointerId: number
+}
+
+interface MeasurementEditDraft {
+  handle: 'start' | 'end' | 'offset'
+  object: MeasurementObject
+  preview: MeasurementObject
+  pointerId: number
+}
+
+interface TextEditorState {
+  sessionId: string
+  objectId: string | null
+  layerId: string
+  position: Point
+  value: string
+  fontSizeMm: number
+  rotation: number
+  selectionStart: number
+  selectionEnd: number
+}
+
+interface TextEditorDrag {
+  pointerId: number
+  startClient: Point
+  startPosition: Point
+}
+
 const PAN_DRAG_THRESHOLD_PX = 3
 
 const isDrawingTool = (toolId: ToolId): toolId is DrawingToolId =>
@@ -133,6 +181,7 @@ function CanvasWorkspace({
   resetViewToken,
   selectedObjectIds,
   isSnappingEnabled,
+  measurementSystem,
   trackSettings,
   zoom,
   onAddObject,
@@ -158,6 +207,14 @@ function CanvasWorkspace({
     height: 1,
   })
   const [drawingDraft, setDrawingDraft] = useState<DrawingDraft | null>(null)
+  const [measurementDraft, setMeasurementDraft] =
+    useState<MeasurementDraft | null>(null)
+  const [measurementEditDraft, setMeasurementEditDraft] =
+    useState<MeasurementEditDraft | null>(null)
+  const [textEditor, setTextEditor] = useState<TextEditorState | null>(null)
+  const textEditorRef = useRef<HTMLTextAreaElement>(null)
+  const textEditorDragRef = useRef<TextEditorDrag | null>(null)
+  const committedTextSessionRef = useRef<string | null>(null)
   const [movementDraft, setMovementDraft] = useState<MovementDraft | null>(null)
   const [areaSelectionDraft, setAreaSelectionDraft] =
     useState<AreaSelectionDraft | null>(null)
@@ -184,6 +241,16 @@ function CanvasWorkspace({
   const visibleObjects = useMemo(
     () => objects.filter((object) => visibleLayerIds.has(object.layerId)),
     [objects, visibleLayerIds],
+  )
+  const resolveMeasurementInputAnchor = useCallback(
+    (point: Point, bypassSnapping: boolean): MeasurementAnchor => {
+      if (bypassSnapping) return createFixedAnchor(point)
+      const nearby = findNearestObjectAnchor(point, visibleObjects, zoom)
+      return nearby
+        ? createObjectAnchor(nearby)
+        : createFixedAnchor(resolvePointSnapping(point, false))
+    },
+    [visibleObjects, zoom],
   )
   const selectedObjects = objects.filter((object) =>
     selectedObjectIds.includes(object.id),
@@ -298,13 +365,86 @@ function CanvasWorkspace({
     cancelDrawing()
     cancelMovement()
     setAreaSelectionDraft(null)
+    setMeasurementDraft(null)
+    setMeasurementEditDraft(null)
   }, [cancelDrawing, cancelMovement])
+
+  useEffect(() => {
+    const editor = textEditorRef.current
+    editor?.focus()
+    if (editor) {
+      const caretIndex = editor.value.length
+      editor.setSelectionRange(caretIndex, caretIndex)
+    }
+  }, [textEditor?.sessionId])
+
+  const commitTextEditor = useCallback(
+    (editor = textEditor) => {
+      if (
+        !editor ||
+        committedTextSessionRef.current === editor.sessionId
+      ) {
+        return
+      }
+      committedTextSessionRef.current = editor.sessionId
+      const value = editor.value
+      if (value.trim()) {
+        const existing = editor.objectId
+          ? objects.find(
+              (object): object is TextObject =>
+                object.id === editor.objectId && object.type === 'text',
+            )
+          : null
+        const nextObject: TextObject = existing
+          ? { ...existing, text: value }
+          : {
+              id: crypto.randomUUID(),
+              type: 'text',
+              layerId: editor.layerId,
+              position: editor.position,
+              text: value,
+              fontSizeMm: editor.fontSizeMm,
+              rotation: editor.rotation,
+            }
+        if (existing) {
+          onUpdateObjects([nextObject])
+        } else {
+          onAddObject(nextObject, true)
+        }
+      }
+      setTextEditor((current) =>
+        current?.sessionId === editor.sessionId ? null : current,
+      )
+    },
+    [objects, onAddObject, onUpdateObjects, textEditor],
+  )
+
+  useEffect(() => {
+    if (!textEditor) return
+
+    const handleClickAway = (event: globalThis.PointerEvent) => {
+      if (
+        event.target instanceof Element &&
+        event.target.closest(
+          '[data-text-editor-target], [data-text-editor-drag], .canvas-text-input',
+        )
+      ) {
+        return
+      }
+      commitTextEditor(textEditor)
+    }
+
+    document.addEventListener('pointerdown', handleClickAway, true)
+    return () =>
+      document.removeEventListener('pointerdown', handleClickAway, true)
+  }, [commitTextEditor, textEditor])
 
   useEffect(() => {
     cancelInteractions()
     setTrackPointer(null)
     setTrackAttachmentIndex(null)
     setHoveredObjectId(null)
+    setTextEditor(null)
   }, [activeLayer.id, activeToolId, cancelInteractions])
 
   useEffect(() => {
@@ -565,6 +705,18 @@ function CanvasWorkspace({
       return
     }
 
+    if (isHorizontalWheelGesture(event.deltaX, event.deltaY)) {
+      setCamera({
+        ...cameraRef.current,
+        x: getCanvasRelativeWheelCameraOffset(
+          cameraRef.current.x,
+          event.deltaX,
+          zoom,
+        ),
+      })
+      return
+    }
+
     const nextZoom = stepZoom(zoom, event.deltaY)
     if (nextZoom === zoom) {
       return
@@ -595,7 +747,7 @@ function CanvasWorkspace({
     return () => viewport.removeEventListener('wheel', handleWheel)
   }, [handleWheel])
 
-  const getTargetObject = (event: PointerEvent<HTMLElement>) => {
+  const getTargetObject = (event: { target: EventTarget | null }) => {
     if (!(event.target instanceof Element)) {
       return null
     }
@@ -649,7 +801,7 @@ function CanvasWorkspace({
       ...draft,
       delta,
       previews: draft.originals.map((object) =>
-        translateObject(object, delta),
+        translateObject(object, delta, objects),
       ),
     }
   }
@@ -675,11 +827,80 @@ function CanvasWorkspace({
     if (event.button !== 0) {
       return
     }
+    if (isTextEntryTarget(event.target)) {
+      return
+    }
+
+    if (textEditor && event.target instanceof Element) {
+      const dragTarget = event.target.closest('[data-text-editor-drag]')
+      if (dragTarget) {
+        event.preventDefault()
+        event.stopPropagation()
+        event.currentTarget.setPointerCapture(event.pointerId)
+        textEditorDragRef.current = {
+          pointerId: event.pointerId,
+          startClient: { x: event.clientX, y: event.clientY },
+          startPosition: textEditor.position,
+        }
+        return
+      }
+      const editorTarget = event.target.closest('[data-text-editor-target]')
+      if (editorTarget) {
+        event.preventDefault()
+        event.stopPropagation()
+        const editorObject: TextObject = {
+          id: textEditor.objectId ?? 'text-editor-draft',
+          type: 'text',
+          layerId: activeLayer.id,
+          position: textEditor.position,
+          text: textEditor.value,
+          fontSizeMm: textEditor.fontSizeMm,
+          rotation: textEditor.rotation,
+        }
+        const caretIndex = getTextCaretIndexAtPoint(
+          editorObject,
+          getPointerPosition(event),
+        )
+        setTextEditor({
+          ...textEditor,
+          selectionStart: caretIndex,
+          selectionEnd: caretIndex,
+        })
+        requestAnimationFrame(() => {
+          textEditorRef.current?.focus()
+          textEditorRef.current?.setSelectionRange(caretIndex, caretIndex)
+        })
+        return
+      }
+    }
+
+    if (textEditor) {
+      commitTextEditor(textEditor)
+    }
 
     const targetObject = getTargetObject(event)
     const targetLayer = layers.find(
       (layer) => layer.id === targetObject?.layerId,
     )
+
+    if (
+      targetObject?.type === 'measurement' &&
+      targetLayer &&
+      !targetLayer.locked &&
+      event.target instanceof Element
+    ) {
+      const handle = event.target.getAttribute('data-measurement-handle')
+      if (handle === 'start' || handle === 'end' || handle === 'offset') {
+        event.currentTarget.setPointerCapture(event.pointerId)
+        setMeasurementEditDraft({
+          handle,
+          object: targetObject,
+          preview: targetObject,
+          pointerId: event.pointerId,
+        })
+        return
+      }
+    }
 
     if (activeToolId === 'select' || activeToolId === 'area-select') {
       if (!targetObject || !targetLayer) {
@@ -716,7 +937,9 @@ function CanvasWorkspace({
         const layer = layers.find(
           (candidate) => candidate.id === object.layerId,
         )
-        return Boolean(layer?.visible && !layer.locked)
+        return Boolean(
+          object.type !== 'measurement' && layer?.visible && !layer.locked,
+        )
       })
       if (movableObjects.length === 0 || targetLayer.locked) {
         onSelectObjects([targetObject.id])
@@ -768,6 +991,57 @@ function CanvasWorkspace({
       return
     }
 
+    if (activeToolId === 'text') {
+      if (!canDrawOnLayer(activeLayer)) return
+      event.preventDefault()
+      if (targetObject?.type === 'text' && !targetLayer?.locked) {
+        setTextEditor({
+          sessionId: crypto.randomUUID(),
+          objectId: targetObject.id,
+          layerId: targetObject.layerId,
+          position: targetObject.position,
+          value: targetObject.text,
+          fontSizeMm: targetObject.fontSizeMm,
+          rotation: targetObject.rotation,
+          selectionStart: targetObject.text.length,
+          selectionEnd: targetObject.text.length,
+        })
+        return
+      }
+      const position = resolvePointSnapping(
+        getPointerPosition(event),
+        shouldBypassSnapping(isSnappingEnabled, event.shiftKey),
+      )
+      setTextEditor({
+        sessionId: crypto.randomUUID(),
+        objectId: null,
+        layerId: activeLayer.id,
+        position,
+        value: '',
+        fontSizeMm: DEFAULT_TEXT_SIZE_MM,
+        rotation: 0,
+        selectionStart: 0,
+        selectionEnd: 0,
+      })
+      return
+    }
+
+    if (activeToolId === 'measurement') {
+      if (!canDrawOnLayer(activeLayer)) return
+      const point = getPointerPosition(event)
+      const anchor = resolveMeasurementInputAnchor(
+        point,
+        shouldBypassSnapping(isSnappingEnabled, event.shiftKey),
+      )
+      event.currentTarget.setPointerCapture(event.pointerId)
+      setMeasurementDraft({
+        start: anchor,
+        end: anchor,
+        pointerId: event.pointerId,
+      })
+      return
+    }
+
     if (!isDrawingTool(activeToolId) || !canDrawOnLayer(activeLayer)) {
       return
     }
@@ -789,6 +1063,36 @@ function CanvasWorkspace({
   }
 
   const handlePointerMove = (event: PointerEvent<HTMLElement>) => {
+    const textDrag = textEditorDragRef.current
+    if (textDrag?.pointerId === event.pointerId) {
+      setTextEditor((current) =>
+        current
+          ? {
+              ...current,
+              position: {
+                x: Math.max(
+                  0,
+                  textDrag.startPosition.x +
+                    screenPixelsToMillimetres(
+                      event.clientX - textDrag.startClient.x,
+                      zoom,
+                    ),
+                ),
+                y: Math.max(
+                  0,
+                  textDrag.startPosition.y +
+                    screenPixelsToMillimetres(
+                      event.clientY - textDrag.startClient.y,
+                      zoom,
+                    ),
+                ),
+              },
+            }
+          : current,
+      )
+      return
+    }
+
     if (panDraft?.pointerId === event.pointerId) {
       setHoveredObjectId(null)
       setCamera({
@@ -815,6 +1119,59 @@ function CanvasWorkspace({
 
     if (activeToolId === 'track') {
       setTrackPointer(pointerPosition)
+    }
+
+    if (
+      measurementEditDraft &&
+      measurementEditDraft.pointerId === event.pointerId
+    ) {
+      let preview = measurementEditDraft.preview
+      if (
+        measurementEditDraft.handle === 'start' ||
+        measurementEditDraft.handle === 'end'
+      ) {
+        preview = {
+          ...measurementEditDraft.object,
+          [measurementEditDraft.handle]: resolveMeasurementInputAnchor(
+            pointerPosition,
+            shouldBypassSnapping(isSnappingEnabled, event.shiftKey),
+          ),
+        }
+      } else {
+        const layout = getMeasurementLayout(
+          measurementEditDraft.object,
+          objects,
+        )
+        preview = {
+          ...measurementEditDraft.object,
+          offset:
+            (pointerPosition.x - layout.start.x) * layout.normal.x +
+            (pointerPosition.y - layout.start.y) * layout.normal.y,
+        }
+      }
+      setMeasurementEditDraft({ ...measurementEditDraft, preview })
+      return
+    }
+
+    if (measurementDraft?.pointerId === event.pointerId) {
+      const nextDraft = {
+        ...measurementDraft,
+        end: resolveMeasurementInputAnchor(
+          pointerPosition,
+          shouldBypassSnapping(isSnappingEnabled, event.shiftKey),
+        ),
+      }
+      setMeasurementDraft(nextDraft)
+      const start = resolveMeasurementAnchor(nextDraft.start, objects)
+      const end = resolveMeasurementAnchor(nextDraft.end, objects)
+      onDraftMeasurementChange({
+        type: 'measurement',
+        lengthMm: lineLength(start, end),
+        startAttached: nextDraft.start.kind === 'object',
+        endAttached: nextDraft.end.kind === 'object',
+        offsetMm: DEFAULT_MEASUREMENT_OFFSET_MM,
+      })
+      return
     }
 
     if (
@@ -865,6 +1222,49 @@ function CanvasWorkspace({
   }
 
   const handlePointerUp = (event: PointerEvent<HTMLElement>) => {
+    if (textEditorDragRef.current?.pointerId === event.pointerId) {
+      releasePointer(event)
+      textEditorDragRef.current = null
+      textEditorRef.current?.focus()
+      return
+    }
+
+    if (
+      measurementEditDraft &&
+      measurementEditDraft.pointerId === event.pointerId
+    ) {
+      releasePointer(event)
+      if (
+        getMeasurementLayout(measurementEditDraft.preview, objects).length > 0
+      ) {
+        onUpdateObjects([measurementEditDraft.preview])
+      }
+      setMeasurementEditDraft(null)
+      return
+    }
+
+    if (measurementDraft?.pointerId === event.pointerId) {
+      releasePointer(event)
+      const start = resolveMeasurementAnchor(measurementDraft.start, objects)
+      const end = resolveMeasurementAnchor(measurementDraft.end, objects)
+      if (isNonZeroLine(start, end)) {
+        onAddObject(
+          {
+            id: crypto.randomUUID(),
+            type: 'measurement',
+            layerId: activeLayer.id,
+            start: measurementDraft.start,
+            end: measurementDraft.end,
+            offset: DEFAULT_MEASUREMENT_OFFSET_MM,
+          },
+          true,
+        )
+      }
+      setMeasurementDraft(null)
+      onDraftMeasurementChange(null)
+      return
+    }
+
     if (panDraft?.pointerId === event.pointerId) {
       const dragDistance = Math.hypot(
         event.clientX - panDraft.startClient.x,
@@ -923,7 +1323,7 @@ function CanvasWorkspace({
       onSelectObjects(
         visibleObjects
           .filter((object) =>
-            boundsIntersect(getObjectBounds(object), marqueeBounds),
+            boundsIntersect(getObjectBounds(object, objects), marqueeBounds),
           )
           .map((object) => object.id),
       )
@@ -980,12 +1380,19 @@ function CanvasWorkspace({
   }
 
   const handlePointerCancel = (event: PointerEvent<HTMLElement>) => {
+    if (textEditorDragRef.current?.pointerId === event.pointerId) {
+      textEditorDragRef.current = null
+      return
+    }
+
     if (panDraft?.pointerId === event.pointerId) {
       setPanDraft(null)
       return
     }
     if (
       drawingDraft?.pointerId === event.pointerId ||
+      measurementDraft?.pointerId === event.pointerId ||
+      measurementEditDraft?.pointerId === event.pointerId ||
       movementDraft?.pointerId === event.pointerId ||
       areaSelectionDraft?.pointerId === event.pointerId
     ) {
@@ -995,7 +1402,14 @@ function CanvasWorkspace({
 
   const handlePointerLeave = () => {
     setHoveredObjectId(null)
-    if (!drawingDraft && !movementDraft && !areaSelectionDraft && !panDraft) {
+    if (
+      !drawingDraft &&
+      !measurementDraft &&
+      !measurementEditDraft &&
+      !movementDraft &&
+      !areaSelectionDraft &&
+      !panDraft
+    ) {
       setTrackPointer(null)
     }
   }
@@ -1005,7 +1419,11 @@ function CanvasWorkspace({
     className: string,
     dataObjectId?: string,
   ) => {
-    if (object.type === 'track-piece') {
+    if (
+      object.type === 'track-piece' ||
+      object.type === 'measurement' ||
+      object.type === 'text'
+    ) {
       return null
     }
 
@@ -1061,6 +1479,9 @@ function CanvasWorkspace({
   }
 
   const renderObject = (object: CanvasObject) => {
+    if (object.type === 'text' && textEditor?.objectId === object.id) {
+      return null
+    }
     const movementPreview = movementDraft?.previews.find(
       (preview) => preview.id === object.id,
     )
@@ -1079,6 +1500,31 @@ function CanvasWorkspace({
           dataObjectId={object.id}
           object={renderedObject}
           showRadiusLabel={isSelected && activeToolId !== 'track'}
+        />
+      )
+    }
+    if (renderedObject.type === 'measurement') {
+      const measurement =
+        measurementEditDraft?.object.id === object.id
+          ? measurementEditDraft.preview
+          : renderedObject
+      return (
+        <MeasurementGeometry
+          key={object.id}
+          measurementSystem={measurementSystem}
+          object={measurement}
+          objects={objects}
+          selected={isSelected}
+          zoom={zoom}
+        />
+      )
+    }
+    if (renderedObject.type === 'text') {
+      return (
+        <TextGeometry
+          key={object.id}
+          object={renderedObject}
+          selected={isSelected}
         />
       )
     }
@@ -1126,7 +1572,10 @@ function CanvasWorkspace({
 
   const workspaceClassName = [
     'canvas-workspace',
-    isDrawingTool(activeToolId) || activeToolId === 'track'
+    isDrawingTool(activeToolId) ||
+    activeToolId === 'track' ||
+    activeToolId === 'measurement' ||
+    activeToolId === 'text'
       ? 'is-drawing-tool'
       : '',
     activeToolId === 'select' || activeToolId === 'area-select'
@@ -1140,7 +1589,17 @@ function CanvasWorkspace({
     .join(' ')
   const viewWidth = viewportSize.width / zoom
   const viewHeight = viewportSize.height / zoom
-
+  const textEditorObject: TextObject | null = textEditor
+    ? {
+        id: textEditor.objectId ?? 'text-editor-draft',
+        type: 'text',
+        layerId: textEditor.layerId,
+        position: textEditor.position,
+        text: textEditor.value,
+        fontSizeMm: textEditor.fontSizeMm,
+        rotation: textEditor.rotation,
+      }
+    : null
   return (
     <section
       ref={viewportRef}
@@ -1151,6 +1610,23 @@ function CanvasWorkspace({
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
       onPointerUp={handlePointerUp}
+      onDoubleClick={(event) => {
+        const object = getTargetObject(event)
+        if (object?.type !== 'text') return
+        const layer = layers.find((candidate) => candidate.id === object.layerId)
+        if (!layer || layer.locked) return
+        setTextEditor({
+          sessionId: crypto.randomUUID(),
+          objectId: object.id,
+          layerId: object.layerId,
+          position: object.position,
+          value: object.text,
+          fontSizeMm: object.fontSizeMm,
+          rotation: object.rotation,
+          selectionStart: object.text.length,
+          selectionEnd: object.text.length,
+        })
+      }}
     >
       <div
         className="workspace-content"
@@ -1172,6 +1648,38 @@ function CanvasWorkspace({
           viewBox={`${camera.x} ${camera.y} ${viewWidth} ${viewHeight}`}
         >
           {visibleObjects.map(renderObject)}
+          {textEditorObject && (
+            <TextGeometry
+              object={textEditorObject}
+              selected
+              zoom={zoom}
+              editing={{
+                caretIndex: textEditor?.selectionStart ?? 0,
+                selectionEnd: textEditor?.selectionEnd ?? 0,
+              }}
+            />
+          )}
+          {measurementDraft && (() => {
+            const preview: MeasurementObject = {
+              id: 'measurement-preview',
+              type: 'measurement',
+              layerId: activeLayer.id,
+              start: measurementDraft.start,
+              end: measurementDraft.end,
+              offset: DEFAULT_MEASUREMENT_OFFSET_MM,
+            }
+            return (
+              <g className="is-draft">
+                <MeasurementGeometry
+                  measurementSystem={measurementSystem}
+                  object={preview}
+                  objects={objects}
+                  selected={false}
+                  zoom={zoom}
+                />
+              </g>
+            )
+          })()}
         {activeToolId === 'track' &&
           nearbyTrackConnectors.map((connector) => (
             <circle
@@ -1264,6 +1772,60 @@ function CanvasWorkspace({
         >
           0,0
         </div>
+        {textEditor && (
+          <textarea
+            ref={textEditorRef}
+            className="canvas-text-input"
+            aria-label="Label text"
+            value={textEditor.value}
+            onChange={(event) => {
+              const { value, selectionStart, selectionEnd } =
+                event.currentTarget
+              setTextEditor((current) =>
+                current
+                  ? {
+                      ...current,
+                      value,
+                      selectionStart,
+                      selectionEnd,
+                    }
+                  : current,
+              )
+            }}
+            onSelect={(event) => {
+              const { selectionStart, selectionEnd } = event.currentTarget
+              setTextEditor((current) => {
+                if (
+                  !current ||
+                  (current.selectionStart === selectionStart &&
+                    current.selectionEnd === selectionEnd)
+                ) {
+                  return current
+                }
+
+                return {
+                  ...current,
+                  selectionStart,
+                  selectionEnd,
+                }
+              })
+            }}
+            onBlur={() => commitTextEditor()}
+            onScroll={(event) => {
+              event.currentTarget.scrollLeft = 0
+              event.currentTarget.scrollTop = 0
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                event.preventDefault()
+                setTextEditor(null)
+              } else if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault()
+                commitTextEditor()
+              }
+            }}
+          />
+        )}
       </div>
       {objects.length === 0 && (
         <div className="empty-state">

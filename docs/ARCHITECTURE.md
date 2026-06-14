@@ -58,6 +58,8 @@ type CanvasObject =
   | { id: string; type: 'line'; layerId: string; start: Point; end: Point }
   | { id: string; type: 'rectangle' | 'room' | 'tabletop'; layerId: string; x: number; y: number; width: number; height: number }
   | { id: string; type: 'track-piece'; layerId: 'track'; definitionId: string; position: Point; rotation: number; direction: 'left' | 'right' }
+  | { id: string; type: 'measurement'; layerId: string; start: MeasurementAnchor; end: MeasurementAnchor; offset: number }
+  | { id: string; type: 'text'; layerId: string; position: Point; text: string; fontSizeMm: number; rotation: number }
 ```
 
 Object data should be independent of React components and rendering technology. This will make undo/redo, JSON export, alternate renderers, and project migrations easier to add.
@@ -68,9 +70,11 @@ When drawing begins, a reducer is a sensible next state step because object edit
 
 ## Project Documents and Browser Storage
 
-Saved projects use a versioned `ProjectDocumentV3` JSON structure. The document contains project metadata, measurement and layout-scale settings, ordered layers, and ordered canvas objects. Geometry remains in millimetres. Theme, cursor position, selected tool, active layer, selection, and drawing drafts are interface state and are not persisted.
+Saved projects use a versioned `ProjectDocumentV4` JSON structure. The document contains project metadata, measurement and layout-scale settings, ordered layers, and ordered canvas objects. Geometry remains in millimetres. Theme, cursor position, selected tool, active layer, selection, and drawing drafts are interface state and are not persisted.
 
-Unknown JSON is validated before it reaches React state. A failed import or restore leaves the current project untouched. Version 1 and version 2 documents are migrated in memory to version 3 with HO as the default scale, while new saves and exports always use version 3.
+Unknown JSON is validated before it reaches React state. A failed import or restore leaves the current project untouched. Versions 1 through 3 are migrated in memory to version 4, with HO used when a legacy document has no scale setting. New saves and exports always use version 4.
+
+Measurement annotations store fixed points or references to stable object anchors. Anchor resolution is derived from the current source geometry, so dimensions follow later object movement, resizing, and rotation. Deleting referenced geometry first converts dependent anchors to fixed coordinates, preventing dangling project references.
 
 Browser storage sits behind a small adapter with load, save, and clear operations. The adapter retains the `trackscape.project.v1` local storage key so existing browser saves remain discoverable. JSON import and export use the same project document format, while imports remain unsaved until the user explicitly chooses Save.
 

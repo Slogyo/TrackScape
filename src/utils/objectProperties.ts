@@ -8,6 +8,7 @@ import {
   millimetresTo,
 } from './units'
 import { getTrackBounds } from './trackGeometry'
+import { resolveMeasurement } from './annotations'
 
 export const propertyUnitForSystem = (
   measurementSystem: MeasurementSystem,
@@ -45,6 +46,7 @@ export const parsePropertyValue = (
 export const getGeometryValue = (
   object: CanvasObject,
   field: GeometryField,
+  objects: CanvasObject[] = [object],
 ): number | null => {
   if (object.type === 'track-piece') {
     const values: Partial<Record<GeometryField, number>> = {
@@ -61,6 +63,26 @@ export const getGeometryValue = (
       y1: object.start.y,
       x2: object.end.x,
       y2: object.end.y,
+    }
+    return values[field] ?? null
+  }
+  if (object.type === 'text') {
+    const values: Partial<Record<GeometryField, number>> = {
+      x: object.position.x,
+      y: object.position.y,
+      fontSize: object.fontSizeMm,
+      rotation: object.rotation,
+    }
+    return values[field] ?? null
+  }
+  if (object.type === 'measurement') {
+    const resolved = resolveMeasurement(object, objects)
+    const values: Partial<Record<GeometryField, number>> = {
+      x1: resolved.start.x,
+      y1: resolved.start.y,
+      x2: resolved.end.x,
+      y2: resolved.end.y,
+      offset: object.offset,
     }
     return values[field] ?? null
   }
@@ -140,6 +162,43 @@ export const updateGeometryValue = (
     }
 
     return nextObject
+  }
+  if (object.type === 'text') {
+    if (field === 'rotation') {
+      return millimetres >= 0 && millimetres < 360
+        ? { ...object, rotation: millimetres }
+        : null
+    }
+    if (field === 'fontSize') {
+      return millimetres > 0
+        ? { ...object, fontSizeMm: millimetres }
+        : null
+    }
+    if ((field !== 'x' && field !== 'y') || millimetres < 0) return null
+    return {
+      ...object,
+      position: { ...object.position, [field]: millimetres },
+    }
+  }
+  if (object.type === 'measurement') {
+    if (field === 'offset') return { ...object, offset: millimetres }
+    const endpoint =
+      field === 'x1' || field === 'y1'
+        ? 'start'
+        : field === 'x2' || field === 'y2'
+          ? 'end'
+          : null
+    if (!endpoint || object[endpoint].kind === 'object' || millimetres < 0) {
+      return null
+    }
+    const coordinate = field.startsWith('x') ? 'x' : 'y'
+    return {
+      ...object,
+      [endpoint]: {
+        ...object[endpoint],
+        point: { ...object[endpoint].point, [coordinate]: millimetres },
+      },
+    }
   }
 
   if (!['x', 'y', 'width', 'height'].includes(field)) {

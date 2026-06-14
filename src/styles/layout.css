@@ -215,6 +215,7 @@
   gap: 6px;
   padding: 12px 8px;
   overflow: visible;
+  user-select: none;
   background: var(--surface-primary);
   border-right: 1px solid var(--border);
 }
@@ -410,6 +411,7 @@
   cursor: grab;
   overscroll-behavior: contain;
   touch-action: none;
+  user-select: none;
 }
 
 .workspace-content {
@@ -456,6 +458,11 @@
   left: 0;
   overflow: visible;
   pointer-events: auto;
+  user-select: none;
+}
+
+.drawing-surface text {
+  user-select: none;
 }
 
 .area-selection-marquee {
@@ -511,6 +518,162 @@
   fill: transparent;
   stroke: transparent;
   pointer-events: none;
+}
+
+.measurement-line,
+.measurement-extension,
+.measurement-arrow {
+  fill: none;
+  stroke: var(--canvas-object);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.measurement-extension {
+  opacity: 0.7;
+}
+
+.measurement-label {
+  fill: var(--canvas-object);
+  font-size: 9px;
+  font-weight: 500;
+  paint-order: stroke;
+  stroke: var(--background);
+  stroke-width: 4px;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.measurement-object.is-selected :is(
+    .measurement-line,
+    .measurement-extension,
+    .measurement-arrow
+  ),
+.is-draft .measurement-object :is(
+    .measurement-line,
+    .measurement-extension,
+    .measurement-arrow
+  ) {
+  stroke: var(--accent);
+}
+
+.measurement-object.is-selected .measurement-label,
+.is-draft .measurement-label {
+  fill: var(--accent);
+}
+
+.measurement-hit-target {
+  stroke: transparent;
+  stroke-width: 18;
+  vector-effect: non-scaling-stroke;
+  pointer-events: stroke;
+  cursor: move;
+}
+
+.annotation-handle {
+  fill: var(--background);
+  stroke: var(--accent);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  cursor: crosshair;
+}
+
+.annotation-offset-handle {
+  cursor: ns-resize;
+}
+
+.text-label {
+  fill: var(--canvas-object);
+  font-family: inherit;
+  white-space: pre;
+  pointer-events: none;
+}
+
+.text-object.is-selected .text-label {
+  fill: var(--accent);
+}
+
+.text-hit-target {
+  fill: transparent;
+  stroke: transparent;
+  pointer-events: all;
+  cursor: move;
+}
+
+.text-edit-boundary {
+  fill: transparent;
+  stroke: var(--accent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  pointer-events: all;
+}
+
+.text-edit-baseline {
+  stroke: color-mix(in srgb, var(--accent) 55%, transparent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.text-edit-drag-handle {
+  fill: transparent;
+  stroke: transparent;
+  cursor: grab;
+  pointer-events: all;
+}
+
+.text-edit-drag-handle:active {
+  cursor: grabbing;
+}
+
+.text-edit-caret {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+  animation: text-caret-blink 1s steps(1, end) infinite;
+}
+
+@keyframes text-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.text-object.is-editing .text-label {
+  fill: var(--text-primary);
+}
+
+.text-object.is-editing .text-hit-target {
+  cursor: text;
+  pointer-events: all;
+}
+
+.canvas-text-input {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  width: 480px;
+  height: 160px;
+  padding: 0;
+  overflow: hidden;
+  color: transparent;
+  caret-color: transparent;
+  font: 16px/20px monospace;
+  resize: none;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  opacity: 0.01;
+  pointer-events: none;
+  scrollbar-width: none;
+}
+
+.canvas-text-input::-webkit-scrollbar {
+  display: none;
 }
 
 .track-object {
@@ -668,6 +831,8 @@
   color: var(--text-muted);
   font-size: 9px;
   letter-spacing: 0.08em;
+  pointer-events: none;
+  user-select: none;
 }
 
 .canvas-origin::before {
@@ -1173,6 +1338,28 @@
 .property-field input:disabled {
   color: var(--text-muted);
   background: var(--surface-secondary);
+}
+
+.property-text-field {
+  margin-top: 12px;
+}
+
+.property-text-field textarea {
+  min-height: 72px;
+  padding: 8px;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.35;
+  resize: vertical;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  outline: 0;
+}
+
+.property-text-field textarea:focus {
+  border-color: var(--accent);
 }
 
 .property-readout {

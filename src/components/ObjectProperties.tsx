@@ -19,12 +19,14 @@ import { getObjectTypeLabel } from '../utils/shapeMode'
 import { formatMillimetres } from '../utils/units'
 import { getTrackLength } from '../utils/trackGeometry'
 import { formatPrototypeLength } from '../utils/layoutScale'
+import { getMeasurementLayout } from '../utils/annotations'
 
 interface ObjectPropertiesProps {
   layer: Layer | null
   layoutScaleId: LayoutScaleId
   measurementSystem: MeasurementSystem
   object: CanvasObject | null
+  objects: CanvasObject[]
   onUpdateObject: (object: CanvasObject) => void
 }
 
@@ -52,12 +54,26 @@ const trackFields: PropertyDefinition[] = [
   { field: 'y', label: 'Y' },
   { field: 'rotation', label: 'Rotation' },
 ]
+const textFields: PropertyDefinition[] = [
+  { field: 'x', label: 'X' },
+  { field: 'y', label: 'Y' },
+  { field: 'fontSize', label: 'Font size' },
+  { field: 'rotation', label: 'Rotation' },
+]
+const measurementFields: PropertyDefinition[] = [
+  { field: 'x1', label: 'X1' },
+  { field: 'y1', label: 'Y1' },
+  { field: 'x2', label: 'X2' },
+  { field: 'y2', label: 'Y2' },
+  { field: 'offset', label: 'Offset' },
+]
 
 function ObjectProperties({
   layer,
   layoutScaleId,
   measurementSystem,
   object,
+  objects,
   onUpdateObject,
 }: ObjectPropertiesProps) {
   const unit = propertyUnitForSystem(measurementSystem)
@@ -66,12 +82,17 @@ function ObjectProperties({
       ? lineFields
       : object?.type === 'track-piece'
         ? trackFields
+        : object?.type === 'text'
+          ? textFields
+          : object?.type === 'measurement'
+            ? measurementFields
         : rectangleFields
   const [values, setValues] = useState<Partial<Record<GeometryField, string>>>(
     {},
   )
   const [error, setError] = useState<string | null>(null)
   const [errorField, setErrorField] = useState<GeometryField | null>(null)
+  const [textValue, setTextValue] = useState('')
 
   const formattedValues = useMemo(() => {
     if (!object) {
@@ -80,7 +101,7 @@ function ObjectProperties({
 
     return Object.fromEntries(
       definitions.map(({ field }) => {
-        const value = getGeometryValue(object, field)
+        const value = getGeometryValue(object, field, objects)
         return [
           field,
           value === null
@@ -91,13 +112,14 @@ function ObjectProperties({
         ]
       }),
     ) as Partial<Record<GeometryField, string>>
-  }, [definitions, measurementSystem, object])
+  }, [definitions, measurementSystem, object, objects])
 
   useEffect(() => {
     setValues(formattedValues)
     setError(null)
     setErrorField(null)
-  }, [formattedValues])
+    setTextValue(object?.type === 'text' ? object.text : '')
+  }, [formattedValues, object])
 
   const commitValue = (field: GeometryField) => {
     if (!object || layer?.locked) {
@@ -117,16 +139,25 @@ function ObjectProperties({
           ? null
           : Number(rawValue)
         : parsePropertyValue(rawValue, measurementSystem)
-    const updatedObject =
+    const candidateObject =
       millimetres === null
         ? null
         : updateGeometryValue(object, field, millimetres)
+    const updatedObject =
+      candidateObject?.type === 'measurement' &&
+      getMeasurementLayout(candidateObject, objects).length === 0
+        ? null
+        : candidateObject
 
     if (!updatedObject) {
       setErrorField(field)
       setError(
         object.type === 'track-piece'
           ? 'Use non-negative positions and rotation in 15 degree steps from 0 to 345.'
+          : object.type === 'text'
+          ? 'Use non-negative positions, a positive font size, and rotation from 0 to below 360.'
+          : object.type === 'measurement'
+          ? 'Attached coordinates are read-only. Fixed coordinates must be non-negative.'
           : object.type === 'line'
           ? 'Use non-negative coordinates and keep the line length above zero.'
           : 'Use non-negative positions and dimensions greater than zero.',
@@ -184,7 +215,14 @@ function ObjectProperties({
                       ? 'Rotation (degrees)'
                       : `${label} (${unit})`
                   }
-                  disabled={layer.locked}
+                  disabled={
+                    layer.locked ||
+                    (object.type === 'measurement' &&
+                      (((field === 'x1' || field === 'y1') &&
+                        object.start.kind === 'object') ||
+                        ((field === 'x2' || field === 'y2') &&
+                          object.end.kind === 'object')))
+                  }
                   inputMode="decimal"
                   step="any"
                   type="number"
@@ -211,6 +249,53 @@ function ObjectProperties({
             ))}
           </div>
 
+          {object.type === 'text' && (
+            <label className="property-field property-text-field">
+              <span>Text</span>
+              <textarea
+                aria-label="Text content"
+                disabled={layer.locked}
+                value={textValue}
+                onChange={(event) => setTextValue(event.target.value)}
+                onBlur={() => {
+                  if (textValue.trim() && textValue !== object.text) {
+                    onUpdateObject({ ...object, text: textValue.trim() })
+                  } else if (!textValue.trim()) {
+                    setTextValue(object.text)
+                  }
+                }}
+              />
+            </label>
+          )}
+
+          {object.type === 'measurement' && (() => {
+            const layout = getMeasurementLayout(object, objects)
+            return (
+              <>
+                <div className="property-readout">
+                  <span>Start anchor</span>
+                  <strong>
+                    {object.start.kind === 'object'
+                      ? `Attached / ${object.start.anchorId}`
+                      : 'Fixed'}
+                  </strong>
+                </div>
+                <div className="property-readout">
+                  <span>End anchor</span>
+                  <strong>
+                    {object.end.kind === 'object'
+                      ? `Attached / ${object.end.anchorId}`
+                      : 'Fixed'}
+                  </strong>
+                </div>
+                <div className="property-readout">
+                  <span>Length</span>
+                  <strong>{formatMillimetres(layout.length, unit)}</strong>
+                </div>
+              </>
+            )
+          })()}
+
           {object.type === 'line' && (
             <>
               <div className="property-readout">
@@ -235,7 +320,9 @@ function ObjectProperties({
             </>
           )}
 
-          {object.type !== 'line' && object.type !== 'track-piece' && (
+          {(object.type === 'rectangle' ||
+            object.type === 'room' ||
+            object.type === 'tabletop') && (
             <>
               <div className="property-readout">
                 <span>Prototype width</span>

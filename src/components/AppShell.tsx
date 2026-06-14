@@ -259,6 +259,7 @@ function AppShell({ initialThemePreference }: AppShellProps) {
           resetViewToken={resetViewToken}
           selectedObjectIds={appState.selectedObjectIds}
           isSnappingEnabled={isSnappingEnabled}
+          measurementSystem={appState.measurementSystem}
           trackSettings={trackSettings}
           zoom={workspaceZoom}
           onAddObject={appState.addCanvasObject}
@@ -279,6 +280,7 @@ function AppShell({ initialThemePreference }: AppShellProps) {
           layers={appState.layers}
           layoutScaleId={appState.layoutScaleId}
           measurementSystem={appState.measurementSystem}
+          objects={appState.objects}
           selectedLayer={selectedLayer}
           selectedObject={selectedObject}
           selectedObjects={selectedObjects}

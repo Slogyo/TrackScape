@@ -3,6 +3,7 @@ import type {
   ProjectDocumentV1,
   ProjectDocumentV2,
   ProjectDocumentV3,
+  ProjectDocumentV4,
 } from '../types'
 import {
   getProjectFilename,
@@ -12,8 +13,8 @@ import {
   validateProjectDocument,
 } from './projectDocument'
 
-const validProject = (): ProjectDocumentV3 => ({
-  schemaVersion: 3,
+const validProject = (): ProjectDocumentV4 => ({
+  schemaVersion: 4,
   metadata: {
     id: 'project-1',
     name: 'Main Layout',
@@ -69,7 +70,34 @@ const validProject = (): ProjectDocumentV3 => ({
 
 describe('project document', () => {
   it('round trips every object and exact millimetre value', () => {
-    const project = validProject()
+    const project: ProjectDocumentV4 = {
+      ...validProject(),
+      objects: [
+        ...validProject().objects,
+        {
+          id: 'measurement-1',
+          type: 'measurement',
+          layerId: 'scenery',
+          start: {
+            kind: 'object',
+            objectId: 'rectangle-1',
+            anchorId: 'top-left',
+            point: { x: 100, y: 200 },
+          },
+          end: { kind: 'fixed', point: { x: 900.25, y: 200 } },
+          offset: -180.5,
+        },
+        {
+          id: 'text-1',
+          type: 'text',
+          layerId: 'scenery',
+          position: { x: 50.5, y: 75.25 },
+          text: 'Platform\nRoad',
+          fontSizeMm: 120,
+          rotation: 22.5,
+        },
+      ],
+    }
 
     expect(parseProjectDocument(serializeProjectDocument(project))).toEqual({
       ok: true,
@@ -77,7 +105,61 @@ describe('project document', () => {
     })
   })
 
-  it('migrates schema version 1 projects to version 3 with HO scale', () => {
+  it('migrates schema version 3 projects to version 4', () => {
+    const project = validProject()
+    const legacy: ProjectDocumentV3 = {
+      ...project,
+      schemaVersion: 3,
+      objects: project.objects as ProjectDocumentV3['objects'],
+    }
+    expect(validateProjectDocument(legacy)).toEqual({
+      ok: true,
+      project,
+    })
+  })
+
+  it('rejects invalid annotation references and zero-length measurements', () => {
+    const project = validProject()
+    const baseMeasurement = {
+      id: 'measurement-1',
+      type: 'measurement',
+      layerId: 'scenery',
+      start: { kind: 'fixed', point: { x: 100, y: 100 } },
+      end: { kind: 'fixed', point: { x: 200, y: 100 } },
+      offset: 100,
+    }
+    expect(
+      validateProjectDocument({
+        ...project,
+        objects: [
+          ...project.objects,
+          {
+            ...baseMeasurement,
+            start: {
+              kind: 'object',
+              objectId: 'missing',
+              anchorId: 'start',
+              point: { x: 100, y: 100 },
+            },
+          },
+        ],
+      }).ok,
+    ).toBe(false)
+    expect(
+      validateProjectDocument({
+        ...project,
+        objects: [
+          ...project.objects,
+          {
+            ...baseMeasurement,
+            end: { kind: 'fixed', point: { x: 100, y: 100 } },
+          },
+        ],
+      }).ok,
+    ).toBe(false)
+  })
+
+  it('migrates schema version 1 projects to version 4 with HO scale', () => {
     const project = validProject()
     const legacyProject: ProjectDocumentV1 = {
       ...project,
@@ -92,7 +174,7 @@ describe('project document', () => {
       ok: true,
       project: {
         ...project,
-        schemaVersion: 3,
+        schemaVersion: 4,
         settings: {
           measurementSystem: project.settings.measurementSystem,
           layoutScaleId: 'ho',
@@ -101,7 +183,7 @@ describe('project document', () => {
     })
   })
 
-  it('migrates schema version 2 track projects to version 3 with HO scale', () => {
+  it('migrates schema version 2 track projects to version 4 with HO scale', () => {
     const project = validProject()
     const trackPiece = {
       id: 'track-piece-1',
@@ -120,14 +202,17 @@ describe('project document', () => {
         ...project.layers,
         { id: 'track', name: 'Track', visible: true, locked: false },
       ],
-      objects: [...project.objects, trackPiece],
+      objects: [
+        ...(project.objects as ProjectDocumentV2['objects']),
+        trackPiece,
+      ],
     }
 
     expect(validateProjectDocument(legacyProject)).toEqual({
       ok: true,
       project: {
         ...legacyProject,
-        schemaVersion: 3,
+        schemaVersion: 4,
         settings: {
           measurementSystem: project.settings.measurementSystem,
           layoutScaleId: 'ho',
@@ -147,7 +232,7 @@ describe('project document', () => {
       rotation: 30,
       direction: 'left' as const,
     }
-    const withTrack: ProjectDocumentV3 = {
+    const withTrack: ProjectDocumentV4 = {
       ...project,
       layers: [
         ...project.layers,
@@ -180,10 +265,10 @@ describe('project document', () => {
       error: 'The selected file is not valid JSON.',
     })
     expect(
-      validateProjectDocument({ ...validProject(), schemaVersion: 4 }),
+      validateProjectDocument({ ...validProject(), schemaVersion: 5 }),
     ).toEqual({
       ok: false,
-      error: 'Unsupported project schema version: 4.',
+      error: 'Unsupported project schema version: 5.',
     })
   })
 

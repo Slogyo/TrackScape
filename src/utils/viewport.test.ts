@@ -8,6 +8,7 @@ import {
   getCanvasRelativeWheelCameraOffset,
   getCenteredCamera,
   getCursorAnchoredCamera,
+  isHorizontalWheelGesture,
   stepZoom,
 } from './viewport'
 
@@ -41,6 +42,13 @@ describe('workspace viewport', () => {
     expect(getCanvasRelativeWheelCameraOffset(1_000_000, -120, 2)).toBe(
       1_000_060,
     )
+  })
+
+  it('distinguishes side-wheel scrolling from ordinary zoom scrolling', () => {
+    expect(isHorizontalWheelGesture(120, 0)).toBe(true)
+    expect(isHorizontalWheelGesture(-120, 1)).toBe(true)
+    expect(isHorizontalWheelGesture(0, 120)).toBe(false)
+    expect(isHorizontalWheelGesture(20, 40)).toBe(false)
   })
 
   it('centres object bounds and keeps an empty project at the origin', () => {

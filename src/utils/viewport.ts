@@ -57,6 +57,13 @@ export function getCanvasRelativeWheelCameraOffset(
   return Math.max(0, currentOffset - wheelDelta / zoom)
 }
 
+export function isHorizontalWheelGesture(
+  deltaX: number,
+  deltaY: number,
+): boolean {
+  return Math.abs(deltaX) > Math.abs(deltaY)
+}
+
 export function getCenteredCamera(
   bounds: Bounds | null,
   zoom: number,

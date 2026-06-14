@@ -18,6 +18,7 @@ interface LayersPanelProps {
   layers: Layer[]
   layoutScaleId: LayoutScaleId
   measurementSystem: MeasurementSystem
+  objects: CanvasObject[]
   selectedLayer: Layer | null
   selectedObject: CanvasObject | null
   selectedObjects: CanvasObject[]
@@ -35,6 +36,7 @@ function LayersPanel({
   layers,
   layoutScaleId,
   measurementSystem,
+  objects,
   selectedLayer,
   selectedObject,
   selectedObjects,
@@ -131,6 +133,7 @@ function LayersPanel({
           layoutScaleId={layoutScaleId}
           measurementSystem={measurementSystem}
           object={selectedObject}
+          objects={objects}
           onUpdateObject={onUpdateObject}
         />
       )}

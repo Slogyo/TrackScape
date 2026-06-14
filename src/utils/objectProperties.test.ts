@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type {
   LineObject,
+  MeasurementObject,
   RectangleObject,
   RoomObject,
   TabletopObject,
   TrackPieceObject,
+  TextObject,
 } from '../types'
 import {
   formatPropertyValue,
@@ -51,6 +53,28 @@ describe('object property helpers', () => {
     position: { x: 500, y: 600 },
     rotation: 30,
     direction: 'right',
+  }
+  const text: TextObject = {
+    id: 'text',
+    type: 'text',
+    layerId: 'room',
+    position: { x: 100, y: 200 },
+    text: 'Station',
+    fontSizeMm: 120,
+    rotation: 0,
+  }
+  const measurement: MeasurementObject = {
+    id: 'measurement',
+    type: 'measurement',
+    layerId: 'room',
+    start: { kind: 'fixed', point: { x: 100, y: 200 } },
+    end: {
+      kind: 'object',
+      objectId: 'line',
+      anchorId: 'end',
+      point: { x: 300, y: 400 },
+    },
+    offset: 180,
   }
 
   it('uses centimetres for metric properties and inches for imperial', () => {
@@ -124,5 +148,29 @@ describe('object property helpers', () => {
         0,
       ),
     ).toBeNull()
+  })
+
+  it('reads and edits text size, position, and rotation', () => {
+    expect(getGeometryValue(text, 'fontSize')).toBe(120)
+    expect(updateGeometryValue(text, 'fontSize', 85.5)).toMatchObject({
+      fontSizeMm: 85.5,
+    })
+    expect(updateGeometryValue(text, 'rotation', 22.5)).toMatchObject({
+      rotation: 22.5,
+    })
+    expect(updateGeometryValue(text, 'fontSize', 0)).toBeNull()
+  })
+
+  it('edits fixed measurement coordinates but protects attached anchors', () => {
+    expect(
+      getGeometryValue(measurement, 'x2', [line, measurement]),
+    ).toBe(300)
+    expect(updateGeometryValue(measurement, 'x1', 125)).toMatchObject({
+      start: { kind: 'fixed', point: { x: 125, y: 200 } },
+    })
+    expect(updateGeometryValue(measurement, 'x2', 350)).toBeNull()
+    expect(updateGeometryValue(measurement, 'offset', -90)).toMatchObject({
+      offset: -90,
+    })
   })
 })

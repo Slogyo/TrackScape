@@ -6,6 +6,11 @@ import type {
   RectangularCanvasObject,
 } from '../types'
 import { getTrackBounds } from './trackGeometry'
+import {
+  getMeasurementBounds,
+  getTextBounds,
+  translateMeasurement,
+} from './annotations'
 
 export const MILLIMETRES_PER_PIXEL = 10
 export const SNAP_INTERVAL_MM = 100
@@ -90,7 +95,10 @@ export const isNonZeroRectangle = (
   rectangle: Pick<RectangularCanvasObject, 'width' | 'height'>,
 ): boolean => rectangle.width > 0 && rectangle.height > 0
 
-export const getObjectBounds = (object: CanvasObject) => {
+export const getObjectBounds = (
+  object: CanvasObject,
+  objects: CanvasObject[] = [object],
+) => {
   if (object.type === 'track-piece') {
     return getTrackBounds(object)
   }
@@ -102,6 +110,12 @@ export const getObjectBounds = (object: CanvasObject) => {
       maxX: Math.max(object.start.x, object.end.x),
       maxY: Math.max(object.start.y, object.end.y),
     }
+  }
+  if (object.type === 'measurement') {
+    return getMeasurementBounds(object, objects)
+  }
+  if (object.type === 'text') {
+    return getTextBounds(object)
   }
 
   return {
@@ -133,7 +147,7 @@ export const getCombinedBounds = (objects: CanvasObject[]): Bounds | null => {
     return null
   }
 
-  const bounds = objects.map(getObjectBounds)
+  const bounds = objects.map((object) => getObjectBounds(object, objects))
   return {
     minX: Math.min(...bounds.map((candidate) => candidate.minX)),
     minY: Math.min(...bounds.map((candidate) => candidate.minY)),
@@ -170,6 +184,7 @@ export const clampTranslationToOrigin = (
 export const translateObject = (
   object: CanvasObject,
   delta: MovementDelta,
+  objects: CanvasObject[] = [object],
 ): CanvasObject => {
   if (object.type === 'track-piece') {
     return {
@@ -191,6 +206,18 @@ export const translateObject = (
       end: {
         x: object.end.x + delta.x,
         y: object.end.y + delta.y,
+      },
+    }
+  }
+  if (object.type === 'measurement') {
+    return translateMeasurement(object, delta, objects)
+  }
+  if (object.type === 'text') {
+    return {
+      ...object,
+      position: {
+        x: object.position.x + delta.x,
+        y: object.position.y + delta.y,
       },
     }
   }

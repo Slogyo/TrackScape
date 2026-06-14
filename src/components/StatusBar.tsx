@@ -66,7 +66,9 @@ function StatusBar({
   const isDrawingTool =
     activeToolId === 'line' ||
     activeToolId === 'shape' ||
-    activeToolId === 'track'
+    activeToolId === 'track' ||
+    activeToolId === 'measurement' ||
+    activeToolId === 'text'
 
   let attributeLabel = 'Active layer'
   let attributeValue = activeLayer.name
@@ -144,6 +146,20 @@ function StatusBar({
       layoutScaleId,
       measurementSystem,
     )}`
+  } else if (draftMeasurement?.type === 'measurement') {
+    attributeLabel = 'Measurement'
+    attributeValue = `${formatMillimetres(
+      draftMeasurement.lengthMm,
+      displayUnit,
+    )} | ${draftMeasurement.startAttached ? 'Attached' : 'Fixed'} to ${
+      draftMeasurement.endAttached ? 'Attached' : 'Fixed'
+    } | Offset ${formatMillimetres(
+      draftMeasurement.offsetMm,
+      displayUnit,
+    )}`
+  } else if (activeToolId === 'text') {
+    attributeLabel = 'Label'
+    attributeValue = 'Click to type. Enter commits; Shift+Enter adds a line.'
   } else if (movementDelta) {
     attributeLabel = 'Move'
     attributeValue = `X ${formatMillimetres(

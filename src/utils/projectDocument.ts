@@ -1,8 +1,9 @@
 import type {
   CanvasObject,
   Layer,
+  MeasurementAnchor,
   Point,
-  ProjectDocumentV3,
+  ProjectDocumentV4,
   ProjectMetadata,
 } from '../types'
 import { isTrackDefinitionId } from '../data/trackCatalog'
@@ -11,12 +12,16 @@ import {
   isLayoutScaleId,
 } from '../data/layoutScales'
 import { getTrackBounds } from './trackGeometry'
+import {
+  getObjectAnchors,
+  resolveMeasurement,
+} from './annotations'
 
-export const PROJECT_SCHEMA_VERSION = 3
+export const PROJECT_SCHEMA_VERSION = 4
 export const PROJECT_NAME_MAX_LENGTH = 80
 
 export type ProjectValidationResult =
-  | { ok: true; project: ProjectDocumentV3 }
+  | { ok: true; project: ProjectDocumentV4 }
   | { ok: false; error: string }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -118,6 +123,7 @@ const validateObjects = (
   value: unknown,
   layers: Layer[],
   allowTrackPieces: boolean,
+  allowAnnotations: boolean,
 ): { ok: true; objects: CanvasObject[] } | { ok: false; error: string } => {
   if (!Array.isArray(value)) {
     return { ok: false, error: 'Project objects must be an array.' }
@@ -214,6 +220,65 @@ const validateObjects = (
       continue
     }
 
+    if (candidate.type === 'text') {
+      if (
+        !allowAnnotations ||
+        !validatePoint(candidate.position) ||
+        !isNonEmptyString(candidate.text) ||
+        !isPositiveNumber(candidate.fontSizeMm) ||
+        typeof candidate.rotation !== 'number' ||
+        !Number.isFinite(candidate.rotation) ||
+        candidate.rotation < 0 ||
+        candidate.rotation >= 360
+      ) {
+        return { ok: false, error: `Text label ${candidate.id} is invalid.` }
+      }
+      objects.push({
+        id: candidate.id,
+        type: 'text',
+        layerId: candidate.layerId,
+        position: { ...candidate.position },
+        text: candidate.text,
+        fontSizeMm: candidate.fontSizeMm,
+        rotation: candidate.rotation,
+      })
+      continue
+    }
+
+    if (candidate.type === 'measurement') {
+      const validateAnchor = (anchor: unknown): anchor is MeasurementAnchor =>
+        isRecord(anchor) &&
+        validatePoint(anchor.point) &&
+        (anchor.kind === 'fixed' ||
+          (anchor.kind === 'object' &&
+            isNonEmptyString(anchor.objectId) &&
+            isNonEmptyString(anchor.anchorId)))
+      if (
+        !allowAnnotations ||
+        !validateAnchor(candidate.start) ||
+        !validateAnchor(candidate.end) ||
+        typeof candidate.offset !== 'number' ||
+        !Number.isFinite(candidate.offset)
+      ) {
+        return { ok: false, error: `Measurement ${candidate.id} is invalid.` }
+      }
+      objects.push({
+        id: candidate.id,
+        type: 'measurement',
+        layerId: candidate.layerId,
+        start: {
+          ...candidate.start,
+          point: { ...candidate.start.point },
+        },
+        end: {
+          ...candidate.end,
+          point: { ...candidate.end.point },
+        },
+        offset: candidate.offset,
+      })
+      continue
+    }
+
     if (
       candidate.type !== 'rectangle' &&
       candidate.type !== 'room' &&
@@ -259,6 +324,35 @@ const validateObjects = (
     } as CanvasObject)
   }
 
+  for (const object of objects) {
+    if (object.type !== 'measurement') continue
+    for (const anchor of [object.start, object.end]) {
+      if (anchor.kind !== 'object') continue
+      const source = objects.find((candidate) => candidate.id === anchor.objectId)
+      if (
+        !source ||
+        getObjectAnchors(source).every(
+          (candidate) => candidate.anchorId !== anchor.anchorId,
+        )
+      ) {
+        return {
+          ok: false,
+          error: `Measurement ${object.id} has an invalid object anchor.`,
+        }
+      }
+    }
+    const resolved = resolveMeasurement(object, objects)
+    if (
+      resolved.start.x === resolved.end.x &&
+      resolved.start.y === resolved.end.y
+    ) {
+      return {
+        ok: false,
+        error: `Measurement ${object.id} has zero length.`,
+      }
+    }
+  }
+
   return { ok: true, objects }
 }
 
@@ -272,7 +366,8 @@ export const validateProjectDocument = (
   if (
     value.schemaVersion !== 1 &&
     value.schemaVersion !== 2 &&
-    value.schemaVersion !== 3
+    value.schemaVersion !== 3 &&
+    value.schemaVersion !== 4
   ) {
     return {
       ok: false,
@@ -294,7 +389,7 @@ export const validateProjectDocument = (
   }
 
   let layoutScaleId = DEFAULT_LAYOUT_SCALE_ID
-  if (value.schemaVersion === 3) {
+  if (value.schemaVersion >= 3) {
     const candidateScaleId = value.settings.layoutScaleId
     if (!isLayoutScaleId(candidateScaleId)) {
       return { ok: false, error: 'Project layout scale is invalid.' }
@@ -311,6 +406,7 @@ export const validateProjectDocument = (
     value.objects,
     layersResult.layers,
     value.schemaVersion >= 2,
+    value.schemaVersion >= 4,
   )
   if (!objectsResult.ok) {
     return objectsResult
@@ -342,7 +438,7 @@ export const parseProjectDocument = (
 }
 
 export const serializeProjectDocument = (
-  project: ProjectDocumentV3,
+  project: ProjectDocumentV4,
 ): string => JSON.stringify(project, null, 2)
 
 export const validateProjectName = (name: string): string | null => {

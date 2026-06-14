@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import type { ProjectDocumentV3 } from '../types'
+import type { ProjectDocumentV4 } from '../types'
 import { getProjectHydration } from './appState'
 
 describe('getProjectHydration', () => {
   it('restores persisted project data and resets transient UI state', () => {
-    const project: ProjectDocumentV3 = {
-      schemaVersion: 3,
+    const project: ProjectDocumentV4 = {
+      schemaVersion: 4,
       metadata: {
         id: 'project-1',
         name: 'Imported Layout',

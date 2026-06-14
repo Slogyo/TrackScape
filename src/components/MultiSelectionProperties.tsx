@@ -14,7 +14,7 @@ function MultiSelectionProperties({
   measurementSystem,
   objects,
 }: MultiSelectionPropertiesProps) {
-  const bounds = objects.map(getObjectBounds)
+  const bounds = objects.map((object) => getObjectBounds(object, objects))
   const minX = Math.min(...bounds.map((candidate) => candidate.minX))
   const minY = Math.min(...bounds.map((candidate) => candidate.minY))
   const maxX = Math.max(...bounds.map((candidate) => candidate.maxX))
