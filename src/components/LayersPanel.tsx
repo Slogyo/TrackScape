@@ -1,3 +1,9 @@
+import { useRef, useState } from 'react'
+import type {
+  CSSProperties,
+  KeyboardEvent,
+  PointerEvent as ReactPointerEvent,
+} from 'react'
 import type {
   CanvasObject,
   Layer,
@@ -30,6 +36,10 @@ interface LayersPanelProps {
   onUpdateObject: (object: CanvasObject) => void
 }
 
+const MIN_SECTION_HEIGHT = 140
+const PANEL_FIXED_SPACE = 205
+const SECTION_KEYBOARD_STEP = 16
+
 function LayersPanel({
   activeLayerId,
   activeToolId,
@@ -47,8 +57,77 @@ function LayersPanel({
   onToggleLock,
   onUpdateObject,
 }: LayersPanelProps) {
+  const panelRef = useRef<HTMLElement>(null)
+  const propertiesRef = useRef<HTMLDivElement>(null)
+  const [propertiesHeight, setPropertiesHeight] = useState<number | null>(null)
+
+  const clampPropertiesHeight = (height: number) => {
+    const panelHeight = panelRef.current?.getBoundingClientRect().height ?? 0
+    return Math.min(
+      Math.max(MIN_SECTION_HEIGHT, height),
+      Math.max(MIN_SECTION_HEIGHT, panelHeight - PANEL_FIXED_SPACE),
+    )
+  }
+
+  const handleSectionResizeStart = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    event.preventDefault()
+    const startY = event.clientY
+    const startHeight =
+      propertiesRef.current?.getBoundingClientRect().height ??
+      MIN_SECTION_HEIGHT
+
+    const handlePointerMove = (pointerEvent: PointerEvent) => {
+      setPropertiesHeight(
+        clampPropertiesHeight(
+          startHeight + startY - pointerEvent.clientY,
+        ),
+      )
+    }
+    const handlePointerUp = () => {
+      document.body.classList.remove('is-resizing-panel-section')
+      window.removeEventListener('pointermove', handlePointerMove)
+      window.removeEventListener('pointerup', handlePointerUp)
+      window.removeEventListener('pointercancel', handlePointerUp)
+    }
+
+    document.body.classList.add('is-resizing-panel-section')
+    window.addEventListener('pointermove', handlePointerMove)
+    window.addEventListener('pointerup', handlePointerUp)
+    window.addEventListener('pointercancel', handlePointerUp)
+  }
+
+  const handleSectionResizeKeyDown = (
+    event: KeyboardEvent<HTMLDivElement>,
+  ) => {
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return
+    event.preventDefault()
+    const currentHeight =
+      propertiesRef.current?.getBoundingClientRect().height ??
+      MIN_SECTION_HEIGHT
+    setPropertiesHeight(
+      clampPropertiesHeight(
+        currentHeight +
+          (event.key === 'ArrowUp'
+            ? SECTION_KEYBOARD_STEP
+            : -SECTION_KEYBOARD_STEP),
+      ),
+    )
+  }
+
   return (
-    <aside className="layers-panel">
+    <aside
+      className="layers-panel"
+      ref={panelRef}
+      style={
+        propertiesHeight === null
+          ? undefined
+          : ({
+              '--properties-panel-height': `${propertiesHeight}px`,
+            } as CSSProperties)
+      }
+    >
       <div className="panel-heading">
         <div>
           <span className="eyebrow">Workspace</span>
@@ -114,29 +193,46 @@ function LayersPanel({
         <span>{layers.length} default layers</span>
         <span>Phase 4</span>
       </div>
-      {activeToolId === 'track' ? (
-        <TrackPalette
-          layoutScaleId={layoutScaleId}
-          measurementSystem={measurementSystem}
-          settings={trackSettings}
-          onChange={onTrackSettingsChange}
-        />
-      ) : selectedObjects.length > 1 ? (
-        <MultiSelectionProperties
-          layers={layers}
-          measurementSystem={measurementSystem}
-          objects={selectedObjects}
-        />
-      ) : (
-        <ObjectProperties
-          layer={selectedLayer}
-          layoutScaleId={layoutScaleId}
-          measurementSystem={measurementSystem}
-          object={selectedObject}
-          objects={objects}
-          onUpdateObject={onUpdateObject}
-        />
-      )}
+      <div
+        className="panel-section-resize-handle"
+        role="separator"
+        aria-label="Resize Layers and Properties sections"
+        aria-orientation="horizontal"
+        aria-valuemin={MIN_SECTION_HEIGHT}
+        aria-valuenow={Math.round(
+          propertiesHeight ??
+            propertiesRef.current?.getBoundingClientRect().height ??
+            MIN_SECTION_HEIGHT,
+        )}
+        tabIndex={0}
+        onKeyDown={handleSectionResizeKeyDown}
+        onPointerDown={handleSectionResizeStart}
+      />
+      <div className="properties-panel-slot" ref={propertiesRef}>
+        {activeToolId === 'track' ? (
+          <TrackPalette
+            layoutScaleId={layoutScaleId}
+            measurementSystem={measurementSystem}
+            settings={trackSettings}
+            onChange={onTrackSettingsChange}
+          />
+        ) : selectedObjects.length > 1 ? (
+          <MultiSelectionProperties
+            layers={layers}
+            measurementSystem={measurementSystem}
+            objects={selectedObjects}
+          />
+        ) : (
+          <ObjectProperties
+            layer={selectedLayer}
+            layoutScaleId={layoutScaleId}
+            measurementSystem={measurementSystem}
+            object={selectedObject}
+            objects={objects}
+            onUpdateObject={onUpdateObject}
+          />
+        )}
+      </div>
     </aside>
   )
 }

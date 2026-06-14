@@ -1,4 +1,9 @@
 import { useEffect, useState } from 'react'
+import type {
+  CSSProperties,
+  KeyboardEvent,
+  PointerEvent as ReactPointerEvent,
+} from 'react'
 import { useAppState } from '../state/appState'
 import type {
   DraftMeasurement,
@@ -32,6 +37,18 @@ import LeftToolbar from './LeftToolbar'
 import StatusBar from './StatusBar'
 
 const projectStorage = createLocalProjectStorage(() => window.localStorage)
+const DEFAULT_SIDEBAR_WIDTH = 276
+const MIN_SIDEBAR_WIDTH = 230
+const MAX_SIDEBAR_WIDTH = 600
+const SIDEBAR_KEYBOARD_STEP = 16
+
+const clampSidebarWidth = (width: number) => {
+  const availableMaximum = Math.max(
+    MIN_SIDEBAR_WIDTH,
+    Math.min(MAX_SIDEBAR_WIDTH, window.innerWidth - 300),
+  )
+  return Math.min(Math.max(MIN_SIDEBAR_WIDTH, width), availableMaximum)
+}
 
 interface AppShellProps {
   initialThemePreference: ThemePreference
@@ -78,6 +95,7 @@ function AppShell({ initialThemePreference }: AppShellProps) {
   )
   const [isSnappingEnabled, setIsSnappingEnabled] = useState(true)
   const [resetViewToken, setResetViewToken] = useState(0)
+  const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_WIDTH)
   const activeLayer =
     appState.layers.find((layer) => layer.id === appState.activeLayerId) ??
     appState.layers[0]
@@ -208,6 +226,46 @@ function AppShell({ initialThemePreference }: AppShellProps) {
     }
   }
 
+  const handleSidebarResizeStart = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    event.preventDefault()
+    const startX = event.clientX
+    const startWidth = sidebarWidth
+
+    const handlePointerMove = (pointerEvent: PointerEvent) => {
+      setSidebarWidth(
+        clampSidebarWidth(startWidth + startX - pointerEvent.clientX),
+      )
+    }
+    const handlePointerUp = () => {
+      document.body.classList.remove('is-resizing-sidebar')
+      window.removeEventListener('pointermove', handlePointerMove)
+      window.removeEventListener('pointerup', handlePointerUp)
+      window.removeEventListener('pointercancel', handlePointerUp)
+    }
+
+    document.body.classList.add('is-resizing-sidebar')
+    window.addEventListener('pointermove', handlePointerMove)
+    window.addEventListener('pointerup', handlePointerUp)
+    window.addEventListener('pointercancel', handlePointerUp)
+  }
+
+  const handleSidebarResizeKeyDown = (
+    event: KeyboardEvent<HTMLDivElement>,
+  ) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+    event.preventDefault()
+    setSidebarWidth((width) =>
+      clampSidebarWidth(
+        width +
+          (event.key === 'ArrowLeft'
+            ? SIDEBAR_KEYBOARD_STEP
+            : -SIDEBAR_KEYBOARD_STEP),
+      ),
+    )
+  }
+
   return (
     <div className="app-shell">
       <HeaderBar
@@ -243,7 +301,14 @@ function AppShell({ initialThemePreference }: AppShellProps) {
         onToggleTheme={handleToggleTheme}
       />
 
-      <main className="app-main">
+      <main
+        className="app-main"
+        style={
+          {
+            '--sidebar-width': `${sidebarWidth}px`,
+          } as CSSProperties
+        }
+      >
         <LeftToolbar
           activeToolId={appState.activeToolId}
           preferredSelectionToolId={preferredSelectionToolId}
@@ -273,6 +338,18 @@ function AppShell({ initialThemePreference }: AppShellProps) {
           onTrackSettingsChange={setTrackSettings}
           onUpdateObjects={appState.updateCanvasObjects}
           onZoomChange={setWorkspaceZoom}
+        />
+        <div
+          className="sidebar-resize-handle"
+          role="separator"
+          aria-label="Resize workspace sidebar"
+          aria-orientation="vertical"
+          aria-valuemin={MIN_SIDEBAR_WIDTH}
+          aria-valuemax={MAX_SIDEBAR_WIDTH}
+          aria-valuenow={Math.round(sidebarWidth)}
+          tabIndex={0}
+          onKeyDown={handleSidebarResizeKeyDown}
+          onPointerDown={handleSidebarResizeStart}
         />
         <LayersPanel
           activeLayerId={appState.activeLayerId}
