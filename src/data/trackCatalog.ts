@@ -3,9 +3,11 @@ import type {
   LayoutScaleId,
   TrackDefinition,
   TrackDefinitionId,
+  TrackDetailType,
   TrackGaugeId,
   TrackHandedness,
   TrackKind,
+  TrackTopology,
 } from '../types'
 
 interface PecoSourceProduct {
@@ -172,6 +174,50 @@ const getHandedness = (name: string): TrackHandedness => {
   return null
 }
 
+const getDetailType = (name: string): TrackDetailType | undefined => {
+  if (/inspection pit/i.test(name)) {
+    return 'inspection-pit'
+  }
+  if (/level crossing/i.test(name)) {
+    return 'level-crossing'
+  }
+  return undefined
+}
+
+const getTopology = (
+  name: string,
+  kind: TrackKind,
+): TrackTopology => {
+  if (/scissors crossing/i.test(name)) {
+    return 'scissors-crossing'
+  }
+  if (/double slip|slip\s*-\s*double/i.test(name)) {
+    return 'double-slip'
+  }
+  if (/single slip|slip\s*-\s*single/i.test(name)) {
+    return 'single-slip'
+  }
+  if (/catch turnout/i.test(name)) {
+    return 'catch-turnout'
+  }
+  if (/3 way asymmetric/i.test(name)) {
+    return 'three-way-asymmetric-turnout'
+  }
+  if (/3 way/i.test(name)) {
+    return 'three-way-turnout'
+  }
+  if (/\b(?:y|wye) turnout\b/i.test(name)) {
+    return 'y-turnout'
+  }
+  if (/curved turnout/i.test(name)) {
+    return 'curved-turnout'
+  }
+  if (kind === 'crossing') {
+    return 'crossing'
+  }
+  return 'standard'
+}
+
 const getDefinitionId = (product: PecoSourceProduct) =>
   `peco-${product.gauge}-${product.productCode
     .toLowerCase()
@@ -231,6 +277,8 @@ const pecoTrackCatalog: TrackDefinition[] = sourceProducts
       sourceUrl: product.sourceUrl,
       technicalSpecifications: product.technicalSpecifications,
       handedness: getHandedness(product.name),
+      detailType: getDetailType(product.name),
+      topology: getTopology(product.name, kind),
       isPlaceable: canPlace(product, kind),
       lengthMm: product.lengthMm ?? undefined,
       routeLengthsMm:

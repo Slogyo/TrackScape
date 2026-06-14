@@ -89,6 +89,18 @@ export type TrackKind =
   | 'turnout'
   | 'crossing'
 export type TrackHandedness = TrackCurveDirection | 'symmetric' | null
+export type TrackDetailType = 'inspection-pit' | 'level-crossing'
+export type TrackTopology =
+  | 'standard'
+  | 'catch-turnout'
+  | 'curved-turnout'
+  | 'y-turnout'
+  | 'three-way-turnout'
+  | 'three-way-asymmetric-turnout'
+  | 'crossing'
+  | 'single-slip'
+  | 'double-slip'
+  | 'scissors-crossing'
 
 export interface TrackPieceObject extends BaseCanvasObject {
   type: 'track-piece'
@@ -124,6 +136,8 @@ export interface TrackDefinition {
   sourceUrl?: string
   technicalSpecifications?: Record<string, string>
   handedness?: TrackHandedness
+  detailType?: TrackDetailType
+  topology?: TrackTopology
   isPlaceable: boolean
   lengthMm?: number
   routeLengthsMm?: number[]
@@ -134,9 +148,11 @@ export interface TrackDefinition {
 
 export interface TrackConnector {
   objectId: string
+  connectorId: string
   end: string
   position: Point
   heading: number
+  routeIds: string[]
 }
 
 export interface TrackPlacementSettings {

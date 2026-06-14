@@ -98,6 +98,39 @@ describe('PECO track catalog', () => {
     })
   })
 
+  it('normalizes complex product topology before geometry rendering', () => {
+    expect(getTrackDefinition('peco-ho-oo-sl-86').topology).toBe(
+      'curved-turnout',
+    )
+    expect(getTrackDefinition('peco-ho-oo-sl-99').topology).toBe(
+      'three-way-turnout',
+    )
+    expect(getTrackDefinition('peco-ho-oo-sl-80').topology).toBe(
+      'single-slip',
+    )
+    expect(getTrackDefinition('peco-ho-oo-sl-90').topology).toBe(
+      'double-slip',
+    )
+    expect(getTrackDefinition('peco-ho-oo-sl-u1180').topology).toBe(
+      'single-slip',
+    )
+    expect(getTrackDefinition('peco-ho-oo-sl-u1190').topology).toBe(
+      'double-slip',
+    )
+    expect(getTrackDefinition('peco-ho-oo-sl-84').topology).toBe(
+      'catch-turnout',
+    )
+    expect(getTrackDefinition('peco-ho-oo-sl-e199').topology).toBe(
+      'three-way-asymmetric-turnout',
+    )
+    expect(getTrackDefinition('peco-n-sl-e383f').topology).toBe(
+      'scissors-crossing',
+    )
+    expect(getTrackDefinition('peco-ho-oo-sl-8356').detailType).toBe(
+      'inspection-pit',
+    )
+  })
+
   it('keeps legacy IDs valid and chooses gauge-specific defaults', () => {
     expect(isTrackDefinitionId('straight-100')).toBe(true)
     expect(getDefaultTrackDefinitionId('ho-oo')).toContain('peco-ho-oo-')

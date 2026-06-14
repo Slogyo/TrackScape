@@ -455,7 +455,7 @@ function TrackPalette({
           </a>
         )}
         <p className="properties-notice">
-          [ / ] rotate · Shift places freely · Esc clears preview
+          R or [ / ] rotate · R cycles the joined end · Shift places freely
         </p>
       </div>
     </section>

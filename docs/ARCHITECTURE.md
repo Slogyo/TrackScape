@@ -76,7 +76,7 @@ Browser storage sits behind a small adapter with load, save, and clear operation
 
 ## Track Catalogues and Geometry
 
-Track pieces reference catalogue definitions rather than copying product dimensions into every object. Each placed piece stores a stable definition ID, its start connector, rotation, and curve direction. Project geometry remains in millimetres and degrees.
+Track pieces reference catalogue definitions rather than copying product dimensions into every object. Each placed piece stores a stable definition ID, local origin, rotation, and curve direction. Project geometry remains in millimetres and degrees.
 
 The PECO source snapshot lives in `src/data/pecoCatalog.source.json`. It is generated from PECO's official track collection and each official product page by `scripts/import-peco-catalog.mjs`. The importer records:
 
@@ -89,7 +89,15 @@ The runtime catalogue in `src/data/trackCatalog.ts` converts that source data in
 
 Scenic accessories that happen to be tagged as track, such as platforms and way gauges, are not exposed as placeable track. A genuine track product remains visible but disabled when PECO publishes insufficient geometry; TrackScape does not invent a length.
 
-Pure helpers in `src/utils/trackGeometry.ts` derive SVG routes, lengths, bounds, connector positions, and radius-label positions. Curves use their published radius and angle. Turnouts and crossings may expose multiple routes and connectors. Definitions can preserve separate route lengths when PECO publishes them, while `lengthMm` remains the normal single-piece length.
+The runtime catalogue normalizes manufacturer naming into brand-neutral topology and detail metadata such as curved turnout, three-way turnout, slip, scissors crossing, inspection pit, and level crossing. Canvas and renderer modules do not inspect PECO product names.
+
+Pure helpers in `src/utils/trackGeometry.ts` derive route topology, lengths, bounds, and unique physical connectors. Coincident route endpoints at a turnout toe merge into one connector, while every external route end remains available. Placement can pair any preview connector with any available connector and solves translation and rotation so their positions coincide and outward headings oppose.
+
+Snap tolerance is defined in screen pixels and converted to millimetres at the current zoom. Connector markers use the inverse zoom for their SVG radius, which keeps both interaction and visual size stable while zooming.
+
+`src/utils/proceduralTrack.ts` converts the same routes into gauge-spaced rails, sleepers, interaction bounds, and piece details. It provides generic turnout switch rails, closure routes, frogs, guard rails, crossing check rails, slip paths, scissors routes, and inspection-pit edges and steps. Published length, gauge, radius, route length, and angle remain authoritative. Gauge-scaled sleeper, blade, frog, and pit dimensions are documented fallbacks until a catalogue supplies those fields explicitly.
+
+`src/components/TrackGeometry.tsx` only renders that procedural result. It does not own product geometry or snapping logic. This keeps alternate SVG, Canvas, print, and future 3D renderers possible without changing persisted objects or connection behavior.
 
 The original generic definitions remain available so older saved projects continue to load. New manufacturer catalogue IDs are string-based and validated against the bundled catalogue during project import.
 

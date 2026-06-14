@@ -517,28 +517,74 @@
   color: var(--canvas-object);
 }
 
-.track-bed,
-.track-gap,
+.track-rail,
+.track-stock-rail,
+.track-closure-rail,
+.track-sleeper,
+.track-detail,
+.track-area,
+.track-interaction-border,
 .track-hit-target {
   fill: none;
   stroke-linecap: square;
   stroke-linejoin: round;
 }
 
-.track-bed {
-  stroke: currentColor;
-  stroke-width: 7;
+.track-area {
+  stroke: none;
 }
 
-.track-gap {
-  stroke: var(--track-gap);
-  stroke-width: 3;
+.track-inspection-pit-floor {
+  fill: var(--track-pit-fill);
+}
+
+.track-level-crossing-deck {
+  fill: var(--track-crossing-fill);
+}
+
+.track-sleeper {
+  stroke: var(--track-sleeper);
+  stroke-width: 1.35;
+}
+
+.track-rail,
+.track-stock-rail,
+.track-closure-rail {
+  stroke: currentColor;
+  stroke-width: 1.45;
+}
+
+.track-detail {
+  stroke: currentColor;
+  stroke-width: 1.35;
+}
+
+.track-switch-rail,
+.track-frog {
+  stroke-width: 1.7;
+}
+
+.track-guard-rail {
+  stroke-width: 1.4;
+}
+
+.track-pit-edge {
+  stroke: var(--track-detail);
+  stroke-width: 1.25;
+}
+
+.track-interaction-border {
+  opacity: 0;
+  stroke: var(--accent);
+  stroke-width: 1;
+  pointer-events: none;
+  transition: opacity 80ms ease;
 }
 
 .track-hit-target {
   stroke: transparent;
   stroke-width: 18;
-  pointer-events: none;
+  pointer-events: stroke;
 }
 
 .canvas-workspace.is-selection-tool .track-hit-target,
@@ -551,14 +597,30 @@
   cursor: crosshair;
 }
 
-.track-object.is-selected,
 .track-object.is-preview {
   color: var(--accent);
 }
 
-.track-object.is-moving .track-bed,
-.track-object.is-preview .track-bed {
-  stroke-dasharray: 7 5;
+.track-object.is-preview .track-hit-target {
+  pointer-events: none;
+}
+
+.track-object.is-selected .track-radius-label {
+  fill: var(--accent);
+}
+
+.track-object.is-selected .track-interaction-border,
+.track-object.is-hovered .track-interaction-border,
+.track-object.is-preview .track-interaction-border,
+.track-object.is-moving .track-interaction-border {
+  opacity: 1;
+}
+
+.track-object.is-moving :is(.track-rail, .track-stock-rail, .track-closure-rail),
+.track-object.is-preview :is(.track-rail, .track-stock-rail, .track-closure-rail),
+.track-object.is-moving .track-interaction-border,
+.track-object.is-preview .track-interaction-border {
+  stroke-dasharray: 6 4;
 }
 
 .track-object.is-invalid {
@@ -571,6 +633,21 @@
   stroke-width: 2;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
+}
+
+.track-connector.is-existing {
+  opacity: 0.72;
+}
+
+.track-connector.is-preview-connector {
+  fill: var(--surface-primary);
+}
+
+.track-connector.is-snap-target,
+.track-connector.is-snap-source {
+  fill: var(--accent);
+  stroke: var(--background);
+  opacity: 1;
 }
 
 .canvas-workspace.is-selection-tool .canvas-hit-target.is-line,

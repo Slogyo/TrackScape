@@ -220,10 +220,15 @@ describe('canvas geometry', () => {
       direction: 'right',
     }
 
-    expect(clampTranslationToOrigin(track, { x: -500, y: -500 })).toEqual({
-      x: -100,
-      y: -200,
+    const clampedDelta = clampTranslationToOrigin(track, {
+      x: -500,
+      y: -500,
     })
+    const clampedTrack = translateObject(track, clampedDelta)
+
+    expect(clampedDelta.x).toBe(-100)
+    expect(getObjectBounds(clampedTrack).minX).toBeCloseTo(0)
+    expect(getObjectBounds(clampedTrack).minY).toBeCloseTo(0)
     expect(translateObject(track, { x: 100, y: 200 })).toMatchObject({
       type: 'track-piece',
       definitionId: 'straight-200',

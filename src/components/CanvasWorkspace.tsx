@@ -47,7 +47,14 @@ import {
   findNearestTrackConnector,
   getAvailableTrackConnectors,
   getTrackBounds,
+  getTrackConnectors,
+  getTrackLocalGeometry,
   normalizeRotation,
+  screenPixelsToMillimetres,
+  snapTrackObjectToConnector,
+  TRACK_CONNECTOR_REVEAL_RADIUS_PX,
+  TRACK_ROTATION_STEP,
+  TRACK_SNAP_RADIUS_PX,
 } from '../utils/trackGeometry'
 import { getTrackDefinition } from '../data/trackCatalog'
 import TrackGeometry from './TrackGeometry'
@@ -156,6 +163,12 @@ function CanvasWorkspace({
     useState<AreaSelectionDraft | null>(null)
   const [panDraft, setPanDraft] = useState<PanDraft | null>(null)
   const [trackPointer, setTrackPointer] = useState<Point | null>(null)
+  const [trackAttachmentIndex, setTrackAttachmentIndex] = useState<
+    number | null
+  >(null)
+  const [hoveredObjectId, setHoveredObjectId] = useState<string | null>(
+    null,
+  )
   const [isShiftPressed, setIsShiftPressed] = useState(false)
   const setCamera = useCallback((nextCamera: CameraPosition) => {
     cameraRef.current = nextCamera
@@ -205,22 +218,35 @@ function CanvasWorkspace({
     )
     const connector = bypassSnapping
       ? null
-      : findNearestTrackConnector(trackPointer, visibleTrackObjects)
-    const preview: TrackPieceObject = {
+      : findNearestTrackConnector(
+          trackPointer,
+          visibleTrackObjects,
+          screenPixelsToMillimetres(TRACK_SNAP_RADIUS_PX, zoom),
+        )
+    const basePreview: TrackPieceObject = {
       id: 'track-preview',
       type: 'track-piece',
       layerId: 'track',
       definitionId: trackSettings.definitionId,
-      position: connector
-        ? connector.position
-        : resolvePointSnapping(trackPointer, bypassSnapping),
-      rotation: connector ? connector.heading : trackSettings.rotation,
+      position: resolvePointSnapping(trackPointer, bypassSnapping),
+      rotation: trackSettings.rotation,
       direction: trackSettings.direction,
     }
+    const snappedPlacement = connector
+      ? snapTrackObjectToConnector(
+          basePreview,
+          connector,
+          trackAttachmentIndex ?? undefined,
+        )
+      : null
+    const preview = snappedPlacement?.object ?? basePreview
 
     return {
       object: preview,
       snapped: connector !== null,
+      sourceConnectorId:
+        snappedPlacement?.sourceConnector.id ?? null,
+      targetConnector: connector,
       withinOrigin: (() => {
         const bounds = getTrackBounds(preview)
         return bounds.minX >= -0.001 && bounds.minY >= -0.001
@@ -231,10 +257,32 @@ function CanvasWorkspace({
     isSnappingEnabled,
     isShiftPressed,
     trackLayer,
+    trackAttachmentIndex,
     trackPointer,
     trackSettings,
     visibleTrackObjects,
+    zoom,
   ])
+  const previewConnectors = useMemo(
+    () => (trackPreview ? getTrackConnectors(trackPreview.object) : []),
+    [trackPreview],
+  )
+  const nearbyTrackConnectors = useMemo(() => {
+    if (!trackPointer) {
+      return []
+    }
+    const revealDistance = screenPixelsToMillimetres(
+      TRACK_CONNECTOR_REVEAL_RADIUS_PX,
+      zoom,
+    )
+    return availableTrackConnectors.filter(
+      (connector) =>
+        Math.hypot(
+          connector.position.x - trackPointer.x,
+          connector.position.y - trackPointer.y,
+        ) <= revealDistance,
+    )
+  }, [availableTrackConnectors, trackPointer, zoom])
 
   const cancelDrawing = useCallback(() => {
     setDrawingDraft(null)
@@ -255,7 +303,13 @@ function CanvasWorkspace({
   useEffect(() => {
     cancelInteractions()
     setTrackPointer(null)
+    setTrackAttachmentIndex(null)
+    setHoveredObjectId(null)
   }, [activeLayer.id, activeToolId, cancelInteractions])
+
+  useEffect(() => {
+    setTrackAttachmentIndex(null)
+  }, [trackSettings.definitionId])
 
   useEffect(() => {
     onZoomChange(DEFAULT_WORKSPACE_ZOOM)
@@ -334,12 +388,45 @@ function CanvasWorkspace({
       ) {
         if (event.key === '[' || event.key === ']') {
           event.preventDefault()
+          setTrackAttachmentIndex(null)
           onTrackSettingsChange({
             ...trackSettings,
             rotation: normalizeRotation(
-              trackSettings.rotation + (event.key === '[' ? -15 : 15),
+              trackSettings.rotation +
+                (event.key === '['
+                  ? -TRACK_ROTATION_STEP
+                  : TRACK_ROTATION_STEP),
             ),
           })
+          return
+        }
+
+        if (event.key.toLowerCase() === 'r') {
+          event.preventDefault()
+          if (trackPreview?.snapped) {
+            const connectors = getTrackLocalGeometry(
+              trackPreview.object,
+            ).connectors
+            if (connectors.length === 0) {
+              return
+            }
+            const currentIndex = connectors.findIndex(
+              (connector) =>
+                connector.id === trackPreview.sourceConnectorId,
+            )
+            setTrackAttachmentIndex(
+              (currentIndex + 1 + connectors.length) %
+                connectors.length,
+            )
+          } else {
+            setTrackAttachmentIndex(null)
+            onTrackSettingsChange({
+              ...trackSettings,
+              rotation: normalizeRotation(
+                trackSettings.rotation + TRACK_ROTATION_STEP,
+              ),
+            })
+          }
           return
         }
 
@@ -349,12 +436,45 @@ function CanvasWorkspace({
           !getTrackDefinition(trackSettings.definitionId).handedness
         ) {
           event.preventDefault()
+          setTrackAttachmentIndex(null)
           onTrackSettingsChange({
             ...trackSettings,
             direction:
               trackSettings.direction === 'left' ? 'right' : 'left',
           })
           return
+        }
+      }
+
+      if (
+        event.key.toLowerCase() === 'r' &&
+        !isTextEntryTarget(event.target) &&
+        activeToolId !== 'track'
+      ) {
+        const rotatedObjects = selectedObjects.flatMap((object) => {
+          if (object.type !== 'track-piece') {
+            return []
+          }
+          const layer = layers.find(
+            (candidate) => candidate.id === object.layerId,
+          )
+          if (!layer?.visible || layer.locked) {
+            return []
+          }
+          const rotated = {
+            ...object,
+            rotation: normalizeRotation(
+              object.rotation + TRACK_ROTATION_STEP,
+            ),
+          }
+          const bounds = getTrackBounds(rotated)
+          return bounds.minX >= -0.001 && bounds.minY >= -0.001
+            ? [rotated]
+            : []
+        })
+        if (rotatedObjects.length > 0) {
+          event.preventDefault()
+          onUpdateObjects(rotatedObjects)
         }
       }
 
@@ -394,7 +514,11 @@ function CanvasWorkspace({
     cancelInteractions,
     onRemoveObjects,
     onTrackSettingsChange,
+    onUpdateObjects,
+    layers,
+    selectedObjects,
     selectedObjectIds,
+    trackPreview,
     trackSettings,
   ])
 
@@ -666,6 +790,7 @@ function CanvasWorkspace({
 
   const handlePointerMove = (event: PointerEvent<HTMLElement>) => {
     if (panDraft?.pointerId === event.pointerId) {
+      setHoveredObjectId(null)
       setCamera({
         x: Math.max(
           0,
@@ -683,6 +808,10 @@ function CanvasWorkspace({
 
     const pointerPosition = getPointerPosition(event)
     onCursorMove(pointerPosition)
+    const pointerObject = getTargetObject(event)
+    setHoveredObjectId(
+      pointerObject?.type === 'track-piece' ? pointerObject.id : null,
+    )
 
     if (activeToolId === 'track') {
       setTrackPointer(pointerPosition)
@@ -864,6 +993,13 @@ function CanvasWorkspace({
     }
   }
 
+  const handlePointerLeave = () => {
+    setHoveredObjectId(null)
+    if (!drawingDraft && !movementDraft && !areaSelectionDraft && !panDraft) {
+      setTrackPointer(null)
+    }
+  }
+
   const renderGeometry = (
     object: CanvasObject,
     className: string,
@@ -937,9 +1073,12 @@ function CanvasWorkspace({
           key={object.id}
           className={`track-object ${
             isSelected ? 'is-selected' : ''
+          } ${
+            hoveredObjectId === object.id ? 'is-hovered' : ''
           } ${isMoving ? 'is-moving' : ''}`.trim()}
           dataObjectId={object.id}
           object={renderedObject}
+          showRadiusLabel={isSelected && activeToolId !== 'track'}
         />
       )
     }
@@ -1010,6 +1149,7 @@ function CanvasWorkspace({
       onPointerCancel={handlePointerCancel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
       onPointerUp={handlePointerUp}
     >
       <div
@@ -1033,13 +1173,20 @@ function CanvasWorkspace({
         >
           {visibleObjects.map(renderObject)}
         {activeToolId === 'track' &&
-          availableTrackConnectors.map((connector) => (
+          nearbyTrackConnectors.map((connector) => (
             <circle
-              className="track-connector"
-              key={`${connector.objectId}-${connector.end}`}
+              className={`track-connector is-existing ${
+                trackPreview?.targetConnector?.objectId ===
+                  connector.objectId &&
+                trackPreview.targetConnector.connectorId ===
+                  connector.connectorId
+                  ? 'is-snap-target'
+                  : ''
+              }`.trim()}
+              key={`${connector.objectId}-${connector.connectorId}`}
               cx={millimetresToPixels(connector.position.x)}
               cy={millimetresToPixels(connector.position.y)}
-              r="4"
+              r={4 / zoom}
             />
           ))}
         {trackPreview && (
@@ -1050,6 +1197,20 @@ function CanvasWorkspace({
             object={trackPreview.object}
           />
         )}
+        {trackPreview &&
+          previewConnectors.map((connector) => (
+            <circle
+              className={`track-connector is-preview-connector ${
+                connector.connectorId === trackPreview.sourceConnectorId
+                  ? 'is-snap-source'
+                  : ''
+              }`.trim()}
+              key={`${connector.objectId}-${connector.connectorId}`}
+              cx={millimetresToPixels(connector.position.x)}
+              cy={millimetresToPixels(connector.position.y)}
+              r={4 / zoom}
+            />
+          ))}
           {draftObject && (
           <g>
             {renderGeometry(

@@ -45,6 +45,10 @@
   --room-inner: #777777;
   --tabletop-fill: rgba(34, 34, 34, 0.08);
   --track-gap: #ffffff;
+  --track-sleeper: #8b8178;
+  --track-detail: #625b55;
+  --track-pit-fill: #d2ccc5;
+  --track-crossing-fill: #b9b9b9;
   --disabled: #9a9a9a;
 }
 
@@ -67,6 +71,10 @@
   --room-inner: #9a9a9a;
   --tabletop-fill: rgba(224, 224, 224, 0.1);
   --track-gap: #232323;
+  --track-sleeper: #80776f;
+  --track-detail: #aaa39b;
+  --track-pit-fill: #111111;
+  --track-crossing-fill: #4a4a4a;
   --disabled: #6f6f6f;
 }
 

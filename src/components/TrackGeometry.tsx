@@ -1,65 +1,91 @@
-import type { TrackConnector, TrackPieceObject } from '../types'
-import { millimetresToPixels } from '../utils/canvas'
-import {
-  getTrackLabelPosition,
-  getTrackPathDataList,
-} from '../utils/trackGeometry'
 import { getTrackDefinition } from '../data/trackCatalog'
+import type { TrackPieceObject } from '../types'
+import { millimetresToPixels } from '../utils/canvas'
+import { buildProceduralTrackGeometry } from '../utils/proceduralTrack'
+import { getTrackLabelPosition } from '../utils/trackGeometry'
 
 interface TrackGeometryProps {
   className: string
-  connectors?: TrackConnector[]
   dataObjectId?: string
   object: TrackPieceObject
-  showConnectors?: boolean
   showRadiusLabel?: boolean
 }
 
 function TrackGeometry({
   className,
-  connectors = [],
   dataObjectId,
   object,
-  showConnectors = false,
   showRadiusLabel = true,
 }: TrackGeometryProps) {
-  const paths = getTrackPathDataList(object)
+  const geometry = buildProceduralTrackGeometry(object)
   const definition = getTrackDefinition(object.definitionId)
   const labelPosition = getTrackLabelPosition(object)
-  const radii = definition.radiiMm ?? (
-    definition.radiusMm ? [definition.radiusMm] : []
-  )
+  const radii =
+    definition.radiiMm ??
+    (definition.radiusMm ? [definition.radiusMm] : [])
   const transform = `translate(${millimetresToPixels(
     object.position.x,
   )} ${millimetresToPixels(object.position.y)}) rotate(${
     object.rotation
   }) scale(0.1)`
+  const borderWidth = geometry.bounds.maxX - geometry.bounds.minX
+  const borderHeight = geometry.bounds.maxY - geometry.bounds.minY
 
   return (
     <g className={className}>
-      {paths.map((path, index) => (
-        <g key={`${object.id}-route-${index}`}>
+      <g transform={transform}>
+        {geometry.areas.map((area) => (
           <path
-            className="track-bed"
-            d={path}
-            transform={transform}
+            className={`track-area track-${area.kind}`}
+            d={area.path}
+            key={area.id}
+          />
+        ))}
+        {geometry.sleepers.map((sleeper) => (
+          <line
+            className="track-sleeper"
+            key={sleeper.id}
+            x1={sleeper.start.x}
+            x2={sleeper.end.x}
+            y1={sleeper.start.y}
+            y2={sleeper.end.y}
             vectorEffect="non-scaling-stroke"
           />
+        ))}
+        {geometry.rails.map((rail) => (
           <path
-            className="track-gap"
-            d={path}
-            transform={transform}
+            className={`track-${rail.kind}`}
+            d={rail.path}
+            key={rail.id}
             vectorEffect="non-scaling-stroke"
           />
+        ))}
+        {geometry.details.map((detail) => (
+          <path
+            className={`track-detail track-${detail.kind}`}
+            d={detail.path}
+            key={detail.id}
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
+        {geometry.routes.map((route) => (
           <path
             className="track-hit-target"
-            d={path}
+            d={route.path}
             data-object-id={dataObjectId}
-            transform={transform}
+            key={`${route.id}-hit-target`}
             vectorEffect="non-scaling-stroke"
           />
-        </g>
-      ))}
+        ))}
+        <rect
+          className="track-interaction-border"
+          x={geometry.bounds.minX}
+          y={geometry.bounds.minY}
+          width={borderWidth}
+          height={borderHeight}
+          vectorEffect="non-scaling-stroke"
+        />
+      </g>
       {showRadiusLabel && radii.length > 0 && (
         <text
           className="track-radius-label"
@@ -70,16 +96,6 @@ function TrackGeometry({
           R{radii.join('/')} mm
         </text>
       )}
-      {showConnectors &&
-        connectors.map((connector) => (
-          <circle
-            className="track-connector"
-            key={`${connector.objectId}-${connector.end}`}
-            cx={millimetresToPixels(connector.position.x)}
-            cy={millimetresToPixels(connector.position.y)}
-            r="4"
-          />
-        ))}
     </g>
   )
 }
