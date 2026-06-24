@@ -11,7 +11,6 @@ import {
   DEFAULT_LAYOUT_SCALE_ID,
   isLayoutScaleId,
 } from '../data/layoutScales'
-import { getTrackBounds } from './trackGeometry'
 import {
   getObjectAnchors,
   resolveMeasurement,
@@ -35,8 +34,8 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0
 
-const isFiniteNonNegativeNumber = (value: unknown): value is number =>
-  typeof value === 'number' && Number.isFinite(value) && value >= 0
+const isFiniteNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value)
 
 const isPositiveNumber = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value) && value > 0
@@ -127,8 +126,8 @@ const validateLayers = (
 
 const validatePoint = (value: unknown): value is Point =>
   isRecord(value) &&
-  isFiniteNonNegativeNumber(value.x) &&
-  isFiniteNonNegativeNumber(value.y)
+  isFiniteNumber(value.x) &&
+  isFiniteNumber(value.y)
 
 const validateObjects = (
   value: unknown,
@@ -254,14 +253,6 @@ const validateObjects = (
         rotation: candidate.rotation,
         direction: candidate.direction,
       }
-      const bounds = getTrackBounds(trackPiece)
-      if (bounds.minX < -0.001 || bounds.minY < -0.001) {
-        return {
-          ok: false,
-          error: `Track piece ${candidate.id} crosses the workspace origin.`,
-        }
-      }
-
       appendObject(trackPiece, candidate)
       continue
     }
@@ -334,8 +325,8 @@ const validateObjects = (
     }
 
     if (
-      !isFiniteNonNegativeNumber(candidate.x) ||
-      !isFiniteNonNegativeNumber(candidate.y) ||
+      !isFiniteNumber(candidate.x) ||
+      !isFiniteNumber(candidate.y) ||
       !isPositiveNumber(candidate.width) ||
       !isPositiveNumber(candidate.height)
     ) {

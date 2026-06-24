@@ -409,9 +409,24 @@ describe('project document', () => {
     expect(
       validateProjectDocument({
         ...project,
-        objects: [{ ...project.objects[1], x: -1 }],
+        objects: [{ ...project.objects[1], x: Number.NaN }],
       }).ok,
     ).toBe(false)
+  })
+
+  it('allows signed object coordinates', () => {
+    const project = validProject()
+    const result = validateProjectDocument({
+      ...project,
+      objects: [
+        { ...project.objects[0], start: { x: -100, y: -200 } },
+        { ...project.objects[1], x: -400, y: -300 },
+        { ...project.objects[2], x: -500, y: -600 },
+        { ...project.objects[3], x: -700, y: -800 },
+      ],
+    })
+
+    expect(result.ok).toBe(true)
   })
 
   it('allows semantic objects to be reparented to any folder', () => {

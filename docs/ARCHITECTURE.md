@@ -8,7 +8,7 @@ There is no backend, account system, or drawing engine. The browser persistence 
 
 ## Workspace Navigation
 
-The workspace is a virtual, unbounded positive-coordinate surface with an upper-left origin. The SVG remains the size of the visible viewport while a transient camera determines which model coordinates are shown. Screen-to-model conversion includes the camera position and zoom, so drawing and snapping use the same millimetre geometry anywhere in the workspace.
+The workspace is a virtual, unbounded signed-coordinate surface centred on the world origin. New layouts open with 0,0 in the centre of the visible canvas, and users can draw, place, pan, and move objects into positive or negative X/Y space. The SVG remains the size of the visible viewport while a transient camera determines which model coordinates are shown. Screen-to-model conversion includes the camera position and zoom, so drawing and snapping use the same millimetre geometry anywhere in the workspace.
 
 Camera position, zoom, panning state, marquee drafts, and single or multiple selection remain transient interface state. They are not written into project documents. Keeping the rendered surface viewport-sized also prevents zoom from resizing a very large DOM element.
 

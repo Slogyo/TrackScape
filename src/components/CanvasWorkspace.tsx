@@ -24,7 +24,6 @@ import type {
 import {
   canDrawOnLayer,
   boundsIntersect,
-  clampGroupTranslationToOrigin,
   getCombinedBounds,
   getObjectBounds,
   isNonZeroLine,
@@ -43,7 +42,7 @@ import {
   DEFAULT_WORKSPACE_ZOOM,
   getCanvasRelativeWheelCameraOffset,
   getCenteredCamera,
-  getCursorAnchoredCamera,
+  getViewportCenteredZoomCamera,
   isHorizontalWheelGesture,
   stepZoom,
 } from '../utils/viewport'
@@ -51,7 +50,6 @@ import { createShapeObject } from '../utils/shapeMode'
 import {
   findNearestTrackConnector,
   getAvailableTrackConnectors,
-  getTrackBounds,
   getTrackConnectors,
   getTrackLocalGeometry,
   normalizeRotation,
@@ -316,10 +314,6 @@ function CanvasWorkspace({
       sourceConnectorId:
         snappedPlacement?.sourceConnector.id ?? null,
       targetConnector: connector,
-      withinOrigin: (() => {
-        const bounds = getTrackBounds(preview)
-        return bounds.minX >= -0.001 && bounds.minY >= -0.001
-      })(),
     }
   }, [
     activeToolId,
@@ -454,8 +448,16 @@ function CanvasWorkspace({
   }, [trackSettings.definitionId])
 
   useEffect(() => {
+    const viewport = viewportRef.current
     onZoomChange(DEFAULT_WORKSPACE_ZOOM)
-    setCamera({ x: 0, y: 0 })
+    setCamera(
+      getCenteredCamera(null, DEFAULT_WORKSPACE_ZOOM, {
+        width: viewport ? Math.max(viewport.clientWidth, 1) : 1,
+        height: viewport
+          ? Math.max(viewport.clientHeight, 1)
+          : 1,
+      }),
+    )
   }, [onZoomChange, projectId, setCamera])
 
   useEffect(() => {
@@ -613,10 +615,7 @@ function CanvasWorkspace({
               object.rotation + TRACK_ROTATION_STEP,
             ),
           }
-          const bounds = getTrackBounds(rotated)
-          return bounds.minX >= -0.001 && bounds.minY >= -0.001
-            ? [rotated]
-            : []
+          return [rotated]
         })
         if (rotatedObjects.length > 0) {
           event.preventDefault()
@@ -728,12 +727,11 @@ function CanvasWorkspace({
       return
     }
 
-    const bounds = viewport.getBoundingClientRect()
-    const nextCamera = getCursorAnchoredCamera(
+    const nextCamera = getViewportCenteredZoomCamera(
       cameraRef.current,
       {
-        x: event.clientX - bounds.left,
-        y: event.clientY - bounds.top,
+        width: Math.max(viewport.clientWidth, 1),
+        height: Math.max(viewport.clientHeight, 1),
       },
       zoom,
       nextZoom,
@@ -798,16 +796,11 @@ function CanvasWorkspace({
       },
       bypassSnapping,
     )
-    const delta = clampGroupTranslationToOrigin(
-      draft.originals,
-      snappedDelta,
-    )
-
     return {
       ...draft,
-      delta,
+      delta: snappedDelta,
       previews: draft.originals.map((object) =>
-        translateObject(object, delta, objects),
+        translateObject(object, snappedDelta, objects),
       ),
     }
   }
@@ -983,11 +976,7 @@ function CanvasWorkspace({
     }
 
     if (activeToolId === 'track') {
-      if (
-        trackLayer?.visible &&
-        !trackLayer.locked &&
-        trackPreview?.withinOrigin
-      ) {
+      if (trackLayer?.visible && !trackLayer.locked && trackPreview) {
         onAddObject({
           ...trackPreview.object,
           id: crypto.randomUUID(),
@@ -1075,22 +1064,18 @@ function CanvasWorkspace({
           ? {
               ...current,
               position: {
-                x: Math.max(
-                  0,
+                x:
                   textDrag.startPosition.x +
-                    screenPixelsToMillimetres(
-                      event.clientX - textDrag.startClient.x,
-                      zoom,
-                    ),
-                ),
-                y: Math.max(
-                  0,
+                  screenPixelsToMillimetres(
+                    event.clientX - textDrag.startClient.x,
+                    zoom,
+                  ),
+                y:
                   textDrag.startPosition.y +
-                    screenPixelsToMillimetres(
-                      event.clientY - textDrag.startClient.y,
-                      zoom,
-                    ),
-                ),
+                  screenPixelsToMillimetres(
+                    event.clientY - textDrag.startClient.y,
+                    zoom,
+                  ),
               },
             }
           : current,
@@ -1101,16 +1086,12 @@ function CanvasWorkspace({
     if (panDraft?.pointerId === event.pointerId) {
       setHoveredObjectId(null)
       setCamera({
-        x: Math.max(
-          0,
+        x:
           panDraft.startCamera.x -
-            (event.clientX - panDraft.startClient.x) / zoom,
-        ),
-        y: Math.max(
-          0,
+          (event.clientX - panDraft.startClient.x) / zoom,
+        y:
           panDraft.startCamera.y -
-            (event.clientY - panDraft.startClient.y) / zoom,
-        ),
+          (event.clientY - panDraft.startClient.y) / zoom,
       })
       return
     }
@@ -1706,7 +1687,7 @@ function CanvasWorkspace({
           <TrackGeometry
             className={`track-object is-preview ${
               trackPreview.snapped ? 'is-snapped' : ''
-            } ${trackPreview.withinOrigin ? '' : 'is-invalid'}`.trim()}
+            }`.trim()}
             object={trackPreview.object}
           />
         )}

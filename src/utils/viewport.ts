@@ -1,9 +1,10 @@
 import { MILLIMETRES_PER_PIXEL, type Bounds } from './canvas'
 
-export const DEFAULT_WORKSPACE_ZOOM = 2
-export const MIN_WORKSPACE_ZOOM = 0.25
-export const MAX_WORKSPACE_ZOOM = 4
-export const WORKSPACE_ZOOM_STEP = 0.1
+export const DEFAULT_WORKSPACE_ZOOM = 5
+export const MIN_WORKSPACE_ZOOM = DEFAULT_WORKSPACE_ZOOM * 0.1
+export const MAX_WORKSPACE_ZOOM = DEFAULT_WORKSPACE_ZOOM * 2
+export const WORKSPACE_ZOOM_PERCENT_PER_DELTA = 0.1
+export const HORIZONTAL_WHEEL_VERTICAL_TOLERANCE = 1
 
 export interface CameraPosition {
   x: number
@@ -19,34 +20,38 @@ export function clampZoom(zoom: number): number {
   return Math.min(MAX_WORKSPACE_ZOOM, Math.max(MIN_WORKSPACE_ZOOM, zoom))
 }
 
+export function getWorkspaceZoomPercent(zoom: number): number {
+  return Math.round((clampZoom(zoom) / DEFAULT_WORKSPACE_ZOOM) * 100)
+}
+
 export function stepZoom(zoom: number, wheelDeltaY: number): number {
   if (wheelDeltaY === 0) {
     return clampZoom(zoom)
   }
 
-  const direction = wheelDeltaY < 0 ? 1 : -1
+  const nextPercent =
+    (clampZoom(zoom) / DEFAULT_WORKSPACE_ZOOM) * 100 -
+    wheelDeltaY * WORKSPACE_ZOOM_PERCENT_PER_DELTA
   return clampZoom(
-    Math.round((zoom + direction * WORKSPACE_ZOOM_STEP) * 100) / 100,
+    Math.round(DEFAULT_WORKSPACE_ZOOM * (nextPercent / 100) * 1000) / 1000,
   )
 }
 
-export function clampCamera(position: CameraPosition): CameraPosition {
-  return {
-    x: Math.max(0, position.x),
-    y: Math.max(0, position.y),
-  }
-}
-
-export function getCursorAnchoredCamera(
+export function getViewportCenteredZoomCamera(
   current: CameraPosition,
-  cursor: CameraPosition,
+  viewport: ViewportSize,
   oldZoom: number,
   newZoom: number,
 ): CameraPosition {
-  return clampCamera({
-    x: current.x + cursor.x / oldZoom - cursor.x / newZoom,
-    y: current.y + cursor.y / oldZoom - cursor.y / newZoom,
-  })
+  const center = {
+    x: viewport.width / 2,
+    y: viewport.height / 2,
+  }
+
+  return {
+    x: current.x + center.x / oldZoom - center.x / newZoom,
+    y: current.y + center.y / oldZoom - center.y / newZoom,
+  }
 }
 
 export function getCanvasRelativeWheelCameraOffset(
@@ -54,14 +59,17 @@ export function getCanvasRelativeWheelCameraOffset(
   wheelDelta: number,
   zoom: number,
 ): number {
-  return Math.max(0, currentOffset - wheelDelta / zoom)
+  return currentOffset - wheelDelta / zoom
 }
 
 export function isHorizontalWheelGesture(
   deltaX: number,
   deltaY: number,
 ): boolean {
-  return Math.abs(deltaX) > Math.abs(deltaY)
+  return (
+    Math.abs(deltaX) > 0 &&
+    Math.abs(deltaY) <= HORIZONTAL_WHEEL_VERTICAL_TOLERANCE
+  )
 }
 
 export function getCenteredCamera(
@@ -70,7 +78,10 @@ export function getCenteredCamera(
   viewport: ViewportSize,
 ): CameraPosition {
   if (!bounds) {
-    return { x: 0, y: 0 }
+    return {
+      x: -viewport.width / zoom / 2,
+      y: -viewport.height / zoom / 2,
+    }
   }
 
   const centerX =
@@ -78,8 +89,8 @@ export function getCenteredCamera(
   const centerY =
     (bounds.minY + bounds.maxY) / 2 / MILLIMETRES_PER_PIXEL
 
-  return clampCamera({
+  return {
     x: centerX - viewport.width / zoom / 2,
     y: centerY - viewport.height / zoom / 2,
-  })
+  }
 }

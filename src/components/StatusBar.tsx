@@ -16,6 +16,7 @@ import { formatPrototypeLength } from '../utils/layoutScale'
 import { getObjectTypeLabel, getShapeMode } from '../utils/shapeMode'
 import { getTrackLength } from '../utils/trackGeometry'
 import { defaultUnitForSystem, formatMillimetres } from '../utils/units'
+import { getWorkspaceZoomPercent } from '../utils/viewport'
 
 interface StatusBarProps {
   activeLayer: Layer
@@ -63,6 +64,7 @@ function StatusBar({
       : activeTool.label
   const displayUnit = defaultUnitForSystem(measurementSystem)
   const scale = getLayoutScalePreset(layoutScaleId)
+  const zoomPercent = getWorkspaceZoomPercent(workspaceZoom)
   const isDrawingTool =
     activeToolId === 'line' ||
     activeToolId === 'shape' ||
@@ -226,12 +228,10 @@ function StatusBar({
           className="status-view-button"
           type="button"
           title="Reset zoom and centre project"
-          aria-label={`Reset workspace view. Current zoom ${Math.round(
-            workspaceZoom * 100,
-          )} percent`}
+          aria-label={`Reset workspace view. Current zoom ${zoomPercent} percent`}
           onClick={onResetView}
         >
-          {Math.round(workspaceZoom * 100)}%
+          {zoomPercent}%
         </button>
       </div>
       <div className="status-item status-attributes">

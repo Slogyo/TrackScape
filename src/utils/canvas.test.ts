@@ -3,8 +3,6 @@ import type { TrackPieceObject } from '../types'
 import {
   canDrawOnLayer,
   boundsIntersect,
-  clampGroupTranslationToOrigin,
-  clampTranslationToOrigin,
   getCombinedBounds,
   getObjectBounds,
   isNonZeroLine,
@@ -26,8 +24,8 @@ describe('canvas geometry', () => {
     expect(pointFromPixels(12.5, 20)).toEqual({ x: 125, y: 200 })
   })
 
-  it('clamps pointer coordinates to the positive workspace', () => {
-    expect(pointFromPixels(-4, -10)).toEqual({ x: 0, y: 0 })
+  it('preserves signed pointer coordinates', () => {
+    expect(pointFromPixels(-4, -10)).toEqual({ x: -40, y: -100 })
   })
 
   it('includes the viewport camera offset without an upper limit', () => {
@@ -50,6 +48,7 @@ describe('canvas geometry', () => {
 
   it('snaps points to the nearest 100 millimetres', () => {
     expect(snapPoint({ x: 149, y: 151 })).toEqual({ x: 100, y: 200 })
+    expect(snapPoint({ x: -149, y: -151 })).toEqual({ x: -100, y: -200 })
     expect(resolvePointSnapping({ x: 149, y: 151 }, true)).toEqual({
       x: 149,
       y: 151,
@@ -103,7 +102,7 @@ describe('canvas geometry', () => {
     })
   })
 
-  it('calculates bounds and clamps movement at the origin', () => {
+  it('calculates bounds while allowing signed movement', () => {
     const line = {
       id: 'line',
       type: 'line' as const,
@@ -118,9 +117,9 @@ describe('canvas geometry', () => {
       maxX: 300,
       maxY: 500,
     })
-    expect(clampTranslationToOrigin(line, { x: -500, y: -300 })).toEqual({
-      x: -100,
-      y: -200,
+    expect(translateObject(line, { x: -500, y: -300 })).toMatchObject({
+      start: { x: -200, y: -100 },
+      end: { x: -400, y: 200 },
     })
   })
 
@@ -156,9 +155,6 @@ describe('canvas geometry', () => {
         { minX: 100, minY: 200, maxX: 400, maxY: 600 },
       ),
     ).toBe(true)
-    expect(
-      clampGroupTranslationToOrigin(objects, { x: -500, y: -300 }),
-    ).toEqual({ x: -100, y: -100 })
   })
 
   it('translates objects without changing dimensions or line orientation', () => {
@@ -209,7 +205,7 @@ describe('canvas geometry', () => {
     })
   })
 
-  it('translates and clamps track pieces using rotated bounds', () => {
+  it('translates track pieces through signed coordinates', () => {
     const track: TrackPieceObject = {
       id: 'track-1',
       type: 'track-piece',
@@ -220,15 +216,12 @@ describe('canvas geometry', () => {
       direction: 'right',
     }
 
-    const clampedDelta = clampTranslationToOrigin(track, {
-      x: -500,
-      y: -500,
+    expect(translateObject(track, { x: -500, y: -500 })).toMatchObject({
+      type: 'track-piece',
+      definitionId: 'straight-200',
+      position: { x: -200, y: -300 },
+      rotation: 180,
     })
-    const clampedTrack = translateObject(track, clampedDelta)
-
-    expect(clampedDelta.x).toBe(-100)
-    expect(getObjectBounds(clampedTrack).minX).toBeCloseTo(0)
-    expect(getObjectBounds(clampedTrack).minY).toBeCloseTo(0)
     expect(translateObject(track, { x: 100, y: 200 })).toMatchObject({
       type: 'track-piece',
       definitionId: 'straight-200',

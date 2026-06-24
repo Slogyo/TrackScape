@@ -22,8 +22,8 @@ export const millimetresToPixels = (millimetres: number): number =>
   millimetres / MILLIMETRES_PER_PIXEL
 
 export const pointFromPixels = (x: number, y: number): Point => ({
-  x: Math.max(0, Math.round(pixelsToMillimetres(x))),
-  y: Math.max(0, Math.round(pixelsToMillimetres(y))),
+  x: Math.round(pixelsToMillimetres(x)),
+  y: Math.round(pixelsToMillimetres(y)),
 })
 
 export const pointFromViewportPixels = (
@@ -38,7 +38,7 @@ export const pointFromViewportPixels = (
 export const snapValue = (
   value: number,
   interval = SNAP_INTERVAL_MM,
-): number => Math.max(0, Math.round(value / interval) * interval)
+): number => Math.round(value / interval) * interval
 
 export const snapPoint = (
   point: Point,
@@ -153,31 +153,6 @@ export const getCombinedBounds = (objects: CanvasObject[]): Bounds | null => {
     minY: Math.min(...bounds.map((candidate) => candidate.minY)),
     maxX: Math.max(...bounds.map((candidate) => candidate.maxX)),
     maxY: Math.max(...bounds.map((candidate) => candidate.maxY)),
-  }
-}
-
-export const clampGroupTranslationToOrigin = (
-  objects: CanvasObject[],
-  delta: MovementDelta,
-): MovementDelta => {
-  const bounds = getCombinedBounds(objects)
-  return bounds
-    ? {
-        x: Math.max(delta.x, -bounds.minX),
-        y: Math.max(delta.y, -bounds.minY),
-      }
-    : { x: 0, y: 0 }
-}
-
-export const clampTranslationToOrigin = (
-  object: CanvasObject,
-  delta: MovementDelta,
-): MovementDelta => {
-  const bounds = getObjectBounds(object)
-
-  return {
-    x: Math.max(delta.x, -bounds.minX),
-    y: Math.max(delta.y, -bounds.minY),
   }
 }
 
