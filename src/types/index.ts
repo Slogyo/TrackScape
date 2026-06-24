@@ -38,6 +38,7 @@ export interface Layer {
   name: string
   visible: boolean
   locked: boolean
+  expanded?: boolean
 }
 
 export interface Point {
@@ -48,6 +49,9 @@ export interface Point {
 interface BaseCanvasObject {
   id: string
   layerId: string
+  name?: string
+  visible?: boolean
+  locked?: boolean
 }
 
 export interface LineObject extends BaseCanvasObject {
@@ -69,12 +73,10 @@ export interface RectangleObject extends BaseRectangularObject {
 
 export interface RoomObject extends BaseRectangularObject {
   type: 'room'
-  layerId: 'room'
 }
 
 export interface TabletopObject extends BaseRectangularObject {
   type: 'tabletop'
-  layerId: 'tabletop'
 }
 
 export type TrackDefinitionId = string
@@ -104,7 +106,6 @@ export type TrackTopology =
 
 export interface TrackPieceObject extends BaseCanvasObject {
   type: 'track-piece'
-  layerId: 'track'
   definitionId: TrackDefinitionId
   position: Point
   rotation: number
@@ -241,6 +242,14 @@ export interface ProjectDocumentV3 {
 
 export interface ProjectDocumentV4 {
   schemaVersion: 4
+  metadata: ProjectMetadata
+  settings: ProjectSettings
+  layers: Layer[]
+  objects: CanvasObject[]
+}
+
+export interface ProjectDocumentV5 {
+  schemaVersion: 5
   metadata: ProjectMetadata
   settings: ProjectSettings
   layers: Layer[]

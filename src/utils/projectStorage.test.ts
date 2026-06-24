@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import type { ProjectDocumentV4 } from '../types'
+import type { ProjectDocumentV5 } from '../types'
 import {
   createLocalProjectStorage,
   PROJECT_STORAGE_KEY,
 } from './projectStorage'
 
-const project: ProjectDocumentV4 = {
-  schemaVersion: 4,
+const project: ProjectDocumentV5 = {
+  schemaVersion: 5,
   metadata: {
     id: 'project-1',
     name: 'Stored Layout',
@@ -17,7 +17,15 @@ const project: ProjectDocumentV4 = {
     measurementSystem: 'metric',
     layoutScaleId: 'oo',
   },
-  layers: [{ id: 'room', name: 'Room', visible: true, locked: false }],
+  layers: [
+    {
+      id: 'room',
+      name: 'Room',
+      visible: true,
+      locked: false,
+      expanded: true,
+    },
+  ],
   objects: [],
 }
 

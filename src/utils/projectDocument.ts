@@ -3,7 +3,7 @@ import type {
   Layer,
   MeasurementAnchor,
   Point,
-  ProjectDocumentV4,
+  ProjectDocumentV5,
   ProjectMetadata,
 } from '../types'
 import { isTrackDefinitionId } from '../data/trackCatalog'
@@ -16,12 +16,17 @@ import {
   getObjectAnchors,
   resolveMeasurement,
 } from './annotations'
+import {
+  getUniqueObjectName,
+  LAYER_NAME_MAX_LENGTH,
+  OBJECT_NAME_MAX_LENGTH,
+} from './outliner'
 
-export const PROJECT_SCHEMA_VERSION = 4
+export const PROJECT_SCHEMA_VERSION = 5
 export const PROJECT_NAME_MAX_LENGTH = 80
 
 export type ProjectValidationResult =
-  | { ok: true; project: ProjectDocumentV4 }
+  | { ok: true; project: ProjectDocumentV5 }
   | { ok: false; error: string }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -79,6 +84,7 @@ const validateMetadata = (
 
 const validateLayers = (
   value: unknown,
+  requireOutlinerState: boolean,
 ): { ok: true; layers: Layer[] } | { ok: false; error: string } => {
   if (!Array.isArray(value) || value.length === 0) {
     return { ok: false, error: 'A project requires at least one layer.' }
@@ -92,8 +98,11 @@ const validateLayers = (
       !isRecord(candidate) ||
       !isNonEmptyString(candidate.id) ||
       !isNonEmptyString(candidate.name) ||
+      (requireOutlinerState &&
+        candidate.name.trim().length > LAYER_NAME_MAX_LENGTH) ||
       typeof candidate.visible !== 'boolean' ||
-      typeof candidate.locked !== 'boolean'
+      typeof candidate.locked !== 'boolean' ||
+      (requireOutlinerState && typeof candidate.expanded !== 'boolean')
     ) {
       return { ok: false, error: 'One or more layers are invalid.' }
     }
@@ -105,9 +114,11 @@ const validateLayers = (
     ids.add(candidate.id)
     layers.push({
       id: candidate.id,
-      name: candidate.name,
+      name: candidate.name.trim().slice(0, LAYER_NAME_MAX_LENGTH),
       visible: candidate.visible,
       locked: candidate.locked,
+      expanded:
+        typeof candidate.expanded === 'boolean' ? candidate.expanded : true,
     })
   }
 
@@ -122,8 +133,7 @@ const validatePoint = (value: unknown): value is Point =>
 const validateObjects = (
   value: unknown,
   layers: Layer[],
-  allowTrackPieces: boolean,
-  allowAnnotations: boolean,
+  schemaVersion: number,
 ): { ok: true; objects: CanvasObject[] } | { ok: false; error: string } => {
   if (!Array.isArray(value)) {
     return { ok: false, error: 'Project objects must be an array.' }
@@ -132,6 +142,30 @@ const validateObjects = (
   const layerIds = new Set(layers.map((layer) => layer.id))
   const objectIds = new Set<string>()
   const objects: CanvasObject[] = []
+  const allowTrackPieces = schemaVersion >= 2
+  const allowAnnotations = schemaVersion >= 4
+  const requireOutlinerState = schemaVersion >= 5
+
+  const appendObject = (
+    object: CanvasObject,
+    candidate: Record<string, unknown>,
+  ) => {
+    objects.push({
+      ...object,
+      name:
+        requireOutlinerState && typeof candidate.name === 'string'
+          ? candidate.name.trim()
+          : getUniqueObjectName(object, objects),
+      visible:
+        requireOutlinerState && typeof candidate.visible === 'boolean'
+          ? candidate.visible
+          : true,
+      locked:
+        requireOutlinerState && typeof candidate.locked === 'boolean'
+          ? candidate.locked
+          : false,
+    })
+  }
 
   for (const candidate of value) {
     if (
@@ -151,6 +185,19 @@ const validateObjects = (
     }
     objectIds.add(candidate.id)
 
+    if (
+      requireOutlinerState &&
+      (!isNonEmptyString(candidate.name) ||
+        candidate.name.trim().length > OBJECT_NAME_MAX_LENGTH ||
+        typeof candidate.visible !== 'boolean' ||
+        typeof candidate.locked !== 'boolean')
+    ) {
+      return {
+        ok: false,
+        error: `Object ${candidate.id} has invalid outliner metadata.`,
+      }
+    }
+
     if (candidate.type === 'line') {
       if (
         !validatePoint(candidate.start) ||
@@ -161,13 +208,13 @@ const validateObjects = (
         return { ok: false, error: `Line ${candidate.id} has invalid geometry.` }
       }
 
-      objects.push({
+      appendObject({
         id: candidate.id,
         type: 'line',
         layerId: candidate.layerId,
         start: { x: candidate.start.x, y: candidate.start.y },
         end: { x: candidate.end.x, y: candidate.end.y },
-      })
+      }, candidate)
       continue
     }
 
@@ -180,7 +227,6 @@ const validateObjects = (
       }
 
       if (
-        candidate.layerId !== 'track' ||
         !isTrackDefinitionId(candidate.definitionId) ||
         !validatePoint(candidate.position) ||
         typeof candidate.rotation !== 'number' ||
@@ -199,7 +245,7 @@ const validateObjects = (
       const trackPiece: CanvasObject = {
         id: candidate.id,
         type: 'track-piece',
-        layerId: 'track',
+        layerId: candidate.layerId,
         definitionId: candidate.definitionId,
         position: {
           x: candidate.position.x,
@@ -216,7 +262,7 @@ const validateObjects = (
         }
       }
 
-      objects.push(trackPiece)
+      appendObject(trackPiece, candidate)
       continue
     }
 
@@ -233,7 +279,7 @@ const validateObjects = (
       ) {
         return { ok: false, error: `Text label ${candidate.id} is invalid.` }
       }
-      objects.push({
+      appendObject({
         id: candidate.id,
         type: 'text',
         layerId: candidate.layerId,
@@ -241,7 +287,7 @@ const validateObjects = (
         text: candidate.text,
         fontSizeMm: candidate.fontSizeMm,
         rotation: candidate.rotation,
-      })
+      }, candidate)
       continue
     }
 
@@ -262,7 +308,7 @@ const validateObjects = (
       ) {
         return { ok: false, error: `Measurement ${candidate.id} is invalid.` }
       }
-      objects.push({
+      appendObject({
         id: candidate.id,
         type: 'measurement',
         layerId: candidate.layerId,
@@ -275,7 +321,7 @@ const validateObjects = (
           point: { ...candidate.end.point },
         },
         offset: candidate.offset,
-      })
+      }, candidate)
       continue
     }
 
@@ -299,21 +345,7 @@ const validateObjects = (
       }
     }
 
-    if (candidate.type === 'room' && candidate.layerId !== 'room') {
-      return {
-        ok: false,
-        error: `Room ${candidate.id} must belong to the Room layer.`,
-      }
-    }
-
-    if (candidate.type === 'tabletop' && candidate.layerId !== 'tabletop') {
-      return {
-        ok: false,
-        error: `Tabletop ${candidate.id} must belong to the Tabletop layer.`,
-      }
-    }
-
-    objects.push({
+    appendObject({
       id: candidate.id,
       type: candidate.type,
       layerId: candidate.layerId,
@@ -321,7 +353,7 @@ const validateObjects = (
       y: candidate.y,
       width: candidate.width,
       height: candidate.height,
-    } as CanvasObject)
+    } as CanvasObject, candidate)
   }
 
   for (const object of objects) {
@@ -365,9 +397,10 @@ export const validateProjectDocument = (
 
   if (
     value.schemaVersion !== 1 &&
-    value.schemaVersion !== 2 &&
-    value.schemaVersion !== 3 &&
-    value.schemaVersion !== 4
+      value.schemaVersion !== 2 &&
+      value.schemaVersion !== 3 &&
+      value.schemaVersion !== 4 &&
+      value.schemaVersion !== 5
   ) {
     return {
       ok: false,
@@ -397,7 +430,7 @@ export const validateProjectDocument = (
     layoutScaleId = candidateScaleId
   }
 
-  const layersResult = validateLayers(value.layers)
+  const layersResult = validateLayers(value.layers, value.schemaVersion >= 5)
   if (!layersResult.ok) {
     return layersResult
   }
@@ -405,8 +438,7 @@ export const validateProjectDocument = (
   const objectsResult = validateObjects(
     value.objects,
     layersResult.layers,
-    value.schemaVersion >= 2,
-    value.schemaVersion >= 4,
+    value.schemaVersion,
   )
   if (!objectsResult.ok) {
     return objectsResult
@@ -438,7 +470,7 @@ export const parseProjectDocument = (
 }
 
 export const serializeProjectDocument = (
-  project: ProjectDocumentV4,
+  project: ProjectDocumentV5,
 ): string => JSON.stringify(project, null, 2)
 
 export const validateProjectName = (name: string): string | null => {

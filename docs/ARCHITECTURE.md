@@ -41,23 +41,27 @@ To add a tool:
 
 The toolbar should remain a renderer and selector. It should not become the drawing engine.
 
-## Extending Layers
+## Layers and Asset Outliner
 
-The default layer definitions live in `src/data/defaultLayers.ts`. Layer runtime state is held in `useAppState`.
+The default top-level folders live in `src/data/defaultLayers.ts`. Folders are ordered, user-manageable project data with visibility, locking, naming, and persisted expansion state. Every canvas object is an individually named asset row and stores its own visibility and locking state.
 
-Future layer features can extend the `Layer` type with properties such as colour, order, parent group, or object count. Operations such as add, remove, rename, reorder, and group should eventually move into a focused layer state module or reducer once the interactions become more complex.
+An object's effective visibility is the combination of its own state and its parent folder's state. Effective locking works the same way: a locked folder prevents edits to every child without overwriting each child's retained lock setting.
 
-## Future Canvas Object Storage
+The object array records sibling order within each folder. The top folder and top asset row are visually frontmost, so SVG rendering reverses the outliner order before painting. Reordering or reparenting assets changes only their project order and `layerId`; it does not alter geometry.
 
-Canvas objects should eventually use a serialisable discriminated union. Every object should have a stable ID, object type, layer ID, geometry in millimetres, and shared metadata.
+Folder selection chooses the destination for newly created objects. Asset selection remains separate transient interface state and supports click, Ctrl/Cmd toggle, and Shift range selection.
+
+## Canvas Object Storage
+
+Canvas objects use a serialisable discriminated union. Every object has a stable ID, object type, parent folder ID, geometry in millimetres, and shared outliner metadata.
 
 For example:
 
 ```ts
 type CanvasObject =
-  | { id: string; type: 'line'; layerId: string; start: Point; end: Point }
-  | { id: string; type: 'rectangle' | 'room' | 'tabletop'; layerId: string; x: number; y: number; width: number; height: number }
-  | { id: string; type: 'track-piece'; layerId: 'track'; definitionId: string; position: Point; rotation: number; direction: 'left' | 'right' }
+  | { id: string; type: 'line'; layerId: string; name: string; visible: boolean; locked: boolean; start: Point; end: Point }
+  | { id: string; type: 'rectangle' | 'room' | 'tabletop'; layerId: string; name: string; visible: boolean; locked: boolean; x: number; y: number; width: number; height: number }
+  | { id: string; type: 'track-piece'; layerId: string; name: string; visible: boolean; locked: boolean; definitionId: string; position: Point; rotation: number; direction: 'left' | 'right' }
   | { id: string; type: 'measurement'; layerId: string; start: MeasurementAnchor; end: MeasurementAnchor; offset: number }
   | { id: string; type: 'text'; layerId: string; position: Point; text: string; fontSizeMm: number; rotation: number }
 ```
@@ -66,13 +70,13 @@ Object data should be independent of React components and rendering technology. 
 
 Room and tabletop objects share rectangular geometry but retain semantic object types. This keeps selection and measurement behavior reusable while allowing dedicated rendering, validation, and future domain-specific properties.
 
-When drawing begins, a reducer is a sensible next state step because object edits are explicit actions. A specialist canvas library should only be introduced after native SVG or Canvas prototypes reveal a concrete need.
+Object edits remain explicit reducer operations. A specialist canvas library should only be introduced after native SVG prototypes reveal a concrete need.
 
 ## Project Documents and Browser Storage
 
-Saved projects use a versioned `ProjectDocumentV4` JSON structure. The document contains project metadata, measurement and layout-scale settings, ordered layers, and ordered canvas objects. Geometry remains in millimetres. Theme, cursor position, selected tool, active layer, selection, and drawing drafts are interface state and are not persisted.
+Saved projects use a versioned `ProjectDocumentV5` JSON structure. The document contains project metadata, measurement and layout-scale settings, ordered folders, and ordered canvas objects. V5 adds folder expansion plus object names, visibility, and locking. Geometry remains in millimetres. Theme, cursor position, selected tool, active folder, selection, and drawing drafts are interface state and are not persisted.
 
-Unknown JSON is validated before it reaches React state. A failed import or restore leaves the current project untouched. Versions 1 through 3 are migrated in memory to version 4, with HO used when a legacy document has no scale setting. New saves and exports always use version 4.
+Unknown JSON is validated before it reaches React state. A failed import or restore leaves the current project untouched. Versions 1 through 4 are migrated in memory to version 5. Legacy objects receive stable generated names and default to visible and unlocked; legacy folders default to expanded. HO remains the fallback when a legacy document has no scale setting. New saves and exports always use version 5.
 
 Measurement annotations store fixed points or references to stable object anchors. Anchor resolution is derived from the current source geometry, so dimensions follow later object movement, resizing, and rotation. Deleting referenced geometry first converts dependent anchors to fixed coordinates, preventing dangling project references.
 

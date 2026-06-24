@@ -1,6 +1,7 @@
 import type { CanvasObject, Layer, MeasurementSystem } from '../types'
 import { getObjectBounds } from '../utils/canvas'
 import { propertyUnitForSystem } from '../utils/objectProperties'
+import { isObjectLocked } from '../utils/outliner'
 import { formatMillimetres } from '../utils/units'
 
 interface MultiSelectionPropertiesProps {
@@ -20,7 +21,7 @@ function MultiSelectionProperties({
   const maxX = Math.max(...bounds.map((candidate) => candidate.maxX))
   const maxY = Math.max(...bounds.map((candidate) => candidate.maxY))
   const lockedCount = objects.filter((object) =>
-    layers.find((layer) => layer.id === object.layerId)?.locked,
+    isObjectLocked(object, layers),
   ).length
   const unit = propertyUnitForSystem(measurementSystem)
 

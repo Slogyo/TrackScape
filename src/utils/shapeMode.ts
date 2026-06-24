@@ -4,10 +4,10 @@ import type {
 } from '../types'
 
 export type ShapeMode =
-  | { type: 'room'; layerId: 'room'; label: 'Create Room' }
+  | { type: 'room'; layerId: string; label: 'Create Room' }
   | {
       type: 'tabletop'
-      layerId: 'tabletop'
+      layerId: string
       label: 'Create Tabletop'
     }
   | {
@@ -53,14 +53,14 @@ export const createShapeObject = (
   const mode = getShapeMode(activeLayerId)
 
   if (mode.type === 'room') {
-    return { id, type: 'room', layerId: 'room', ...geometry }
+    return { id, type: 'room', layerId: activeLayerId, ...geometry }
   }
 
   if (mode.type === 'tabletop') {
     return {
       id,
       type: 'tabletop',
-      layerId: 'tabletop',
+      layerId: activeLayerId,
       ...geometry,
     }
   }

@@ -74,6 +74,11 @@ import {
   getTextCaretIndexAtPoint,
   resolveMeasurementAnchor,
 } from '../utils/annotations'
+import {
+  getObjectsInRenderOrder,
+  isObjectLocked,
+  isObjectVisible,
+} from '../utils/outliner'
 
 interface CanvasWorkspaceProps {
   activeLayer: Layer
@@ -231,16 +236,13 @@ function CanvasWorkspace({
     cameraRef.current = nextCamera
     setCameraState(nextCamera)
   }, [])
-  const visibleLayerIds = useMemo(
-    () =>
-      new Set(
-        layers.filter((layer) => layer.visible).map((layer) => layer.id),
-      ),
-    [layers],
-  )
   const visibleObjects = useMemo(
-    () => objects.filter((object) => visibleLayerIds.has(object.layerId)),
-    [objects, visibleLayerIds],
+    () => objects.filter((object) => isObjectVisible(object, layers)),
+    [layers, objects],
+  )
+  const renderObjects = useMemo(
+    () => getObjectsInRenderOrder(layers, visibleObjects),
+    [layers, visibleObjects],
   )
   const resolveMeasurementInputAnchor = useCallback(
     (point: Point, bypassSnapping: boolean): MeasurementAnchor => {
@@ -255,7 +257,7 @@ function CanvasWorkspace({
   const selectedObjects = objects.filter((object) =>
     selectedObjectIds.includes(object.id),
   )
-  const trackLayer = layers.find((layer) => layer.id === 'track') ?? null
+  const trackLayer = activeLayer
   const visibleTrackObjects = useMemo(
     () =>
       visibleObjects.filter(
@@ -293,7 +295,7 @@ function CanvasWorkspace({
     const basePreview: TrackPieceObject = {
       id: 'track-preview',
       type: 'track-piece',
-      layerId: 'track',
+      layerId: trackLayer.id,
       definitionId: trackSettings.definitionId,
       position: resolvePointSnapping(trackPointer, bypassSnapping),
       rotation: trackSettings.rotation,
@@ -598,7 +600,11 @@ function CanvasWorkspace({
           const layer = layers.find(
             (candidate) => candidate.id === object.layerId,
           )
-          if (!layer?.visible || layer.locked) {
+          if (
+            !layer ||
+            !isObjectVisible(object, layers) ||
+            isObjectLocked(object, layers)
+          ) {
             return []
           }
           const rotated = {
@@ -886,7 +892,7 @@ function CanvasWorkspace({
     if (
       targetObject?.type === 'measurement' &&
       targetLayer &&
-      !targetLayer.locked &&
+      !isObjectLocked(targetObject, layers) &&
       event.target instanceof Element
     ) {
       const handle = event.target.getAttribute('data-measurement-handle')
@@ -934,14 +940,13 @@ function CanvasWorkspace({
       }
 
       const movableObjects = nextSelection.filter((object) => {
-        const layer = layers.find(
-          (candidate) => candidate.id === object.layerId,
-        )
         return Boolean(
-          object.type !== 'measurement' && layer?.visible && !layer.locked,
+          object.type !== 'measurement' &&
+            isObjectVisible(object, layers) &&
+            !isObjectLocked(object, layers),
         )
       })
-      if (movableObjects.length === 0 || targetLayer.locked) {
+      if (movableObjects.length === 0 || isObjectLocked(targetObject, layers)) {
         onSelectObjects([targetObject.id])
         return
       }
@@ -971,7 +976,7 @@ function CanvasWorkspace({
       }
 
       onSelectObjects([targetObject.id])
-      if (!targetLayer.locked) {
+      if (!isObjectLocked(targetObject, layers)) {
         onRemoveObject(targetObject.id)
       }
       return
@@ -1614,7 +1619,7 @@ function CanvasWorkspace({
         const object = getTargetObject(event)
         if (object?.type !== 'text') return
         const layer = layers.find((candidate) => candidate.id === object.layerId)
-        if (!layer || layer.locked) return
+        if (!layer || isObjectLocked(object, layers)) return
         setTextEditor({
           sessionId: crypto.randomUUID(),
           objectId: object.id,
@@ -1647,7 +1652,7 @@ function CanvasWorkspace({
           preserveAspectRatio="none"
           viewBox={`${camera.x} ${camera.y} ${viewWidth} ${viewHeight}`}
         >
-          {visibleObjects.map(renderObject)}
+          {renderObjects.map(renderObject)}
           {textEditorObject && (
             <TextGeometry
               object={textEditorObject}

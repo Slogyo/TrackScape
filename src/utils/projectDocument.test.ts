@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 import type {
   ProjectDocumentV1,
   ProjectDocumentV2,
-  ProjectDocumentV3,
   ProjectDocumentV4,
+  ProjectDocumentV5,
 } from '../types'
 import {
   getProjectFilename,
@@ -13,8 +13,8 @@ import {
   validateProjectDocument,
 } from './projectDocument'
 
-const validProject = (): ProjectDocumentV4 => ({
-  schemaVersion: 4,
+const validProject = (): ProjectDocumentV5 => ({
+  schemaVersion: 5,
   metadata: {
     id: 'project-1',
     name: 'Main Layout',
@@ -26,15 +26,30 @@ const validProject = (): ProjectDocumentV4 => ({
     layoutScaleId: 'oo',
   },
   layers: [
-    { id: 'room', name: 'Room', visible: true, locked: false },
-    { id: 'tabletop', name: 'Tabletop', visible: true, locked: false },
-    { id: 'scenery', name: 'Scenery', visible: false, locked: true },
+    { id: 'room', name: 'Room', visible: true, locked: false, expanded: true },
+    {
+      id: 'tabletop',
+      name: 'Tabletop',
+      visible: true,
+      locked: false,
+      expanded: true,
+    },
+    {
+      id: 'scenery',
+      name: 'Scenery',
+      visible: false,
+      locked: true,
+      expanded: false,
+    },
   ],
   objects: [
     {
       id: 'line-1',
       type: 'line',
       layerId: 'scenery',
+      name: 'Guide line',
+      visible: true,
+      locked: false,
       start: { x: 25.4, y: 10 },
       end: { x: 500.25, y: 350.5 },
     },
@@ -42,6 +57,9 @@ const validProject = (): ProjectDocumentV4 => ({
       id: 'rectangle-1',
       type: 'rectangle',
       layerId: 'scenery',
+      name: 'Scenery zone',
+      visible: false,
+      locked: false,
       x: 100,
       y: 200,
       width: 300.5,
@@ -51,6 +69,9 @@ const validProject = (): ProjectDocumentV4 => ({
       id: 'room-1',
       type: 'room',
       layerId: 'room',
+      name: 'Main room',
+      visible: true,
+      locked: true,
       x: 0,
       y: 0,
       width: 4000,
@@ -60,6 +81,9 @@ const validProject = (): ProjectDocumentV4 => ({
       id: 'tabletop-1',
       type: 'tabletop',
       layerId: 'tabletop',
+      name: 'North bench',
+      visible: true,
+      locked: false,
       x: 500,
       y: 500,
       width: 1800,
@@ -70,7 +94,7 @@ const validProject = (): ProjectDocumentV4 => ({
 
 describe('project document', () => {
   it('round trips every object and exact millimetre value', () => {
-    const project: ProjectDocumentV4 = {
+    const project: ProjectDocumentV5 = {
       ...validProject(),
       objects: [
         ...validProject().objects,
@@ -78,6 +102,9 @@ describe('project document', () => {
           id: 'measurement-1',
           type: 'measurement',
           layerId: 'scenery',
+          name: 'Aisle width',
+          visible: true,
+          locked: false,
           start: {
             kind: 'object',
             objectId: 'rectangle-1',
@@ -91,6 +118,9 @@ describe('project document', () => {
           id: 'text-1',
           type: 'text',
           layerId: 'scenery',
+          name: 'Platform label',
+          visible: true,
+          locked: false,
           position: { x: 50.5, y: 75.25 },
           text: 'Platform\nRoad',
           fontSizeMm: 120,
@@ -105,17 +135,41 @@ describe('project document', () => {
     })
   })
 
-  it('migrates schema version 3 projects to version 4', () => {
+  it('migrates schema version 4 projects to version 5 with outliner defaults', () => {
     const project = validProject()
-    const legacy: ProjectDocumentV3 = {
+    const legacy: ProjectDocumentV4 = {
       ...project,
-      schemaVersion: 3,
-      objects: project.objects as ProjectDocumentV3['objects'],
+      schemaVersion: 4,
+      layers: project.layers.map((layer) => ({
+        id: layer.id,
+        name: layer.name,
+        visible: layer.visible,
+        locked: layer.locked,
+      })),
+      objects: project.objects.map((object) => {
+        const legacyObject = { ...object }
+        delete legacyObject.name
+        delete legacyObject.visible
+        delete legacyObject.locked
+        return legacyObject
+      }),
     }
-    expect(validateProjectDocument(legacy)).toEqual({
-      ok: true,
-      project,
-    })
+    const result = validateProjectDocument(legacy)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.project.schemaVersion).toBe(5)
+    expect(result.project.layers.every((layer) => layer.expanded)).toBe(true)
+    expect(result.project.objects.map((object) => object.name)).toEqual([
+      'Line',
+      'Rectangle',
+      'Room',
+      'Tabletop',
+    ])
+    expect(
+      result.project.objects.every(
+        (object) => object.visible === true && object.locked === false,
+      ),
+    ).toBe(true)
   })
 
   it('rejects invalid annotation references and zero-length measurements', () => {
@@ -159,7 +213,7 @@ describe('project document', () => {
     ).toBe(false)
   })
 
-  it('migrates schema version 1 projects to version 4 with HO scale', () => {
+  it('migrates schema version 1 projects to version 5 with HO scale', () => {
     const project = validProject()
     const legacyProject: ProjectDocumentV1 = {
       ...project,
@@ -170,20 +224,17 @@ describe('project document', () => {
       ) as ProjectDocumentV1['objects'],
     }
 
-    expect(validateProjectDocument(legacyProject)).toEqual({
-      ok: true,
-      project: {
-        ...project,
-        schemaVersion: 4,
-        settings: {
-          measurementSystem: project.settings.measurementSystem,
-          layoutScaleId: 'ho',
-        },
-      },
+    const result = validateProjectDocument(legacyProject)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.project.schemaVersion).toBe(5)
+    expect(result.project.settings).toEqual({
+      measurementSystem: project.settings.measurementSystem,
+      layoutScaleId: 'ho',
     })
   })
 
-  it('migrates schema version 2 track projects to version 4 with HO scale', () => {
+  it('migrates schema version 2 track projects to version 5 with HO scale', () => {
     const project = validProject()
     const trackPiece = {
       id: 'track-piece-1',
@@ -200,7 +251,13 @@ describe('project document', () => {
       settings: { measurementSystem: project.settings.measurementSystem },
       layers: [
         ...project.layers,
-        { id: 'track', name: 'Track', visible: true, locked: false },
+        {
+          id: 'track',
+          name: 'Track',
+          visible: true,
+          locked: false,
+          expanded: true,
+        },
       ],
       objects: [
         ...(project.objects as ProjectDocumentV2['objects']),
@@ -208,16 +265,16 @@ describe('project document', () => {
       ],
     }
 
-    expect(validateProjectDocument(legacyProject)).toEqual({
-      ok: true,
-      project: {
-        ...legacyProject,
-        schemaVersion: 4,
-        settings: {
-          measurementSystem: project.settings.measurementSystem,
-          layoutScaleId: 'ho',
-        },
-      },
+    const result = validateProjectDocument(legacyProject)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.project.schemaVersion).toBe(5)
+    expect(result.project.settings.layoutScaleId).toBe('ho')
+    expect(result.project.objects[result.project.objects.length - 1]).toMatchObject({
+      id: 'track-piece-1',
+      layerId: 'track',
+      visible: true,
+      locked: false,
     })
   })
 
@@ -232,13 +289,27 @@ describe('project document', () => {
       rotation: 30,
       direction: 'left' as const,
     }
-    const withTrack: ProjectDocumentV4 = {
+    const withTrack: ProjectDocumentV5 = {
       ...project,
       layers: [
         ...project.layers,
-        { id: 'track', name: 'Track', visible: true, locked: false },
+        {
+          id: 'track',
+          name: 'Track',
+          visible: true,
+          locked: false,
+          expanded: true,
+        },
       ],
-      objects: [...project.objects, trackPiece],
+      objects: [
+        ...project.objects,
+        {
+          ...trackPiece,
+          name: 'Curve 450',
+          visible: true,
+          locked: false,
+        },
+      ],
     }
 
     expect(parseProjectDocument(serializeProjectDocument(withTrack))).toEqual({
@@ -265,10 +336,10 @@ describe('project document', () => {
       error: 'The selected file is not valid JSON.',
     })
     expect(
-      validateProjectDocument({ ...validProject(), schemaVersion: 5 }),
+      validateProjectDocument({ ...validProject(), schemaVersion: 6 }),
     ).toEqual({
       ok: false,
-      error: 'Unsupported project schema version: 5.',
+      error: 'Unsupported project schema version: 6.',
     })
   })
 
@@ -343,26 +414,16 @@ describe('project document', () => {
     ).toBe(false)
   })
 
-  it('rejects semantic objects on mismatched layers', () => {
+  it('allows semantic objects to be reparented to any folder', () => {
     const project = validProject()
-    expect(
-      validateProjectDocument({
-        ...project,
-        objects: [{ ...project.objects[2], layerId: 'scenery' }],
-      }),
-    ).toEqual({
-      ok: false,
-      error: 'Room room-1 must belong to the Room layer.',
+    const result = validateProjectDocument({
+      ...project,
+      objects: [
+        { ...project.objects[2], layerId: 'scenery' },
+        { ...project.objects[3], layerId: 'room' },
+      ],
     })
-    expect(
-      validateProjectDocument({
-        ...project,
-        objects: [{ ...project.objects[3], layerId: 'room' }],
-      }),
-    ).toEqual({
-      ok: false,
-      error: 'Tabletop tabletop-1 must belong to the Tabletop layer.',
-    })
+    expect(result.ok).toBe(true)
   })
 
   it('creates a filesystem-safe TrackScape filename', () => {

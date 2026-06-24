@@ -30,6 +30,7 @@ import {
   getTrackDefinition,
   layoutScaleToTrackGauge,
 } from '../data/trackCatalog'
+import { isObjectLocked } from '../utils/outliner'
 import CanvasWorkspace from './CanvasWorkspace'
 import HeaderBar from './HeaderBar'
 import LayersPanel from './LayersPanel'
@@ -107,8 +108,7 @@ function AppShell({ initialThemePreference }: AppShellProps) {
   const selectedLayer =
     appState.layers.find((layer) => layer.id === selectedObject?.layerId) ??
     null
-  const trackLayer =
-    appState.layers.find((layer) => layer.id === 'track') ?? null
+  const trackLayer = activeLayer
 
   useEffect(() => {
     document.documentElement.dataset.theme = appState.theme
@@ -221,9 +221,6 @@ function AppShell({ initialThemePreference }: AppShellProps) {
 
   const handleSelectTool = (toolId: ToolId) => {
     appState.setActiveToolId(toolId)
-    if (toolId === 'track' && trackLayer) {
-      appState.setActiveLayerId(trackLayer.id)
-    }
   }
 
   const handleSidebarResizeStart = (
@@ -360,11 +357,22 @@ function AppShell({ initialThemePreference }: AppShellProps) {
           objects={appState.objects}
           selectedLayer={selectedLayer}
           selectedObject={selectedObject}
+          selectedObjectIds={appState.selectedObjectIds}
           selectedObjects={selectedObjects}
           trackSettings={trackSettings}
+          onAddLayer={appState.addLayer}
+          onDeleteLayer={appState.deleteLayer}
+          onRenameLayer={appState.renameLayer}
+          onRenameObject={appState.renameObject}
+          onReorderLayer={appState.reorderLayer}
+          onReorderObjects={appState.reorderCanvasObjects}
           onSelectLayer={appState.setActiveLayerId}
+          onSelectObjects={appState.setSelectedObjectIds}
+          onSetLayerExpanded={appState.setLayerExpanded}
           onTrackSettingsChange={setTrackSettings}
           onToggleLock={appState.toggleLayerLock}
+          onToggleObjectLock={appState.toggleObjectLock}
+          onToggleObjectVisibility={appState.toggleObjectVisibility}
           onToggleVisibility={appState.toggleLayerVisibility}
           onUpdateObject={appState.updateCanvasObject}
         />
@@ -382,8 +390,7 @@ function AppShell({ initialThemePreference }: AppShellProps) {
         selectedObject={selectedObject}
         selectedObjectCount={selectedObjects.length}
         selectedLockedCount={selectedObjects.filter((object) =>
-          appState.layers.find((layer) => layer.id === object.layerId)
-            ?.locked,
+          isObjectLocked(object, appState.layers),
         ).length}
         isSnappingEnabled={isSnappingEnabled}
         trackLayer={trackLayer}

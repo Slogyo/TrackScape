@@ -6,16 +6,26 @@ import type {
   LayoutScaleId,
   MeasurementSystem,
   Point,
-  ProjectDocumentV4,
+  ProjectDocumentV5,
   ProjectMetadata,
   Theme,
   ToolId,
 } from '../types'
 import { createProjectMetadata } from '../utils/projectDocument'
 import { detachMeasurementsForDeletedObjects } from '../utils/annotations'
+import {
+  isObjectLocked,
+  isObjectVisible,
+  LAYER_NAME_MAX_LENGTH,
+  OBJECT_NAME_MAX_LENGTH,
+  reorderLayers,
+  reorderObjects,
+  withLayerOutlinerDefaults,
+  withObjectOutlinerDefaults,
+} from '../utils/outliner'
 import { canvasObjectsReducer } from './canvasObjects'
 
-const initialLayers = () => defaultLayers.map((layer) => ({ ...layer }))
+const initialLayers = () => defaultLayers.map(withLayerOutlinerDefaults)
 
 const cloneCanvasObject = (object: CanvasObject): CanvasObject =>
   object.type === 'track-piece'
@@ -39,11 +49,11 @@ const cloneCanvasObject = (object: CanvasObject): CanvasObject =>
       }
     : { ...object }
 
-export const getProjectHydration = (project: ProjectDocumentV4) => ({
+export const getProjectHydration = (project: ProjectDocumentV5) => ({
   metadata: { ...project.metadata },
   measurementSystem: project.settings.measurementSystem,
   layoutScaleId: project.settings.layoutScaleId,
-  layers: project.layers.map((layer) => ({ ...layer })),
+  layers: project.layers.map(withLayerOutlinerDefaults),
   objects: project.objects.map(cloneCanvasObject),
   activeLayerId: project.layers[0].id,
   activeToolId: 'select' as const,
@@ -51,7 +61,7 @@ export const getProjectHydration = (project: ProjectDocumentV4) => ({
 })
 
 export function useAppState(
-  initialProject: ProjectDocumentV4 | null = null,
+  initialProject: ProjectDocumentV5 | null = null,
   initialTheme: Theme = 'light',
 ) {
   const initialHydration = initialProject
@@ -130,16 +140,152 @@ export function useAppState(
     )
   }
 
+  const setLayerExpanded = (layerId: string, expanded: boolean) => {
+    setLayers((currentLayers) =>
+      currentLayers.map((layer) =>
+        layer.id === layerId ? { ...layer, expanded } : layer,
+      ),
+    )
+  }
+
+  const renameLayer = (layerId: string, name: string) => {
+    const trimmedName = name.trim().slice(0, LAYER_NAME_MAX_LENGTH)
+    if (!trimmedName) return
+    setLayers((currentLayers) =>
+      currentLayers.map((layer) =>
+        layer.id === layerId ? { ...layer, name: trimmedName } : layer,
+      ),
+    )
+  }
+
+  const addLayer = () => {
+    const existingNames = new Set(layers.map((layer) => layer.name))
+    let suffix = 1
+    let name = 'New Folder'
+    while (existingNames.has(name)) {
+      suffix += 1
+      name = `New Folder ${suffix}`
+    }
+    const layer: Layer = {
+      id: crypto.randomUUID(),
+      name,
+      visible: true,
+      locked: false,
+      expanded: true,
+    }
+    setLayers((currentLayers) => [...currentLayers, layer])
+    setActiveLayerId(layer.id)
+    return layer
+  }
+
+  const deleteLayer = (layerId: string) => {
+    if (layers.length <= 1) return
+    const layerIndex = layers.findIndex((layer) => layer.id === layerId)
+    if (layerIndex < 0) return
+    const deletedIds = new Set(
+      objects
+        .filter((object) => object.layerId === layerId)
+        .map((object) => object.id),
+    )
+    dispatchObjects({
+      type: 'replace',
+      objects: detachMeasurementsForDeletedObjects(objects, deletedIds),
+    })
+    const remainingLayers = layers.filter((layer) => layer.id !== layerId)
+    setLayers(remainingLayers)
+    setSelectedObjectIds((currentIds) =>
+      currentIds.filter((id) => !deletedIds.has(id)),
+    )
+    if (activeLayerId === layerId) {
+      setActiveLayerId(
+        remainingLayers[Math.min(layerIndex, remainingLayers.length - 1)].id,
+      )
+    }
+  }
+
+  const reorderLayer = (
+    sourceId: string,
+    targetId: string,
+    position: 'before' | 'after',
+  ) => {
+    setLayers((currentLayers) =>
+      reorderLayers(currentLayers, sourceId, targetId, position),
+    )
+  }
+
+  const toggleObjectVisibility = (objectId: string) => {
+    const object = objects.find((candidate) => candidate.id === objectId)
+    if (!object) return
+    const nextVisible = object.visible === false
+    dispatchObjects({
+      type: 'update',
+      object: { ...object, visible: nextVisible },
+    })
+    if (!nextVisible) {
+      setSelectedObjectIds((currentIds) =>
+        currentIds.filter((id) => id !== objectId),
+      )
+    }
+  }
+
+  const toggleObjectLock = (objectId: string) => {
+    const object = objects.find((candidate) => candidate.id === objectId)
+    if (!object) return
+    dispatchObjects({
+      type: 'update',
+      object: { ...object, locked: !object.locked },
+    })
+  }
+
+  const renameObject = (objectId: string, name: string) => {
+    const object = objects.find((candidate) => candidate.id === objectId)
+    const trimmedName = name.trim().slice(0, OBJECT_NAME_MAX_LENGTH)
+    if (!object || !trimmedName || isObjectLocked(object, layers)) return
+    dispatchObjects({
+      type: 'update',
+      object: { ...object, name: trimmedName },
+    })
+  }
+
+  const reorderCanvasObjects = (
+    objectIds: string[],
+    targetLayerId: string,
+    targetIndex: number,
+  ) => {
+    const targetLayer = layers.find((layer) => layer.id === targetLayerId)
+    if (!targetLayer || targetLayer.locked) return
+    const movableIds = objectIds.filter((id) => {
+      const object = objects.find((candidate) => candidate.id === id)
+      return Boolean(object && !isObjectLocked(object, layers))
+    })
+    if (movableIds.length === 0) return
+    dispatchObjects({
+      type: 'replace',
+      objects: reorderObjects(
+        layers,
+        objects,
+        movableIds,
+        targetLayerId,
+        targetIndex,
+      ),
+    })
+  }
+
   const addCanvasObject = (object: CanvasObject, selectObject = false) => {
-    dispatchObjects({ type: 'add', object })
+    const preparedObject = withObjectOutlinerDefaults(object, objects)
+    dispatchObjects({ type: 'add', object: preparedObject })
     if (selectObject) {
-      setSelectedObjectIds([object.id])
+      setSelectedObjectIds([preparedObject.id])
     }
   }
 
   const updateCanvasObject = (object: CanvasObject) => {
     const layer = layers.find((candidate) => candidate.id === object.layerId)
-    if (!layer?.visible || layer.locked) {
+    if (
+      !layer ||
+      !isObjectVisible(object, layers) ||
+      isObjectLocked(object, layers)
+    ) {
       return
     }
 
@@ -153,7 +299,11 @@ export function useAppState(
           const layer = layers.find(
             (candidate) => candidate.id === object.layerId,
           )
-          return Boolean(layer?.visible && !layer.locked)
+          return Boolean(
+            layer &&
+              isObjectVisible(object, layers) &&
+              !isObjectLocked(object, layers),
+          )
         })
         .map((object) => [object.id, object]),
     )
@@ -173,7 +323,12 @@ export function useAppState(
   const removeCanvasObject = (objectId: string) => {
     const object = objects.find((candidate) => candidate.id === objectId)
     const layer = layers.find((candidate) => candidate.id === object?.layerId)
-    if (!object || !layer?.visible || layer.locked) {
+    if (
+      !object ||
+      !layer ||
+      !isObjectVisible(object, layers) ||
+      isObjectLocked(object, layers)
+    ) {
       return
     }
 
@@ -197,7 +352,11 @@ export function useAppState(
           const layer = layers.find(
             (candidate) => candidate.id === object.layerId,
           )
-          return Boolean(layer?.visible && !layer.locked)
+          return Boolean(
+            layer &&
+              isObjectVisible(object, layers) &&
+              !isObjectLocked(object, layers),
+          )
         })
         .map((object) => object.id),
     )
@@ -229,7 +388,7 @@ export function useAppState(
     }))
   }
 
-  const hydrateProject = (project: ProjectDocumentV4) => {
+  const hydrateProject = (project: ProjectDocumentV5) => {
     const hydration = getProjectHydration(project)
 
     setMetadata(hydration.metadata)
@@ -245,8 +404,8 @@ export function useAppState(
 
   const getProjectDocument = (
     updatedAt = metadata.updatedAt,
-  ): ProjectDocumentV4 => ({
-    schemaVersion: 4,
+  ): ProjectDocumentV5 => ({
+    schemaVersion: 5,
     metadata: {
       ...metadata,
       updatedAt,
@@ -255,8 +414,10 @@ export function useAppState(
       measurementSystem,
       layoutScaleId,
     },
-    layers: layers.map((layer) => ({ ...layer })),
-    objects: objects.map(cloneCanvasObject),
+    layers: layers.map(withLayerOutlinerDefaults),
+    objects: objects.map((object, index) =>
+      withObjectOutlinerDefaults(cloneCanvasObject(object), objects.slice(0, index)),
+    ),
   })
 
   return {
@@ -289,6 +450,15 @@ export function useAppState(
     toggleMeasurementSystem,
     toggleLayerVisibility,
     toggleLayerLock,
+    setLayerExpanded,
+    renameLayer,
+    addLayer,
+    deleteLayer,
+    reorderLayer,
+    toggleObjectVisibility,
+    toggleObjectLock,
+    renameObject,
+    reorderCanvasObjects,
   }
 }
 

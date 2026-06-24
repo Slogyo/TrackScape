@@ -20,6 +20,7 @@ import { formatMillimetres } from '../utils/units'
 import { getTrackLength } from '../utils/trackGeometry'
 import { formatPrototypeLength } from '../utils/layoutScale'
 import { getMeasurementLayout } from '../utils/annotations'
+import { isObjectLocked } from '../utils/outliner'
 
 interface ObjectPropertiesProps {
   layer: Layer | null
@@ -93,6 +94,9 @@ function ObjectProperties({
   const [error, setError] = useState<string | null>(null)
   const [errorField, setErrorField] = useState<GeometryField | null>(null)
   const [textValue, setTextValue] = useState('')
+  const objectLocked = Boolean(
+    object && isObjectLocked(object, layer ? [layer] : []),
+  )
 
   const formattedValues = useMemo(() => {
     if (!object) {
@@ -122,7 +126,7 @@ function ObjectProperties({
   }, [formattedValues, object])
 
   const commitValue = (field: GeometryField) => {
-    if (!object || layer?.locked) {
+    if (!object || objectLocked) {
       return
     }
 
@@ -216,7 +220,7 @@ function ObjectProperties({
                       : `${label} (${unit})`
                   }
                   disabled={
-                    layer.locked ||
+                    objectLocked ||
                     (object.type === 'measurement' &&
                       (((field === 'x1' || field === 'y1') &&
                         object.start.kind === 'object') ||
@@ -254,7 +258,7 @@ function ObjectProperties({
               <span>Text</span>
               <textarea
                 aria-label="Text content"
-                disabled={layer.locked}
+                disabled={objectLocked}
                 value={textValue}
                 onChange={(event) => setTextValue(event.target.value)}
                 onBlur={() => {
@@ -486,8 +490,12 @@ function ObjectProperties({
             )
           })()}
 
-          {layer.locked && (
-            <p className="properties-notice">Unlock this layer to edit.</p>
+          {objectLocked && (
+            <p className="properties-notice">
+              {layer?.locked
+                ? 'Unlock this folder to edit.'
+                : 'Unlock this asset to edit.'}
+            </p>
           )}
           {error && (
             <p className="properties-error" role="alert">

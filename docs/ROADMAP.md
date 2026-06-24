@@ -13,6 +13,7 @@
 9. Add scrollable workspace navigation, area selection, SVG controls, and persistent theme preference. Complete.
 10. Add the official PECO HO/OO, N, and O track catalogue with product specifications, multi-route geometry, and radius labels. Complete.
 11. Add persistent attached/free measurement annotations and multiline text labels. Complete.
+12. Add a hierarchical Layers and Asset Outliner with folders, per-asset state, desktop multi-selection, reordering, and reparenting. Complete.
 
 Each step should include focused tests for measurement conversion and object-state behavior before moving to the next feature group.
 
