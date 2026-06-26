@@ -1,0 +1,497 @@
+import type {
+  CanvasObject,
+  Layer,
+  MeasurementAnchor,
+  Point,
+  ProjectDocumentV5,
+  ProjectMetadata,
+} from '../types'
+import { isTrackDefinitionId } from '../data/trackCatalog'
+import {
+  DEFAULT_LAYOUT_SCALE_ID,
+  isLayoutScaleId,
+} from '../data/layoutScales'
+import {
+  getObjectAnchors,
+  resolveMeasurement,
+} from './annotations'
+import {
+  getUniqueObjectName,
+  LAYER_NAME_MAX_LENGTH,
+  OBJECT_NAME_MAX_LENGTH,
+} from './outliner'
+
+export const PROJECT_SCHEMA_VERSION = 5
+export const PROJECT_NAME_MAX_LENGTH = 80
+
+export type ProjectValidationResult =
+  | { ok: true; project: ProjectDocumentV5 }
+  | { ok: false; error: string }
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const isNonEmptyString = (value: unknown): value is string =>
+  typeof value === 'string' && value.trim().length > 0
+
+const isFiniteNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value)
+
+const isPositiveNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value) && value > 0
+
+const isIsoTimestamp = (value: unknown): value is string =>
+  typeof value === 'string' &&
+  value.length > 0 &&
+  Number.isFinite(Date.parse(value))
+
+const validateMetadata = (
+  value: unknown,
+): { ok: true; metadata: ProjectMetadata } | { ok: false; error: string } => {
+  if (!isRecord(value)) {
+    return { ok: false, error: 'Project metadata is missing or invalid.' }
+  }
+
+  if (!isNonEmptyString(value.id)) {
+    return { ok: false, error: 'Project metadata requires an ID.' }
+  }
+
+  if (
+    !isNonEmptyString(value.name) ||
+    value.name.trim().length > PROJECT_NAME_MAX_LENGTH
+  ) {
+    return {
+      ok: false,
+      error: `Project name must be between 1 and ${PROJECT_NAME_MAX_LENGTH} characters.`,
+    }
+  }
+
+  if (!isIsoTimestamp(value.createdAt) || !isIsoTimestamp(value.updatedAt)) {
+    return { ok: false, error: 'Project timestamps are invalid.' }
+  }
+
+  return {
+    ok: true,
+    metadata: {
+      id: value.id,
+      name: value.name.trim(),
+      createdAt: value.createdAt,
+      updatedAt: value.updatedAt,
+    },
+  }
+}
+
+const validateLayers = (
+  value: unknown,
+  requireOutlinerState: boolean,
+): { ok: true; layers: Layer[] } | { ok: false; error: string } => {
+  if (!Array.isArray(value) || value.length === 0) {
+    return { ok: false, error: 'A project requires at least one layer.' }
+  }
+
+  const ids = new Set<string>()
+  const layers: Layer[] = []
+
+  for (const candidate of value) {
+    if (
+      !isRecord(candidate) ||
+      !isNonEmptyString(candidate.id) ||
+      !isNonEmptyString(candidate.name) ||
+      (requireOutlinerState &&
+        candidate.name.trim().length > LAYER_NAME_MAX_LENGTH) ||
+      typeof candidate.visible !== 'boolean' ||
+      typeof candidate.locked !== 'boolean' ||
+      (requireOutlinerState && typeof candidate.expanded !== 'boolean')
+    ) {
+      return { ok: false, error: 'One or more layers are invalid.' }
+    }
+
+    if (ids.has(candidate.id)) {
+      return { ok: false, error: `Duplicate layer ID: ${candidate.id}.` }
+    }
+
+    ids.add(candidate.id)
+    layers.push({
+      id: candidate.id,
+      name: candidate.name.trim().slice(0, LAYER_NAME_MAX_LENGTH),
+      visible: candidate.visible,
+      locked: candidate.locked,
+      expanded:
+        typeof candidate.expanded === 'boolean' ? candidate.expanded : true,
+    })
+  }
+
+  return { ok: true, layers }
+}
+
+const validatePoint = (value: unknown): value is Point =>
+  isRecord(value) &&
+  isFiniteNumber(value.x) &&
+  isFiniteNumber(value.y)
+
+const validateObjects = (
+  value: unknown,
+  layers: Layer[],
+  schemaVersion: number,
+): { ok: true; objects: CanvasObject[] } | { ok: false; error: string } => {
+  if (!Array.isArray(value)) {
+    return { ok: false, error: 'Project objects must be an array.' }
+  }
+
+  const layerIds = new Set(layers.map((layer) => layer.id))
+  const objectIds = new Set<string>()
+  const objects: CanvasObject[] = []
+  const allowTrackPieces = schemaVersion >= 2
+  const allowAnnotations = schemaVersion >= 4
+  const requireOutlinerState = schemaVersion >= 5
+
+  const appendObject = (
+    object: CanvasObject,
+    candidate: Record<string, unknown>,
+  ) => {
+    objects.push({
+      ...object,
+      name:
+        requireOutlinerState && typeof candidate.name === 'string'
+          ? candidate.name.trim()
+          : getUniqueObjectName(object, objects),
+      visible:
+        requireOutlinerState && typeof candidate.visible === 'boolean'
+          ? candidate.visible
+          : true,
+      locked:
+        requireOutlinerState && typeof candidate.locked === 'boolean'
+          ? candidate.locked
+          : false,
+    })
+  }
+
+  for (const candidate of value) {
+    if (
+      !isRecord(candidate) ||
+      !isNonEmptyString(candidate.id) ||
+      !isNonEmptyString(candidate.layerId) ||
+      !layerIds.has(candidate.layerId)
+    ) {
+      return {
+        ok: false,
+        error: 'One or more objects have invalid IDs or layer references.',
+      }
+    }
+
+    if (objectIds.has(candidate.id)) {
+      return { ok: false, error: `Duplicate object ID: ${candidate.id}.` }
+    }
+    objectIds.add(candidate.id)
+
+    if (
+      requireOutlinerState &&
+      (!isNonEmptyString(candidate.name) ||
+        candidate.name.trim().length > OBJECT_NAME_MAX_LENGTH ||
+        typeof candidate.visible !== 'boolean' ||
+        typeof candidate.locked !== 'boolean')
+    ) {
+      return {
+        ok: false,
+        error: `Object ${candidate.id} has invalid outliner metadata.`,
+      }
+    }
+
+    if (candidate.type === 'line') {
+      if (
+        !validatePoint(candidate.start) ||
+        !validatePoint(candidate.end) ||
+        (candidate.start.x === candidate.end.x &&
+          candidate.start.y === candidate.end.y)
+      ) {
+        return { ok: false, error: `Line ${candidate.id} has invalid geometry.` }
+      }
+
+      appendObject({
+        id: candidate.id,
+        type: 'line',
+        layerId: candidate.layerId,
+        start: { x: candidate.start.x, y: candidate.start.y },
+        end: { x: candidate.end.x, y: candidate.end.y },
+      }, candidate)
+      continue
+    }
+
+    if (candidate.type === 'track-piece') {
+      if (!allowTrackPieces) {
+        return {
+          ok: false,
+          error: 'Track pieces are not supported by project schema version 1.',
+        }
+      }
+
+      if (
+        !isTrackDefinitionId(candidate.definitionId) ||
+        !validatePoint(candidate.position) ||
+        typeof candidate.rotation !== 'number' ||
+        !Number.isFinite(candidate.rotation) ||
+        candidate.rotation < 0 ||
+        candidate.rotation >= 360 ||
+        candidate.rotation % 15 !== 0 ||
+        (candidate.direction !== 'left' && candidate.direction !== 'right')
+      ) {
+        return {
+          ok: false,
+          error: `Track piece ${candidate.id} has invalid geometry or catalog data.`,
+        }
+      }
+
+      const trackPiece: CanvasObject = {
+        id: candidate.id,
+        type: 'track-piece',
+        layerId: candidate.layerId,
+        definitionId: candidate.definitionId,
+        position: {
+          x: candidate.position.x,
+          y: candidate.position.y,
+        },
+        rotation: candidate.rotation,
+        direction: candidate.direction,
+      }
+      appendObject(trackPiece, candidate)
+      continue
+    }
+
+    if (candidate.type === 'text') {
+      if (
+        !allowAnnotations ||
+        !validatePoint(candidate.position) ||
+        !isNonEmptyString(candidate.text) ||
+        !isPositiveNumber(candidate.fontSizeMm) ||
+        typeof candidate.rotation !== 'number' ||
+        !Number.isFinite(candidate.rotation) ||
+        candidate.rotation < 0 ||
+        candidate.rotation >= 360
+      ) {
+        return { ok: false, error: `Text label ${candidate.id} is invalid.` }
+      }
+      appendObject({
+        id: candidate.id,
+        type: 'text',
+        layerId: candidate.layerId,
+        position: { ...candidate.position },
+        text: candidate.text,
+        fontSizeMm: candidate.fontSizeMm,
+        rotation: candidate.rotation,
+      }, candidate)
+      continue
+    }
+
+    if (candidate.type === 'measurement') {
+      const validateAnchor = (anchor: unknown): anchor is MeasurementAnchor =>
+        isRecord(anchor) &&
+        validatePoint(anchor.point) &&
+        (anchor.kind === 'fixed' ||
+          (anchor.kind === 'object' &&
+            isNonEmptyString(anchor.objectId) &&
+            isNonEmptyString(anchor.anchorId)))
+      if (
+        !allowAnnotations ||
+        !validateAnchor(candidate.start) ||
+        !validateAnchor(candidate.end) ||
+        typeof candidate.offset !== 'number' ||
+        !Number.isFinite(candidate.offset)
+      ) {
+        return { ok: false, error: `Measurement ${candidate.id} is invalid.` }
+      }
+      appendObject({
+        id: candidate.id,
+        type: 'measurement',
+        layerId: candidate.layerId,
+        start: {
+          ...candidate.start,
+          point: { ...candidate.start.point },
+        },
+        end: {
+          ...candidate.end,
+          point: { ...candidate.end.point },
+        },
+        offset: candidate.offset,
+      }, candidate)
+      continue
+    }
+
+    if (
+      candidate.type !== 'rectangle' &&
+      candidate.type !== 'room' &&
+      candidate.type !== 'tabletop'
+    ) {
+      return { ok: false, error: `Object ${candidate.id} has an unknown type.` }
+    }
+
+    if (
+      !isFiniteNumber(candidate.x) ||
+      !isFiniteNumber(candidate.y) ||
+      !isPositiveNumber(candidate.width) ||
+      !isPositiveNumber(candidate.height)
+    ) {
+      return {
+        ok: false,
+        error: `Object ${candidate.id} has invalid rectangular geometry.`,
+      }
+    }
+
+    appendObject({
+      id: candidate.id,
+      type: candidate.type,
+      layerId: candidate.layerId,
+      x: candidate.x,
+      y: candidate.y,
+      width: candidate.width,
+      height: candidate.height,
+    } as CanvasObject, candidate)
+  }
+
+  for (const object of objects) {
+    if (object.type !== 'measurement') continue
+    for (const anchor of [object.start, object.end]) {
+      if (anchor.kind !== 'object') continue
+      const source = objects.find((candidate) => candidate.id === anchor.objectId)
+      if (
+        !source ||
+        getObjectAnchors(source).every(
+          (candidate) => candidate.anchorId !== anchor.anchorId,
+        )
+      ) {
+        return {
+          ok: false,
+          error: `Measurement ${object.id} has an invalid object anchor.`,
+        }
+      }
+    }
+    const resolved = resolveMeasurement(object, objects)
+    if (
+      resolved.start.x === resolved.end.x &&
+      resolved.start.y === resolved.end.y
+    ) {
+      return {
+        ok: false,
+        error: `Measurement ${object.id} has zero length.`,
+      }
+    }
+  }
+
+  return { ok: true, objects }
+}
+
+export const validateProjectDocument = (
+  value: unknown,
+): ProjectValidationResult => {
+  if (!isRecord(value)) {
+    return { ok: false, error: 'Project data must be a JSON object.' }
+  }
+
+  if (
+    value.schemaVersion !== 1 &&
+      value.schemaVersion !== 2 &&
+      value.schemaVersion !== 3 &&
+      value.schemaVersion !== 4 &&
+      value.schemaVersion !== 5
+  ) {
+    return {
+      ok: false,
+      error: `Unsupported project schema version: ${String(value.schemaVersion)}.`,
+    }
+  }
+
+  const metadataResult = validateMetadata(value.metadata)
+  if (!metadataResult.ok) {
+    return metadataResult
+  }
+
+  if (
+    !isRecord(value.settings) ||
+    (value.settings.measurementSystem !== 'metric' &&
+      value.settings.measurementSystem !== 'imperial')
+  ) {
+    return { ok: false, error: 'Project measurement settings are invalid.' }
+  }
+
+  let layoutScaleId = DEFAULT_LAYOUT_SCALE_ID
+  if (value.schemaVersion >= 3) {
+    const candidateScaleId = value.settings.layoutScaleId
+    if (!isLayoutScaleId(candidateScaleId)) {
+      return { ok: false, error: 'Project layout scale is invalid.' }
+    }
+    layoutScaleId = candidateScaleId
+  }
+
+  const layersResult = validateLayers(value.layers, value.schemaVersion >= 5)
+  if (!layersResult.ok) {
+    return layersResult
+  }
+
+  const objectsResult = validateObjects(
+    value.objects,
+    layersResult.layers,
+    value.schemaVersion,
+  )
+  if (!objectsResult.ok) {
+    return objectsResult
+  }
+
+  return {
+    ok: true,
+    project: {
+      schemaVersion: PROJECT_SCHEMA_VERSION,
+      metadata: metadataResult.metadata,
+      settings: {
+        measurementSystem: value.settings.measurementSystem,
+        layoutScaleId,
+      },
+      layers: layersResult.layers,
+      objects: objectsResult.objects,
+    },
+  }
+}
+
+export const parseProjectDocument = (
+  json: string,
+): ProjectValidationResult => {
+  try {
+    return validateProjectDocument(JSON.parse(json))
+  } catch {
+    return { ok: false, error: 'The selected file is not valid JSON.' }
+  }
+}
+
+export const serializeProjectDocument = (
+  project: ProjectDocumentV5,
+): string => JSON.stringify(project, null, 2)
+
+export const validateProjectName = (name: string): string | null => {
+  if (name.trim().length === 0) {
+    return 'Project name cannot be blank.'
+  }
+
+  if (name.trim().length > PROJECT_NAME_MAX_LENGTH) {
+    return `Project name cannot exceed ${PROJECT_NAME_MAX_LENGTH} characters.`
+  }
+
+  return null
+}
+
+export const createProjectMetadata = (
+  id: string,
+  now: string,
+): ProjectMetadata => ({
+  id,
+  name: 'Untitled Layout',
+  createdAt: now,
+  updatedAt: now,
+})
+
+export const getProjectFilename = (name: string): string => {
+  const safeName = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+  return `${safeName || 'untitled-layout'}.trackscape.json`
+}
