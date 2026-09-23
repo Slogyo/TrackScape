@@ -9,3 +9,12 @@ The project will support:
 - future Digital Command Control (DCC) integration.
 
 This repository was reset for a fresh start on 23 September 2026. The previous implementation is preserved in the `archive/pre-fresh-start-2026-09-23` branch and the `pre-fresh-start-2026-09-23` tag.
+
+## Development
+
+```bash
+pnpm install
+pnpm dev
+```
+
+The first build establishes the layout workspace: a pannable and zoomable coordinate grid centred on `(0, 0)`.
