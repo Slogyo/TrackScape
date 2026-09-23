@@ -147,6 +147,39 @@ button {
 
 .header-actions {
   justify-content: flex-end;
+  gap: 8px;
+}
+
+.measurement-toggle {
+  display: flex;
+  border: 1px solid rgb(234 215 174 / 55%);
+}
+
+.measurement-toggle button {
+  height: 29px;
+  padding: 0 9px;
+  border: 0;
+  color: var(--nswgr-buff-light);
+  background: transparent;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.measurement-toggle button + button {
+  border-left: 1px solid rgb(234 215 174 / 40%);
+}
+
+.measurement-toggle button:hover {
+  color: var(--nswgr-cream);
+  background: rgb(77 29 26 / 50%);
+}
+
+.measurement-toggle button[aria-pressed="true"] {
+  color: var(--nswgr-tuscan-dark);
+  background: var(--nswgr-buff);
 }
 
 .scale-pill {
@@ -292,7 +325,7 @@ button {
 }
 
 .coordinate-readout span {
-  min-width: 74px;
+  min-width: 96px;
   padding: 3px 8px;
   color: var(--nswgr-ink);
   font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
@@ -325,6 +358,10 @@ button {
   }
 
   .coordinate-readout span {
-    min-width: 60px;
+    min-width: 82px;
+  }
+
+  .scale-pill {
+    display: none;
   }
 }

@@ -1,6 +1,22 @@
+import { useEffect, useState } from "react";
 import { LayoutCanvas } from "./components/LayoutCanvas";
+import {
+  getGridSpecification,
+  inferMeasurementSystem,
+  saveMeasurementSystem,
+  type MeasurementSystem,
+} from "./utils/measurement";
 
 export default function App() {
+  const [measurementSystem, setMeasurementSystem] = useState<MeasurementSystem>(
+    inferMeasurementSystem,
+  );
+  const grid = getGridSpecification(measurementSystem);
+
+  useEffect(() => {
+    saveMeasurementSystem(measurementSystem);
+  }, [measurementSystem]);
+
   return (
     <main className="app-shell">
       <header className="app-header">
@@ -18,14 +34,29 @@ export default function App() {
         </div>
 
         <div className="header-actions">
-          <span className="scale-pill">Grid · 1 unit</span>
+          <div className="measurement-toggle" role="group" aria-label="Measurement system">
+            <button
+              type="button"
+              aria-pressed={measurementSystem === "metric"}
+              onClick={() => setMeasurementSystem("metric")}
+            >
+              Metric
+            </button>
+            <button
+              type="button"
+              aria-pressed={measurementSystem === "imperial"}
+              onClick={() => setMeasurementSystem("imperial")}
+            >
+              Imperial
+            </button>
+          </div>
+          <span className="scale-pill">Grid · {grid.description}</span>
         </div>
       </header>
 
       <section className="workspace" aria-label="Layout workspace">
-        <LayoutCanvas />
+        <LayoutCanvas measurementSystem={measurementSystem} />
       </section>
     </main>
   );
 }
-

@@ -1,23 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  formatMeasurement,
+  getGridSpecification,
+  type MeasurementSystem,
+} from "../utils/measurement";
 
 type Point = { x: number; y: number };
-type Viewport = { origin: Point; pixelsPerUnit: number };
+type Viewport = { origin: Point; pixelsPerMillimetre: number };
 
-const MIN_ZOOM = 12;
-const MAX_ZOOM = 120;
+const DEFAULT_PIXELS_PER_MILLIMETRE = 0.32;
+const MIN_ZOOM = 0.12;
+const MAX_ZOOM = 1.2;
 const ZOOM_FACTOR = 1.12;
-const MAJOR_INTERVAL = 5;
 
 function screenToWorld(point: Point, viewport: Viewport): Point {
   return {
-    x: (point.x - viewport.origin.x) / viewport.pixelsPerUnit,
-    y: (viewport.origin.y - point.y) / viewport.pixelsPerUnit,
+    x: (point.x - viewport.origin.x) / viewport.pixelsPerMillimetre,
+    y: (viewport.origin.y - point.y) / viewport.pixelsPerMillimetre,
   };
-}
-
-function formatCoordinate(value: number) {
-  const normalized = Math.abs(value) < 0.005 ? 0 : value;
-  return normalized.toFixed(1);
 }
 
 function drawLine(
@@ -41,24 +41,27 @@ function drawGrid(
   height: number,
   viewport: Viewport,
   pixelRatio: number,
+  measurementSystem: MeasurementSystem,
 ) {
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   context.clearRect(0, 0, width, height);
   context.fillStyle = "#f3ead6";
   context.fillRect(0, 0, width, height);
 
-  const { origin, pixelsPerUnit } = viewport;
-  const minX = Math.floor(-origin.x / pixelsPerUnit) - 1;
-  const maxX = Math.ceil((width - origin.x) / pixelsPerUnit) + 1;
-  const minY = Math.floor((origin.y - height) / pixelsPerUnit) - 1;
-  const maxY = Math.ceil(origin.y / pixelsPerUnit) + 1;
+  const { origin, pixelsPerMillimetre } = viewport;
+  const grid = getGridSpecification(measurementSystem);
+  const gridSpacing = grid.minorMillimetres * pixelsPerMillimetre;
+  const minX = Math.floor(-origin.x / gridSpacing) - 1;
+  const maxX = Math.ceil((width - origin.x) / gridSpacing) + 1;
+  const minY = Math.floor((origin.y - height) / gridSpacing) - 1;
+  const maxY = Math.ceil(origin.y / gridSpacing) + 1;
 
   context.lineCap = "square";
 
   for (let x = minX; x <= maxX; x += 1) {
     if (x === 0) continue;
-    const screenX = origin.x + x * pixelsPerUnit;
-    const isMajor = x % MAJOR_INTERVAL === 0;
+    const screenX = origin.x + x * gridSpacing;
+    const isMajor = x % grid.majorEvery === 0;
     drawLine(
       context,
       { x: Math.round(screenX) + 0.5, y: 0 },
@@ -70,8 +73,8 @@ function drawGrid(
 
   for (let y = minY; y <= maxY; y += 1) {
     if (y === 0) continue;
-    const screenY = origin.y - y * pixelsPerUnit;
-    const isMajor = y % MAJOR_INTERVAL === 0;
+    const screenY = origin.y - y * gridSpacing;
+    const isMajor = y % grid.majorEvery === 0;
     drawLine(
       context,
       { x: 0, y: Math.round(screenY) + 0.5 },
@@ -96,10 +99,14 @@ function drawGrid(
     context.textAlign = "center";
     context.textBaseline = "top";
     for (let x = minX; x <= maxX; x += 1) {
-      if (x === 0 || x % MAJOR_INTERVAL !== 0) continue;
-      const screenX = origin.x + x * pixelsPerUnit;
-      if (screenX > 28 && screenX < width - 28) {
-        context.fillText(String(x), screenX, origin.y + 7);
+      if (x === 0 || x % grid.majorEvery !== 0) continue;
+      const screenX = origin.x + x * gridSpacing;
+      if (screenX > 44 && screenX < width - 44) {
+        context.fillText(
+          formatMeasurement(x * grid.minorMillimetres, measurementSystem, true),
+          screenX,
+          origin.y + 7,
+        );
       }
     }
   }
@@ -108,10 +115,14 @@ function drawGrid(
     context.textAlign = "right";
     context.textBaseline = "middle";
     for (let y = minY; y <= maxY; y += 1) {
-      if (y === 0 || y % MAJOR_INTERVAL !== 0) continue;
-      const screenY = origin.y - y * pixelsPerUnit;
+      if (y === 0 || y % grid.majorEvery !== 0) continue;
+      const screenY = origin.y - y * gridSpacing;
       if (screenY > 24 && screenY < height - 24) {
-        context.fillText(String(y), origin.x - 8, screenY);
+        context.fillText(
+          formatMeasurement(y * grid.minorMillimetres, measurementSystem, true),
+          origin.x - 8,
+          screenY,
+        );
       }
     }
   }
@@ -148,12 +159,16 @@ function drawGrid(
   }
 }
 
-export function LayoutCanvas() {
+type LayoutCanvasProps = {
+  measurementSystem: MeasurementSystem;
+};
+
+export function LayoutCanvas({ measurementSystem }: LayoutCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<Viewport>({
     origin: { x: 0, y: 0 },
-    pixelsPerUnit: 32,
+    pixelsPerMillimetre: DEFAULT_PIXELS_PER_MILLIMETRE,
   });
   const sizeRef = useRef({ width: 0, height: 0 });
   const hasCenteredRef = useRef(false);
@@ -175,14 +190,15 @@ export function LayoutCanvas() {
       sizeRef.current.height,
       viewportRef.current,
       ratio,
+      measurementSystem,
     );
-  }, []);
+  }, [measurementSystem]);
 
   const resetView = useCallback(() => {
     const { width, height } = sizeRef.current;
     viewportRef.current = {
       origin: { x: width / 2, y: height / 2 },
-      pixelsPerUnit: 32,
+      pixelsPerMillimetre: DEFAULT_PIXELS_PER_MILLIMETRE,
     };
     setZoom(100);
     setCursor({ x: 0, y: 0 });
@@ -265,17 +281,17 @@ export function LayoutCanvas() {
       const direction = event.deltaY < 0 ? ZOOM_FACTOR : 1 / ZOOM_FACTOR;
       const nextScale = Math.min(
         MAX_ZOOM,
-        Math.max(MIN_ZOOM, viewportRef.current.pixelsPerUnit * direction),
+        Math.max(MIN_ZOOM, viewportRef.current.pixelsPerMillimetre * direction),
       );
 
       viewportRef.current = {
-        pixelsPerUnit: nextScale,
+        pixelsPerMillimetre: nextScale,
         origin: {
           x: pointer.x - worldBeforeZoom.x * nextScale,
           y: pointer.y + worldBeforeZoom.y * nextScale,
         },
       };
-      setZoom(Math.round((nextScale / 32) * 100));
+      setZoom(Math.round((nextScale / DEFAULT_PIXELS_PER_MILLIMETRE) * 100));
       setCursor(worldBeforeZoom);
       render();
     };
@@ -360,8 +376,8 @@ export function LayoutCanvas() {
       </div>
 
       <output className="coordinate-readout" aria-live="polite">
-        <span><small>X</small>{formatCoordinate(cursor.x)}</span>
-        <span><small>Y</small>{formatCoordinate(cursor.y)}</span>
+        <span><small>X</small>{formatMeasurement(cursor.x, measurementSystem)}</span>
+        <span><small>Y</small>{formatMeasurement(cursor.y, measurementSystem)}</span>
       </output>
     </div>
   );
