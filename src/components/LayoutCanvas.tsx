@@ -35,6 +35,98 @@ function drawLine(
   context.stroke();
 }
 
+function drawGuideLabel(
+  context: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  align: CanvasTextAlign,
+) {
+  context.font = "500 11px Unica77, Arial, sans-serif";
+  context.textAlign = align;
+  context.textBaseline = "middle";
+  const width = context.measureText(text).width;
+  const left =
+    align === "center" ? x - width / 2 - 5 : align === "right" ? x - width - 5 : x - 5;
+
+  context.fillStyle = "rgb(243 234 214 / 88%)";
+  context.fillRect(left, y - 9, width + 10, 18);
+  context.fillStyle = "rgb(122 47 42 / 72%)";
+  context.fillText(text, x, y);
+}
+
+function drawCursorGuides(
+  context: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  viewport: Viewport,
+  cursor: Point | null,
+  measurementSystem: MeasurementSystem,
+) {
+  if (!cursor || cursor.x < 0 || cursor.y < 0 || cursor.x > width || cursor.y > height) {
+    return;
+  }
+
+  const { origin } = viewport;
+  const world = screenToWorld(cursor, viewport);
+  const xAxisVisible = origin.y >= 0 && origin.y <= height;
+  const yAxisVisible = origin.x >= 0 && origin.x <= width;
+
+  context.save();
+  context.setLineDash([4, 4]);
+  const guideColor = "rgb(122 47 42 / 34%)";
+  context.strokeStyle = guideColor;
+  context.lineWidth = 1;
+
+  if (xAxisVisible) {
+    drawLine(context, cursor, { x: cursor.x, y: origin.y }, guideColor, 1);
+  }
+  if (yAxisVisible) {
+    drawLine(context, cursor, { x: origin.x, y: cursor.y }, guideColor, 1);
+  }
+
+  context.setLineDash([]);
+  const crosshairColor = "rgb(122 47 42 / 52%)";
+  context.strokeStyle = crosshairColor;
+  drawLine(
+    context,
+    { x: cursor.x - 5, y: cursor.y },
+    { x: cursor.x + 5, y: cursor.y },
+    crosshairColor,
+    1,
+  );
+  drawLine(
+    context,
+    { x: cursor.x, y: cursor.y - 5 },
+    { x: cursor.x, y: cursor.y + 5 },
+    crosshairColor,
+    1,
+  );
+
+  if (xAxisVisible && Math.abs(cursor.x - origin.x) > 34) {
+    const labelY = origin.y > 28 ? origin.y - 17 : origin.y + 17;
+    drawGuideLabel(
+      context,
+      formatMeasurement(world.x, measurementSystem),
+      cursor.x,
+      labelY,
+      "center",
+    );
+  }
+  if (yAxisVisible && Math.abs(cursor.y - origin.y) > 28) {
+    const labelX = origin.x < width - 90 ? origin.x + 11 : origin.x - 11;
+    drawGuideLabel(
+      context,
+      formatMeasurement(world.y, measurementSystem),
+      labelX,
+      cursor.y,
+      labelX > origin.x ? "left" : "right",
+    );
+  }
+
+  context.restore();
+}
+
 function drawGrid(
   context: CanvasRenderingContext2D,
   width: number,
@@ -42,6 +134,7 @@ function drawGrid(
   viewport: Viewport,
   pixelRatio: number,
   measurementSystem: MeasurementSystem,
+  cursor: Point | null,
 ) {
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   context.clearRect(0, 0, width, height);
@@ -157,6 +250,8 @@ function drawGrid(
     context.textBaseline = "bottom";
     context.fillText("−Y", origin.x + 8, height - 12);
   }
+
+  drawCursorGuides(context, width, height, viewport, cursor, measurementSystem);
 }
 
 type LayoutCanvasProps = {
@@ -174,6 +269,7 @@ export function LayoutCanvas({ measurementSystem, onScaleChange }: LayoutCanvasP
   const sizeRef = useRef({ width: 0, height: 0 });
   const hasCenteredRef = useRef(false);
   const panRef = useRef<{ pointerId: number; last: Point } | null>(null);
+  const cursorScreenRef = useRef<Point | null>(null);
   const spacePressedRef = useRef(false);
   const [cursor, setCursor] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(100);
@@ -192,6 +288,7 @@ export function LayoutCanvas({ measurementSystem, onScaleChange }: LayoutCanvasP
       viewportRef.current,
       ratio,
       measurementSystem,
+      cursorScreenRef.current,
     );
   }, [measurementSystem]);
 
@@ -306,6 +403,7 @@ export function LayoutCanvas({ measurementSystem, onScaleChange }: LayoutCanvasP
   const updateCursor = (event: React.PointerEvent<HTMLCanvasElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const point = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    cursorScreenRef.current = point;
 
     if (panRef.current?.pointerId === event.pointerId) {
       const delta = {
@@ -315,10 +413,16 @@ export function LayoutCanvas({ measurementSystem, onScaleChange }: LayoutCanvasP
       viewportRef.current.origin.x += delta.x;
       viewportRef.current.origin.y += delta.y;
       panRef.current.last = point;
-      render();
     }
 
     setCursor(screenToWorld(point, viewportRef.current));
+    render();
+  };
+
+  const clearCursor = () => {
+    if (panRef.current) return;
+    cursorScreenRef.current = null;
+    render();
   };
 
   const startPan = (event: React.PointerEvent<HTMLCanvasElement>) => {
@@ -357,6 +461,7 @@ export function LayoutCanvas({ measurementSystem, onScaleChange }: LayoutCanvasP
         onContextMenu={(event) => event.preventDefault()}
         onPointerDown={startPan}
         onPointerMove={updateCursor}
+        onPointerLeave={clearCursor}
         onPointerUp={stopPan}
         onPointerCancel={stopPan}
       />
