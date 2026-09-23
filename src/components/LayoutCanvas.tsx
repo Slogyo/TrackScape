@@ -9,8 +9,8 @@ type Point = { x: number; y: number };
 type Viewport = { origin: Point; pixelsPerMillimetre: number };
 
 const DEFAULT_PIXELS_PER_MILLIMETRE = 0.32;
-const MIN_ZOOM = 0.12;
-const MAX_ZOOM = 1.2;
+const MIN_ZOOM = 0.012;
+const MAX_ZOOM = 12;
 const ZOOM_FACTOR = 1.12;
 
 function screenToWorld(point: Point, viewport: Viewport): Point {
@@ -49,7 +49,7 @@ function drawGrid(
   context.fillRect(0, 0, width, height);
 
   const { origin, pixelsPerMillimetre } = viewport;
-  const grid = getGridSpecification(measurementSystem);
+  const grid = getGridSpecification(measurementSystem, pixelsPerMillimetre);
   const gridSpacing = grid.minorMillimetres * pixelsPerMillimetre;
   const minX = Math.floor(-origin.x / gridSpacing) - 1;
   const maxX = Math.ceil((width - origin.x) / gridSpacing) + 1;
@@ -161,9 +161,10 @@ function drawGrid(
 
 type LayoutCanvasProps = {
   measurementSystem: MeasurementSystem;
+  onScaleChange: (pixelsPerMillimetre: number) => void;
 };
 
-export function LayoutCanvas({ measurementSystem }: LayoutCanvasProps) {
+export function LayoutCanvas({ measurementSystem, onScaleChange }: LayoutCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<Viewport>({
@@ -202,8 +203,9 @@ export function LayoutCanvas({ measurementSystem }: LayoutCanvasProps) {
     };
     setZoom(100);
     setCursor({ x: 0, y: 0 });
+    onScaleChange(DEFAULT_PIXELS_PER_MILLIMETRE);
     render();
-  }, [render]);
+  }, [onScaleChange, render]);
 
   useEffect(() => {
     let active = true;
@@ -292,13 +294,14 @@ export function LayoutCanvas({ measurementSystem }: LayoutCanvasProps) {
         },
       };
       setZoom(Math.round((nextScale / DEFAULT_PIXELS_PER_MILLIMETRE) * 100));
+      onScaleChange(nextScale);
       setCursor(worldBeforeZoom);
       render();
     };
 
     canvas.addEventListener("wheel", onWheel, { passive: false });
     return () => canvas.removeEventListener("wheel", onWheel);
-  }, [render]);
+  }, [onScaleChange, render]);
 
   const updateCursor = (event: React.PointerEvent<HTMLCanvasElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();

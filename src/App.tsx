@@ -11,7 +11,8 @@ export default function App() {
   const [measurementSystem, setMeasurementSystem] = useState<MeasurementSystem>(
     inferMeasurementSystem,
   );
-  const grid = getGridSpecification(measurementSystem);
+  const [canvasScale, setCanvasScale] = useState(0.32);
+  const grid = getGridSpecification(measurementSystem, canvasScale);
 
   useEffect(() => {
     saveMeasurementSystem(measurementSystem);
@@ -55,7 +56,10 @@ export default function App() {
       </header>
 
       <section className="workspace" aria-label="Layout workspace">
-        <LayoutCanvas measurementSystem={measurementSystem} />
+        <LayoutCanvas
+          measurementSystem={measurementSystem}
+          onScaleChange={setCanvasScale}
+        />
       </section>
     </main>
   );

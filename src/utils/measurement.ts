@@ -11,6 +11,43 @@ export type GridSpecification = {
   description: string;
 };
 
+type GridStep = Omit<GridSpecification, "description">;
+
+const MINOR_GRID_TARGET_PIXELS = 24;
+
+const METRIC_GRID_STEPS: GridStep[] = [
+  { minorMillimetres: 1, majorEvery: 5 },
+  { minorMillimetres: 2, majorEvery: 5 },
+  { minorMillimetres: 5, majorEvery: 2 },
+  { minorMillimetres: 10, majorEvery: 5 },
+  { minorMillimetres: 20, majorEvery: 5 },
+  { minorMillimetres: 50, majorEvery: 2 },
+  { minorMillimetres: 100, majorEvery: 5 },
+  { minorMillimetres: 200, majorEvery: 5 },
+  { minorMillimetres: 500, majorEvery: 2 },
+  { minorMillimetres: 1000, majorEvery: 5 },
+  { minorMillimetres: 2000, majorEvery: 5 },
+  { minorMillimetres: 5000, majorEvery: 2 },
+  { minorMillimetres: 10000, majorEvery: 5 },
+  { minorMillimetres: 20000, majorEvery: 5 },
+  { minorMillimetres: 50000, majorEvery: 2 },
+];
+
+const IMPERIAL_GRID_STEPS: GridStep[] = [
+  { minorMillimetres: MILLIMETRES_PER_INCH / 8, majorEvery: 8 },
+  { minorMillimetres: MILLIMETRES_PER_INCH / 4, majorEvery: 4 },
+  { minorMillimetres: MILLIMETRES_PER_INCH / 2, majorEvery: 2 },
+  { minorMillimetres: MILLIMETRES_PER_INCH, majorEvery: 6 },
+  { minorMillimetres: 2 * MILLIMETRES_PER_INCH, majorEvery: 6 },
+  { minorMillimetres: 3 * MILLIMETRES_PER_INCH, majorEvery: 4 },
+  { minorMillimetres: 6 * MILLIMETRES_PER_INCH, majorEvery: 2 },
+  { minorMillimetres: 12 * MILLIMETRES_PER_INCH, majorEvery: 5 },
+  { minorMillimetres: 24 * MILLIMETRES_PER_INCH, majorEvery: 5 },
+  { minorMillimetres: 60 * MILLIMETRES_PER_INCH, majorEvery: 2 },
+  { minorMillimetres: 120 * MILLIMETRES_PER_INCH, majorEvery: 5 },
+  { minorMillimetres: 240 * MILLIMETRES_PER_INCH, majorEvery: 5 },
+];
+
 export function inferMeasurementSystem(): MeasurementSystem {
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY);
@@ -31,19 +68,20 @@ export function saveMeasurementSystem(system: MeasurementSystem) {
   }
 }
 
-export function getGridSpecification(system: MeasurementSystem): GridSpecification {
-  if (system === "imperial") {
-    return {
-      minorMillimetres: 3 * MILLIMETRES_PER_INCH,
-      majorEvery: 4,
-      description: "3 in",
-    };
-  }
+export function getGridSpecification(
+  system: MeasurementSystem,
+  pixelsPerMillimetre: number,
+): GridSpecification {
+  const steps = system === "imperial" ? IMPERIAL_GRID_STEPS : METRIC_GRID_STEPS;
+  const selected =
+    steps.find(
+      ({ minorMillimetres }) =>
+        minorMillimetres * pixelsPerMillimetre >= MINOR_GRID_TARGET_PIXELS,
+    ) ?? steps[steps.length - 1];
 
   return {
-    minorMillimetres: 100,
-    majorEvery: 5,
-    description: "100 mm",
+    ...selected,
+    description: formatMeasurement(selected.minorMillimetres, system, true),
   };
 }
 
