@@ -44,7 +44,7 @@ function drawGrid(
 ) {
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   context.clearRect(0, 0, width, height);
-  context.fillStyle = "#f7f8f5";
+  context.fillStyle = "#f3ead6";
   context.fillRect(0, 0, width, height);
 
   const { origin, pixelsPerUnit } = viewport;
@@ -63,7 +63,7 @@ function drawGrid(
       context,
       { x: Math.round(screenX) + 0.5, y: 0 },
       { x: Math.round(screenX) + 0.5, y: height },
-      isMajor ? "#cfd7d1" : "#e5e9e5",
+      isMajor ? "#cbbfa8" : "#ded6c6",
       isMajor ? 1.2 : 1,
     );
   }
@@ -76,12 +76,12 @@ function drawGrid(
       context,
       { x: 0, y: Math.round(screenY) + 0.5 },
       { x: width, y: Math.round(screenY) + 0.5 },
-      isMajor ? "#cfd7d1" : "#e5e9e5",
+      isMajor ? "#cbbfa8" : "#ded6c6",
       isMajor ? 1.2 : 1,
     );
   }
 
-  const axisColor = "#53665d";
+  const axisColor = "#66423a";
   if (origin.y >= 0 && origin.y <= height) {
     drawLine(context, { x: 0, y: origin.y }, { x: width, y: origin.y }, axisColor, 1.5);
   }
@@ -89,8 +89,8 @@ function drawGrid(
     drawLine(context, { x: origin.x, y: 0 }, { x: origin.x, y: height }, axisColor, 1.5);
   }
 
-  context.fillStyle = "#6b7871";
-  context.font = "500 11px Inter, system-ui, sans-serif";
+  context.fillStyle = "#725b53";
+  context.font = "500 11px Unica77, Arial, sans-serif";
 
   if (origin.y >= 18 && origin.y <= height - 18) {
     context.textAlign = "center";
@@ -117,23 +117,21 @@ function drawGrid(
   }
 
   if (origin.x >= 0 && origin.x <= width && origin.y >= 0 && origin.y <= height) {
-    context.beginPath();
-    context.arc(origin.x, origin.y, 4.5, 0, Math.PI * 2);
-    context.fillStyle = "#146e50";
-    context.fill();
-    context.strokeStyle = "#f7f8f5";
+    context.fillStyle = "#7a2f2a";
+    context.fillRect(origin.x - 4, origin.y - 4, 8, 8);
+    context.strokeStyle = "#f3ead6";
     context.lineWidth = 2;
-    context.stroke();
+    context.strokeRect(origin.x - 5, origin.y - 5, 10, 10);
 
-    context.fillStyle = "#244c3e";
-    context.font = "650 11px Inter, system-ui, sans-serif";
+    context.fillStyle = "#4d1d1a";
+    context.font = "700 11px Unica77, Arial, sans-serif";
     context.textAlign = "left";
     context.textBaseline = "bottom";
     context.fillText("0, 0", origin.x + 10, origin.y - 8);
   }
 
   context.fillStyle = axisColor;
-  context.font = "700 11px Inter, system-ui, sans-serif";
+  context.font = "700 11px Unica77, Arial, sans-serif";
   if (origin.y >= 0 && origin.y <= height) {
     context.textAlign = "right";
     context.textBaseline = "bottom";
@@ -189,6 +187,16 @@ export function LayoutCanvas() {
     setZoom(100);
     setCursor({ x: 0, y: 0 });
     render();
+  }, [render]);
+
+  useEffect(() => {
+    let active = true;
+    void document.fonts.ready.then(() => {
+      if (active) render();
+    });
+    return () => {
+      active = false;
+    };
   }, [render]);
 
   useEffect(() => {
@@ -358,4 +366,3 @@ export function LayoutCanvas() {
     </div>
   );
 }
-

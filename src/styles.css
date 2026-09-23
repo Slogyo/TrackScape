@@ -1,9 +1,46 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700&display=swap");
+@font-face {
+  font-family: "Unica77";
+  src: url("../Fonts/Unica77LLTrialWeb-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Unica77";
+  src: url("../Fonts/Unica77LLTrialWeb-Medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Unica77";
+  src: url("../Fonts/Unica77LLTrialWeb-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Unica77";
+  src: url("../Fonts/Unica77LLTrialWeb-Black.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
 
 :root {
-  font-family: "DM Sans", system-ui, sans-serif;
-  color: #18211d;
-  background: #111916;
+  font-family: "Unica77", Arial, sans-serif;
+  color: #241714;
+  background: #301815;
+  --nswgr-tuscan: #7a2f2a;
+  --nswgr-tuscan-dark: #4d1d1a;
+  --nswgr-russet: #3b211c;
+  --nswgr-buff: #d6ae63;
+  --nswgr-buff-light: #ead7ae;
+  --nswgr-cream: #f3ead6;
+  --nswgr-ink: #241714;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -27,19 +64,20 @@ button {
 
 .app-shell {
   display: grid;
-  grid-template-rows: 64px minmax(0, 1fr);
+  grid-template-rows: 66px minmax(0, 1fr);
   width: 100%;
   height: 100%;
-  padding: 10px;
-  background: #111916;
+  background: var(--nswgr-russet);
 }
 
 .app-header {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 0 16px 10px;
-  color: #f1f5f2;
+  padding: 0 22px;
+  border-bottom: 5px solid var(--nswgr-buff);
+  color: var(--nswgr-cream);
+  background: var(--nswgr-tuscan);
 }
 
 .brand,
@@ -51,20 +89,19 @@ button {
 
 .brand {
   gap: 11px;
-  font-family: "Manrope", sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
 }
 
 .brand-mark {
   position: relative;
   display: inline-block;
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  background: #d9f064;
-  transform: rotate(-4deg);
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--nswgr-buff);
+  background: var(--nswgr-tuscan-dark);
 }
 
 .brand-mark span {
@@ -72,8 +109,7 @@ button {
   top: 5px;
   width: 3px;
   height: 16px;
-  border-radius: 2px;
-  background: #17392d;
+  background: var(--nswgr-buff);
   transform: rotate(28deg);
 }
 
@@ -91,19 +127,22 @@ button {
 
 .project-name {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .project-state,
 .scale-pill {
-  color: #aab8b0;
+  color: var(--nswgr-buff-light);
   font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .project-state {
-  padding: 3px 7px;
-  border: 1px solid #34433c;
-  border-radius: 999px;
+  padding: 4px 7px 3px;
+  border: 1px solid rgb(234 215 174 / 50%);
 }
 
 .header-actions {
@@ -111,17 +150,17 @@ button {
 }
 
 .scale-pill {
-  padding: 6px 10px;
-  border-radius: 7px;
-  background: #1d2924;
+  padding: 7px 10px 6px;
+  border-left: 3px solid var(--nswgr-buff);
+  color: var(--nswgr-cream);
+  background: var(--nswgr-tuscan-dark);
 }
 
 .workspace {
   min-height: 0;
   overflow: hidden;
-  border: 1px solid #2b3933;
-  border-radius: 14px;
-  box-shadow: 0 24px 60px rgb(0 0 0 / 24%);
+  border: 0;
+  box-shadow: inset 0 0 0 1px rgb(59 33 28 / 25%);
 }
 
 .canvas-container {
@@ -129,7 +168,7 @@ button {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #f7f8f5;
+  background: var(--nswgr-cream);
 }
 
 .canvas-container canvas {
@@ -156,18 +195,18 @@ button {
 }
 
 .canvas-heading .eyebrow {
-  color: #78867e;
+  color: var(--nswgr-tuscan);
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-weight: 900;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .canvas-heading strong {
-  color: #23312b;
-  font-family: "Manrope", sans-serif;
-  font-size: 16px;
-  letter-spacing: -0.025em;
+  color: var(--nswgr-ink);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .canvas-help,
@@ -176,10 +215,10 @@ button {
   position: absolute;
   bottom: 18px;
   min-height: 38px;
-  border: 1px solid rgb(24 33 29 / 10%);
-  border-radius: 10px;
-  background: rgb(255 255 255 / 88%);
-  box-shadow: 0 8px 22px rgb(31 47 39 / 9%);
+  border: 1px solid rgb(77 29 26 / 28%);
+  border-top: 3px solid var(--nswgr-tuscan);
+  background: rgb(243 234 214 / 94%);
+  box-shadow: 5px 5px 0 rgb(59 33 28 / 12%);
   backdrop-filter: blur(10px);
 }
 
@@ -189,7 +228,7 @@ button {
   align-items: center;
   gap: 9px;
   padding: 0 12px;
-  color: #68756e;
+  color: #6c5149;
   font-size: 11px;
   font-weight: 500;
   pointer-events: none;
@@ -199,8 +238,7 @@ button {
   position: relative;
   width: 13px;
   height: 18px;
-  border: 1.5px solid #849088;
-  border-radius: 7px;
+  border: 1.5px solid #8b645a;
 }
 
 .mouse-icon::after {
@@ -209,8 +247,7 @@ button {
   left: 4.5px;
   width: 2px;
   height: 4px;
-  border-radius: 1px;
-  background: #849088;
+  background: var(--nswgr-tuscan);
   content: "";
 }
 
@@ -226,8 +263,7 @@ button {
   height: 30px;
   padding: 0 11px;
   border: 0;
-  border-radius: 7px;
-  color: #304139;
+  color: var(--nswgr-tuscan-dark);
   background: transparent;
   cursor: pointer;
   font-size: 11px;
@@ -235,14 +271,15 @@ button {
 }
 
 .canvas-controls button:hover {
-  background: #edf1ed;
+  color: var(--nswgr-cream);
+  background: var(--nswgr-tuscan);
 }
 
 .zoom-readout {
   min-width: 50px;
   padding: 0 9px;
-  border-left: 1px solid #dde2de;
-  color: #738078;
+  border-left: 1px solid #c7ad83;
+  color: #72564e;
   font-size: 11px;
   text-align: center;
 }
@@ -257,21 +294,21 @@ button {
 .coordinate-readout span {
   min-width: 74px;
   padding: 3px 8px;
-  color: #26372f;
+  color: var(--nswgr-ink);
   font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
   font-size: 12px;
   text-align: right;
 }
 
 .coordinate-readout span + span {
-  border-left: 1px solid #dde2de;
+  border-left: 1px solid #c7ad83;
 }
 
 .coordinate-readout small {
   float: left;
   margin-right: 8px;
-  color: #819087;
-  font-family: "DM Sans", sans-serif;
+  color: var(--nswgr-tuscan);
+  font-family: "Unica77", Arial, sans-serif;
   font-size: 9px;
   font-weight: 700;
   line-height: 15px;
@@ -291,4 +328,3 @@ button {
     min-width: 60px;
   }
 }
-
