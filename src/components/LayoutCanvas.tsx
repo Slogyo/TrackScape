@@ -7,11 +7,42 @@ import {
 
 type Point = { x: number; y: number };
 type Viewport = { origin: Point; pixelsPerMillimetre: number };
+type CanvasPalette = {
+  background: string;
+  gridMinor: string;
+  gridMajor: string;
+  axis: string;
+  label: string;
+  origin: string;
+  originText: string;
+  guide: string;
+  guideStrong: string;
+  guideLabelBackground: string;
+};
 
 const DEFAULT_PIXELS_PER_MILLIMETRE = 0.32;
 const MIN_ZOOM = 0.012;
 const MAX_ZOOM = 12;
 const ZOOM_FACTOR = 1.12;
+
+function readCanvasPalette(): CanvasPalette {
+  const styles = getComputedStyle(document.documentElement);
+  const read = (name: string, fallback: string) =>
+    styles.getPropertyValue(name).trim() || fallback;
+
+  return {
+    background: read("--canvas-background", "#f3ead6"),
+    gridMinor: read("--canvas-grid-minor", "#ded6c6"),
+    gridMajor: read("--canvas-grid-major", "#cbbfa8"),
+    axis: read("--canvas-axis", "#66423a"),
+    label: read("--canvas-label", "#725b53"),
+    origin: read("--canvas-origin", "#7a2f2a"),
+    originText: read("--canvas-origin-text", "#4d1d1a"),
+    guide: read("--canvas-guide", "rgb(122 47 42 / 34%)"),
+    guideStrong: read("--canvas-guide-strong", "rgb(122 47 42 / 62%)"),
+    guideLabelBackground: read("--canvas-guide-label", "rgb(243 234 214 / 88%)"),
+  };
+}
 
 function screenToWorld(point: Point, viewport: Viewport): Point {
   return {
@@ -41,6 +72,7 @@ function drawGuideLabel(
   x: number,
   y: number,
   align: CanvasTextAlign,
+  palette: CanvasPalette,
 ) {
   context.font = "500 11px Unica77, Arial, sans-serif";
   context.textAlign = align;
@@ -49,9 +81,9 @@ function drawGuideLabel(
   const left =
     align === "center" ? x - width / 2 - 5 : align === "right" ? x - width - 5 : x - 5;
 
-  context.fillStyle = "rgb(243 234 214 / 88%)";
+  context.fillStyle = palette.guideLabelBackground;
   context.fillRect(left, y - 9, width + 10, 18);
-  context.fillStyle = "rgb(122 47 42 / 72%)";
+  context.fillStyle = palette.guideStrong;
   context.fillText(text, x, y);
 }
 
@@ -62,6 +94,7 @@ function drawCursorGuides(
   viewport: Viewport,
   cursor: Point | null,
   measurementSystem: MeasurementSystem,
+  palette: CanvasPalette,
 ) {
   if (!cursor || cursor.x < 0 || cursor.y < 0 || cursor.x > width || cursor.y > height) {
     return;
@@ -74,7 +107,7 @@ function drawCursorGuides(
 
   context.save();
   context.setLineDash([4, 4]);
-  const guideColor = "rgb(122 47 42 / 34%)";
+  const guideColor = palette.guide;
   context.strokeStyle = guideColor;
   context.lineWidth = 1;
 
@@ -86,7 +119,7 @@ function drawCursorGuides(
   }
 
   context.setLineDash([]);
-  const crosshairColor = "rgb(122 47 42 / 52%)";
+  const crosshairColor = palette.guideStrong;
   context.strokeStyle = crosshairColor;
   drawLine(
     context,
@@ -111,6 +144,7 @@ function drawCursorGuides(
       cursor.x,
       labelY,
       "center",
+      palette,
     );
   }
   if (yAxisVisible && Math.abs(cursor.y - origin.y) > 28) {
@@ -121,6 +155,7 @@ function drawCursorGuides(
       labelX,
       cursor.y,
       labelX > origin.x ? "left" : "right",
+      palette,
     );
   }
 
@@ -135,10 +170,11 @@ function drawGrid(
   pixelRatio: number,
   measurementSystem: MeasurementSystem,
   cursor: Point | null,
+  palette: CanvasPalette,
 ) {
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   context.clearRect(0, 0, width, height);
-  context.fillStyle = "#f3ead6";
+  context.fillStyle = palette.background;
   context.fillRect(0, 0, width, height);
 
   const { origin, pixelsPerMillimetre } = viewport;
@@ -159,7 +195,7 @@ function drawGrid(
       context,
       { x: Math.round(screenX) + 0.5, y: 0 },
       { x: Math.round(screenX) + 0.5, y: height },
-      isMajor ? "#cbbfa8" : "#ded6c6",
+      isMajor ? palette.gridMajor : palette.gridMinor,
       isMajor ? 1.2 : 1,
     );
   }
@@ -172,12 +208,12 @@ function drawGrid(
       context,
       { x: 0, y: Math.round(screenY) + 0.5 },
       { x: width, y: Math.round(screenY) + 0.5 },
-      isMajor ? "#cbbfa8" : "#ded6c6",
+      isMajor ? palette.gridMajor : palette.gridMinor,
       isMajor ? 1.2 : 1,
     );
   }
 
-  const axisColor = "#66423a";
+  const axisColor = palette.axis;
   if (origin.y >= 0 && origin.y <= height) {
     drawLine(context, { x: 0, y: origin.y }, { x: width, y: origin.y }, axisColor, 1.5);
   }
@@ -185,7 +221,7 @@ function drawGrid(
     drawLine(context, { x: origin.x, y: 0 }, { x: origin.x, y: height }, axisColor, 1.5);
   }
 
-  context.fillStyle = "#725b53";
+  context.fillStyle = palette.label;
   context.font = "500 11px Unica77, Arial, sans-serif";
 
   if (origin.y >= 18 && origin.y <= height - 18) {
@@ -221,13 +257,13 @@ function drawGrid(
   }
 
   if (origin.x >= 0 && origin.x <= width && origin.y >= 0 && origin.y <= height) {
-    context.fillStyle = "#7a2f2a";
+    context.fillStyle = palette.origin;
     context.fillRect(origin.x - 4, origin.y - 4, 8, 8);
-    context.strokeStyle = "#f3ead6";
+    context.strokeStyle = palette.background;
     context.lineWidth = 2;
     context.strokeRect(origin.x - 5, origin.y - 5, 10, 10);
 
-    context.fillStyle = "#4d1d1a";
+    context.fillStyle = palette.originText;
     context.font = "700 11px Unica77, Arial, sans-serif";
     context.textAlign = "left";
     context.textBaseline = "bottom";
@@ -251,15 +287,20 @@ function drawGrid(
     context.fillText("−Y", origin.x + 8, height - 12);
   }
 
-  drawCursorGuides(context, width, height, viewport, cursor, measurementSystem);
+  drawCursorGuides(context, width, height, viewport, cursor, measurementSystem, palette);
 }
 
 type LayoutCanvasProps = {
   measurementSystem: MeasurementSystem;
   onScaleChange: (pixelsPerMillimetre: number) => void;
+  appearanceKey: string;
 };
 
-export function LayoutCanvas({ measurementSystem, onScaleChange }: LayoutCanvasProps) {
+export function LayoutCanvas({
+  measurementSystem,
+  onScaleChange,
+  appearanceKey,
+}: LayoutCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<Viewport>({
@@ -281,6 +322,7 @@ export function LayoutCanvas({ measurementSystem, onScaleChange }: LayoutCanvasP
     const context = canvas.getContext("2d");
     if (!context) return;
     const ratio = window.devicePixelRatio || 1;
+    const palette = readCanvasPalette();
     drawGrid(
       context,
       sizeRef.current.width,
@@ -289,8 +331,9 @@ export function LayoutCanvas({ measurementSystem, onScaleChange }: LayoutCanvasP
       ratio,
       measurementSystem,
       cursorScreenRef.current,
+      palette,
     );
-  }, [measurementSystem]);
+  }, [appearanceKey, measurementSystem]);
 
   const resetView = useCallback(() => {
     const { width, height } = sizeRef.current;
@@ -312,6 +355,13 @@ export function LayoutCanvas({ measurementSystem, onScaleChange }: LayoutCanvasP
     return () => {
       active = false;
     };
+  }, [render]);
+
+  useEffect(() => {
+    const systemAppearance = window.matchMedia("(prefers-color-scheme: dark)");
+    const redraw = () => render();
+    systemAppearance.addEventListener("change", redraw);
+    return () => systemAppearance.removeEventListener("change", redraw);
   }, [render]);
 
   useEffect(() => {
@@ -465,11 +515,6 @@ export function LayoutCanvas({ measurementSystem, onScaleChange }: LayoutCanvasP
         onPointerUp={stopPan}
         onPointerCancel={stopPan}
       />
-
-      <div className="canvas-heading">
-        <span className="eyebrow">Layout space</span>
-        <strong>Build from the centre out.</strong>
-      </div>
 
       <div className="canvas-help" aria-hidden="true">
         <span className="mouse-icon" />
