@@ -11,11 +11,21 @@ import {
 import eyeIcon from "../../SVG/MdiEye.svg";
 import eyeClosedIcon from "../../SVG/MdiEyeClosed.svg";
 import crossIcon from "../../SVG/Cross.svg";
+import inventoryIcon from "../../SVG/inventory.svg";
+import parametersIcon from "../../SVG/MdiPipeWrench.svg";
+
+type ItemParameters = {
+  xMm: number;
+  yMm: number;
+  rotationDeg: number;
+  scalePercent: number;
+};
 
 type LayerItem = {
   id: string;
   name: string;
   visible: boolean;
+  parameters: ItemParameters;
 };
 
 type LayerGroup = {
@@ -57,7 +67,14 @@ const INITIAL_GROUPS: LayerGroup[] = [
     name: "Layout",
     visible: true,
     expanded: true,
-    items: [{ id: "base-layout", name: "Base layout", visible: true }],
+    items: [
+      {
+        id: "base-layout",
+        name: "Base layout",
+        visible: true,
+        parameters: { xMm: 0, yMm: 0, rotationDeg: 0, scalePercent: 100 },
+      },
+    ],
   },
 ];
 
@@ -105,6 +122,7 @@ export function WorkspaceDrawer({ isOpen, onToggle }: WorkspaceDrawerProps) {
   const [renameValue, setRenameValue] = useState("");
   const [layerClipboard, setLayerClipboard] = useState<LayerClipboard | null>(null);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+  const [lowerPanel, setLowerPanel] = useState<"inventory" | "parameters">("inventory");
   const drawerRef = useRef<HTMLElement>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
@@ -334,6 +352,20 @@ export function WorkspaceDrawer({ isOpen, onToggle }: WorkspaceDrawerProps) {
     setSelectedKeys((currentKeys) => currentKeys.filter((key) => key !== `item:${itemId}`));
   };
 
+  const updateItemParameter = (itemId: string, parameter: keyof ItemParameters, value: number) => {
+    if (!Number.isFinite(value)) return;
+    setGroups((currentGroups) =>
+      currentGroups.map((group) => ({
+        ...group,
+        items: group.items.map((item) =>
+          item.id === itemId
+            ? { ...item, parameters: { ...item.parameters, [parameter]: value } }
+            : item,
+        ),
+      })),
+    );
+  };
+
   const getContextActionKeys = () => {
     if (contextMenu?.targetKey && !selectedKeys.includes(contextMenu.targetKey)) {
       return [contextMenu.targetKey];
@@ -539,6 +571,10 @@ export function WorkspaceDrawer({ isOpen, onToggle }: WorkspaceDrawerProps) {
   };
 
   const itemCount = groups.reduce((count, group) => count + group.items.length, 0);
+  const selectedItems = groups.flatMap((group) =>
+    group.items.filter((item) => selectedKeys.includes(`item:${item.id}`)),
+  );
+  const selectedItem = selectedItems.length === 1 ? selectedItems[0] : null;
   const workspaceWidth = Math.round(
     drawerRef.current?.parentElement?.getBoundingClientRect().width ?? window.innerWidth,
   );
@@ -860,12 +896,138 @@ export function WorkspaceDrawer({ isOpen, onToggle }: WorkspaceDrawerProps) {
 
         <section
           className="workspace-drawer-section inventory-section"
-          aria-labelledby="inventory-title"
+          aria-labelledby="lower-panel-title"
         >
-          <header className="workspace-drawer-heading inventory-heading">
-            <h2 id="inventory-title">Inventory</h2>
+          <header className="workspace-drawer-heading lower-panel-heading">
+            <div className="lower-panel-tabs" role="tablist" aria-label="Workspace details">
+              <button
+                className={lowerPanel === "inventory" ? "is-active" : ""}
+                type="button"
+                role="tab"
+                aria-label="Inventory"
+                aria-selected={lowerPanel === "inventory"}
+                aria-controls="inventory-panel"
+                title="Inventory"
+                onClick={() => setLowerPanel("inventory")}
+              >
+                <img src={inventoryIcon} alt="" aria-hidden="true" />
+              </button>
+              <button
+                className={lowerPanel === "parameters" ? "is-active" : ""}
+                type="button"
+                role="tab"
+                aria-label="Parameters"
+                aria-selected={lowerPanel === "parameters"}
+                aria-controls="parameters-panel"
+                title="Parameters"
+                onClick={() => setLowerPanel("parameters")}
+              >
+                <img src={parametersIcon} alt="" aria-hidden="true" />
+              </button>
+            </div>
+            <h2 id="lower-panel-title">{lowerPanel === "inventory" ? "Inventory" : "Parameters"}</h2>
           </header>
-          <div className="inventory-body" aria-label="Inventory items" />
+          {lowerPanel === "inventory" ? (
+            <div
+              className="inventory-body lower-panel-body"
+              id="inventory-panel"
+              role="tabpanel"
+              aria-label="Inventory items"
+            />
+          ) : (
+            <div
+              className="parameters-body lower-panel-body"
+              id="parameters-panel"
+              role="tabpanel"
+              aria-label="Object parameters"
+            >
+              {selectedItem ? (
+                <>
+                  <div className="parameters-object-heading">
+                    <span>Selected object</span>
+                    <strong>{selectedItem.name}</strong>
+                  </div>
+                  <fieldset className="parameter-section">
+                    <legend>Transform</legend>
+                    <label>
+                      <span>X position</span>
+                      <span className="parameter-input">
+                        <input
+                          type="number"
+                          step="1"
+                          value={selectedItem.parameters.xMm}
+                          onChange={(event) =>
+                            updateItemParameter(selectedItem.id, "xMm", event.currentTarget.valueAsNumber)
+                          }
+                        />
+                        <small>mm</small>
+                      </span>
+                    </label>
+                    <label>
+                      <span>Y position</span>
+                      <span className="parameter-input">
+                        <input
+                          type="number"
+                          step="1"
+                          value={selectedItem.parameters.yMm}
+                          onChange={(event) =>
+                            updateItemParameter(selectedItem.id, "yMm", event.currentTarget.valueAsNumber)
+                          }
+                        />
+                        <small>mm</small>
+                      </span>
+                    </label>
+                    <label>
+                      <span>Rotation</span>
+                      <span className="parameter-input">
+                        <input
+                          type="number"
+                          step="1"
+                          value={selectedItem.parameters.rotationDeg}
+                          onChange={(event) =>
+                            updateItemParameter(
+                              selectedItem.id,
+                              "rotationDeg",
+                              event.currentTarget.valueAsNumber,
+                            )
+                          }
+                        />
+                        <small>deg</small>
+                      </span>
+                    </label>
+                    <label>
+                      <span>Scale</span>
+                      <span className="parameter-input">
+                        <input
+                          type="number"
+                          min="1"
+                          step="1"
+                          value={selectedItem.parameters.scalePercent}
+                          onChange={(event) =>
+                            updateItemParameter(
+                              selectedItem.id,
+                              "scalePercent",
+                              event.currentTarget.valueAsNumber,
+                            )
+                          }
+                        />
+                        <small>%</small>
+                      </span>
+                    </label>
+                  </fieldset>
+                </>
+              ) : (
+                <div className="parameters-empty">
+                  <strong>{selectedItems.length > 1 ? `${selectedItems.length} objects selected` : "No object selected"}</strong>
+                  <span>
+                    {selectedItems.length > 1
+                      ? "Select one object to adjust its parameters."
+                      : "Select an item in Layers to view its parameters."}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </section>
       </aside>
 
